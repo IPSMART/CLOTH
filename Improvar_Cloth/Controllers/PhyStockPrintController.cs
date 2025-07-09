@@ -413,6 +413,91 @@ namespace Improvar.Controllers
         {
             try
             {
+                DataTable tbl = GetStockDiffTbl(VE, FC, Command);
+                if (tbl.Rows.Count == 0)
+                {
+                    return RedirectToAction("NoRecords", "RPTViewer", new { errmsg = "No Records Found !!" });
+                }
+
+                DataTable IR = new DataTable("mstrep");
+
+                Models.PrintViewer PV = new Models.PrintViewer();
+                HtmlConverter HC = new HtmlConverter();
+
+                HC.RepStart(IR, 2);
+                HC.GetPrintHeader(IR, "itcd", "string", "c,15", "Item Code");
+                HC.GetPrintHeader(IR, "itstyle", "string", "c,25", "Style No.");
+                HC.GetPrintHeader(IR, "uomcd", "string", "c,10", "Uom");
+                HC.GetPrintHeader(IR, "pqnty", "double", "c,15,3", "Physical Stock");
+                HC.GetPrintHeader(IR, "aqnty", "double", "c,15,3", "Actual Stock");
+                HC.GetPrintHeader(IR, "balqnty", "double", "c,15,3", "Difference");
+
+                Int32 rNo = 0; Int32 i = 0; Int32 maxR = 0;
+                i = 0; maxR = tbl.Rows.Count - 1;
+
+                double taqnty = 0, tpqnty = 0, tbalqnty = 0;
+                while (i <= maxR)
+                {
+                    string itcd = tbl.Rows[i]["itcd"].retStr();
+
+                    double aqnty = 0, pqnty = 0, balqnty = 0;
+                    while (tbl.Rows[i]["itcd"].retStr() == itcd)
+                    {
+                        aqnty += tbl.Rows[i]["aqnty"].retDbl();
+                        pqnty += tbl.Rows[i]["pqnty"].retDbl();
+                        balqnty += tbl.Rows[i]["balqnty"].retDbl();
+                        i++;
+                        if (i > maxR) break;
+                    }
+                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                    IR.Rows[rNo]["itcd"] = tbl.Rows[i - 1]["itcd"].retStr();
+                    IR.Rows[rNo]["itstyle"] = tbl.Rows[i - 1]["itstyle"].retStr();
+                    IR.Rows[rNo]["uomcd"] = tbl.Rows[i - 1]["uomcd"].retStr();
+                    IR.Rows[rNo]["pqnty"] = pqnty;
+                    IR.Rows[rNo]["aqnty"] = aqnty;
+                    IR.Rows[rNo]["balqnty"] = balqnty;
+
+                    taqnty += aqnty;
+                    tpqnty += pqnty;
+                    tbalqnty += balqnty;
+
+                    if (i > maxR) break;
+                }
+                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                IR.Rows[rNo]["dammy"] = "";
+
+                IR.Rows[rNo]["itcd"] = "Grand Totals";
+                IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
+                IR.Rows[rNo]["aqnty"] = taqnty;
+                IR.Rows[rNo]["pqnty"] = tpqnty;
+                IR.Rows[rNo]["balqnty"] = tbalqnty;
+
+                string pghdr1 = "";
+
+                pghdr1 = "Physical stock v/s Actual stock Details as on " + VE.TDT;
+
+                PV = HC.ShowReport(IR, "PhyStockPrint", pghdr1, "", true, true, "P", false);
+
+                TempData["PhyStockPrint"] = PV;
+                return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = "PhyStockPrint" });
+
+
+
+
+
+
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message);
+            }
+            return null;
+        }
+        public DataTable GetStockDiffTbl(ReportViewinHtml VE, FormCollection FC, string Command)
+        {
+            try
+            {
                 //Cn.getQueryString(VE);
 
                 string fdate = "", tdate = "";
@@ -427,7 +512,7 @@ namespace Improvar.Controllers
                 string fdocno = FC["FDOCNO"].ToString();
                 string tdocno = FC["TDOCNO"].ToString();
                 string doccd = FC["doccd"].ToString();
-                string godown = VE.TEXTBOX1;
+                string godown = VE.TEXTBOX1.retSqlformat();
                 string ReportType = VE.TEXTBOX3;
                 string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
                 string yr_cd = CommVar.YearCode(UNQSNO);
@@ -446,7 +531,10 @@ namespace Improvar.Controllers
                     itcd = A["itcd"].ToString(),
                     itstyle = A["itstyle"].ToString(),
                     uomcd = A["uomcd"].ToString(),
-                }).DistinctBy(s => s.itcd).OrderBy(a => a.itstyle).ToList();
+                    barno = A["barno"].ToString(),
+                    stktype = A["stktype"].ToString(),
+                    mtrljobcd = A["mtrljobcd"].ToString(),
+                }).Distinct().OrderBy(a => a.itstyle).ToList();
 
                 DataTable tbl = new DataTable();
                 if (Item.Count() > 0)
@@ -479,79 +567,107 @@ namespace Improvar.Controllers
                                         itcd = a.itcd,
                                         itstyle = a.itstyle,
                                         uomcd = a.uomcd,
+                                        barno = a.barno,
+                                        stktype = a.stktype,
+                                        mtrljobcd = a.mtrljobcd,
                                         pqnty = b != null ? b.balqnty : 0,
                                         aqnty = c != null ? c.balqnty : 0
                                     })
-                  .GroupBy(x => new { x.itcd, x.itstyle, x.uomcd })
+                  .GroupBy(x => new { x.itcd, x.itstyle, x.uomcd, x.barno, x.stktype,x.mtrljobcd })
                   .Select(g => new
                   {
                       itcd = g.Key.itcd,
                       itstyle = g.Key.itstyle,
                       uomcd = g.Key.uomcd,
+                      barno = g.Key.barno,
+                      stktype = g.Key.stktype,
+                      mtrljobcd = g.Key.mtrljobcd,
                       pqnty = g.Sum(x => x.pqnty),
-                      aqnty = g.Sum(x => x.aqnty)
+                      aqnty = g.Sum(x => x.aqnty),
+                      balqnty = (g.Sum(x => x.pqnty).toRound(3) - g.Sum(x => x.aqnty).toRound(3)).toRound(3)
                   })
                   .ToList();
+
+                    if (tempdata.Count > 0)
+                    {
+                        if (VE.Checkbox1 == true)
+                        {
+                            tempdata = tempdata.Where(a => a.balqnty != 0).ToList();
+                        }
+                    }
+
                     if (tempdata.Count > 0)
                     {
                         tbl = ListToDatatable.LINQResultToDataTable(tempdata);
                     }
                 }
+                return tbl;
+
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return null;
+            }
+        }
+        public ActionResult DownloadPhyStockTemplate(ReportViewinHtml VE, FormCollection FC)
+        {
+            try
+            {
+                VE.Checkbox1 = true;
+                DataTable tbl = GetStockDiffTbl(VE, FC, "");
                 if (tbl.Rows.Count == 0)
                 {
-                    return RedirectToAction("NoRecords", "RPTViewer", new { errmsg = "No Records Found !!" });
+                    return Content("No Records Found");
                 }
 
-                DataTable IR = new DataTable("mstrep");
+                string nm = "Template_Physical stock".retRepname();
 
-                Models.PrintViewer PV = new Models.PrintViewer();
-                HtmlConverter HC = new HtmlConverter();
+                string Excel_Header = "Item Code" + "|" + "Style No" + "|" + "Bar No." + "|" + "Quantity" + "|" + "Stock Type" + "|" + "Material Job";
 
-                HC.RepStart(IR, 2);
-                HC.GetPrintHeader(IR, "itcd", "string", "c,15", "Item Code");
-                HC.GetPrintHeader(IR, "itstyle", "string", "c,25", "Style No.");
-                HC.GetPrintHeader(IR, "uomcd", "string", "c,10", "Uom");
-                HC.GetPrintHeader(IR, "pqnty", "double", "c,15,3", "Physical Stock");
-                HC.GetPrintHeader(IR, "aqnty", "double", "c,15,3", "Actual Stock");
+                ExcelPackage ExcelPkg = new ExcelPackage();
+                ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("Sheet1");
 
-                Int32 rNo = 0; Int32 i = 0; Int32 maxR = 0;
+                using (ExcelRange Rng = wsSheet1.Cells["A1:F1"])
+                {
+                    Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Yellow);
+                    string[] Header = Excel_Header.Split('|');
+                    for (int a = 0; a < Header.Length; a++)
+                    {
+                        wsSheet1.Cells[1, a + 1].Value = Header[a];
+                    }
+                }
+                Int32 i = 0; Int32 maxR = 0;
                 i = 0; maxR = tbl.Rows.Count - 1;
 
-                double taqnty = 0, tpqnty = 0;
+                int rowno = 2, colno = 1;
                 while (i <= maxR)
                 {
-                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                    IR.Rows[rNo]["itcd"] = tbl.Rows[i]["itcd"].retStr();
-                    IR.Rows[rNo]["itstyle"] = tbl.Rows[i]["itstyle"].retStr();
-                    IR.Rows[rNo]["uomcd"] = tbl.Rows[i]["uomcd"].retStr();
-                    IR.Rows[rNo]["pqnty"] = tbl.Rows[i]["pqnty"].retDbl();
-                    IR.Rows[rNo]["aqnty"] = tbl.Rows[i]["aqnty"].retDbl();
+                    colno = 1;
 
-                    taqnty += tbl.Rows[i]["aqnty"].retDbl();
-                    tpqnty += tbl.Rows[i]["pqnty"].retDbl();
+                    wsSheet1.Cells[rowno, colno].Value = tbl.Rows[i]["itcd"].retStr(); colno++;
+                    wsSheet1.Cells[rowno, colno].Value = tbl.Rows[i]["itstyle"].retStr(); colno++;
+                    wsSheet1.Cells[rowno, colno].Value = tbl.Rows[i]["barno"].retStr(); colno++;
+                    wsSheet1.Cells[rowno, colno].Value = tbl.Rows[i]["balqnty"].retDbl(); colno++;
+                    wsSheet1.Cells[rowno, colno].Value = tbl.Rows[i]["stktype"].retStr(); colno++;
+                    wsSheet1.Cells[rowno, colno].Value = tbl.Rows[i]["mtrljobcd"].retStr(); colno++;
+                    rowno++;
                     i++;
                     if (i > maxR) break;
                 }
-                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                IR.Rows[rNo]["dammy"] = "";
+                wsSheet1.Cells[1, 1, 1, 6].AutoFitColumns();
 
-                IR.Rows[rNo]["itcd"] = "Grand Totals";
-                IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
-                IR.Rows[rNo]["aqnty"] = taqnty;
-                IR.Rows[rNo]["pqnty"] = tpqnty;
-
-                string pghdr1 = "";
-
-                pghdr1 = "Physical stock v/s Actual stock Details as on " + tdate;
-
-                PV = HC.ShowReport(IR, "PhyStockPrint", pghdr1, "", true, true, "P", false);
-
-                TempData["PhyStockPrint"] = PV;
-                return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = "PhyStockPrint" });
-
-
-
-
+                Response.Clear();
+                Response.ClearContent();
+                Response.Buffer = true;
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                Response.AddHeader("Content-Disposition", "attachment; filename=Template_" + nm + ".xlsx");
+                Response.BinaryWrite(ExcelPkg.GetAsByteArray());
+                Response.Flush();
+                Response.Close();
+                Response.End();
+                return Content("Download Sucessfull");
 
 
             }
@@ -560,9 +676,7 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, "");
                 return Content(ex.Message);
             }
-            return null;
         }
-
     }
 }
 

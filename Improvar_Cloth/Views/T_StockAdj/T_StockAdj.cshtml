@@ -30,6 +30,54 @@
         else if ("@Model.DefaultAction" == "A") {
             $('form :input:enabled:visible:not([readonly]):first').focus();
         }
+
+        $('#btnExtractFile').click(function () {
+            debugger;
+            if (window.FormData !== undefined) {
+                var formData = new FormData($('form').get(0));
+                var file = document.getElementById("file").files[0];
+                var filename = document.getElementById("file").value;
+                if (filename == "") {
+                    msgWarning("Please Select Excel File");
+                    return false;
+                }
+                formData.append("file", file);
+                formData.append("Command", "Upload");
+                formData.append("CorrectExcel", "Y");
+                $.ajax({
+                    url: "@Url.Action("UpdateGrid", PageControllerName)",
+                    type: "POST",
+                    beforesend: $("#WaitingMode").show(),
+                    contentType: false, // Not to set any content header
+                    processData: false, // Not to process data
+                    data: formData,
+                    success: function (result) {
+
+                        debugger;
+                        var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
+                        if (res.length > 1) {
+                            $("#WaitingMode").hide();
+                            $("#partialdivIN").html(res[0]);
+                            $("#partialdivOUT").html(res[1]);
+                            $("input[type='file']").attr("disabled", false);
+                        }
+                        else {
+                            msgInfo(result);
+                            return false;
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError(XMLHttpRequest.responseText);
+                        $("body span h1").remove(); $("#msgbody_error style").remove();
+                    }
+                });
+            }
+            else {
+                alert("File/FormData not found.");
+            }
+        });
+
         $("#WaitingMode").hide();
     });
 </script>
@@ -314,199 +362,219 @@
 {
     if (Model.DefaultView == true)
     {
-        <div class="form-horizontal" style="padding-left:5px;padding-right:5px;margin-top: -15px;">
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
-            <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
-            <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
-            <input type="hidden" id="callfrmbar" value="bar"/>
-            <input type="hidden" id="callfrmstyle" value="style" />
-  @Html.HiddenFor(s => s.DefaultAction)
-            @Html.HiddenFor(a => a.T_TXN.AUTONO, new { id = "AUTONO" })
-            @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
-            @Html.HiddenFor(m => m.MENU_PARA)
-            @Html.HiddenFor(a => a.M_SYSCNFG.MNTNSIZE, new { id = "MNTNSIZE" })
-            @Html.HiddenFor(a => a.M_SYSCNFG.MNTNCOLOR, new { id = "MNTNCOLOR" })
-            @Html.HiddenFor(a => a.M_SYSCNFG.MNTNPART, new { id = "MNTNPART" })
-            @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
- <div class="row">
-                <div class="col-lg-8">
-                    <div class="row" style="margin-top: 10px;">
-                        <div class="col-md-7">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Document Code")
-                            </div>
-                        </div>
-                        <div class="col-md-9">
-                            <div class="editor-field">
-                                @if (Model.DefaultAction == "A")
-                    {
-                                    @Html.DropDownListFor(model => model.T_TXN.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD" })
-                                }
-                                else
-                                {
-                                    @Html.DropDownListFor(model => model.T_TXN.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", style = "pointer-events:none;background-color:#eee" })
-                                }
-                            </div>
-                        </div>
-                        <div class="col-md-7">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Document Date")
-                                <b style="color:Red;">*</b>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.T_TXN.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", maxlength = 10, @placeholder = "dd/mm/yyyy", onblur = "DocumentDateCHK(this)" } })
-                            </div>
-                        </div>
-                        <div class="col-md-7">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Document No.")
-                                <b style="color:Red;">*</b>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.T_TXN.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", maxlength = 6, @placeholder = "Doc. No.", @readonly = "readonly" } })
-                            </div>
-                        </div>
-                        @if ((Model.MENU_PARA == "CNV") && Model.DefaultAction == "V")
-                    {
-                            <div class="col-md-3">
-                                <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Print_Barcode" value="Print Barcode" title="Click to Print Barcode" onclick="Barcodeprinting()" />
-                            </div>
-                        }
-                    </div>
-                    <div class="row">
-                        <div class="col-md-7">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Godown")
-                                <b style="color:Red;">*</b>
-                            </div>
-                        </div>
-                        <div class="col-md-7">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.T_TXN.GOCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "GOCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GodownName=GONM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GodownName=GONM=0');", @placeholder = "Code", maxlength = 6 } })
-                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGodownDetails", PageControllerName)','Godown Details','GOCD','GOCD=GOCD=1/GodownName=GONM=0')" />
-                            </div>
-                        </div>
-                        <div class="col-md-10">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.GodownName, new { htmlAttributes = new { @class = "form-control", id = "GodownName", maxlength = 30, @TabIndex = -1, @placeholder = "Godown Name", @readonly = "readonly" } })
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-7">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Remarks")
-                            </div>
-                        </div>
-                        <div class="col-md-11">
-                            <div class="editor-field">
-                                @Html.TextAreaFor(model => model.T_TXNOTH.DOCREM, new { id = "DOCREM1", @class = "form-control", @style = "width:430px;height:60px;resize: none;", @placeholder = "Remarks", maxlength = 100 })
-                            </div>
-                        </div>
-                        <div class="col-md-6" style="margin-top: 6px;">
-                            <div class="editor-label">
-                                @Html.Label("", "Bar Generation")
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="editor-field">
-                                @Html.DropDownListFor(model => model.T_TXN.BARGENTYPE, new SelectList(Model.BARGEN_TYPE, "Value", "Text"), new { @class = "form-control", id = "BARGENTYPE" })
-                            </div>
-                        </div>
+<div class="form-horizontal" style="padding-left:5px;padding-right:5px;margin-top: -15px;">
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+    <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
+    <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+    <input type="hidden" id="callfrmbar" value="bar" />
+    <input type="hidden" id="callfrmstyle" value="style" />
+    @Html.HiddenFor(s => s.DefaultAction)
+    @Html.HiddenFor(a => a.T_TXN.AUTONO, new { id = "AUTONO" })
+    @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
+    @Html.HiddenFor(m => m.MENU_PARA)
+    @Html.HiddenFor(a => a.M_SYSCNFG.MNTNSIZE, new { id = "MNTNSIZE" })
+    @Html.HiddenFor(a => a.M_SYSCNFG.MNTNCOLOR, new { id = "MNTNCOLOR" })
+    @Html.HiddenFor(a => a.M_SYSCNFG.MNTNPART, new { id = "MNTNPART" })
+    @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="row" style="margin-top: 10px;">
+                <div class="col-md-7">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Document Code")
                     </div>
                 </div>
-                <div class="col-lg-4" style="margin-left:-10px;margin-top:10px;">
-                    <div class="col-md-6" style="width:auto;overflow:no-display;">
-                        <div>
-                            <div id="partialdivTOTALQNTY">
-                                @if (Model.STOCK_ADJUSTMENT != null && Model.STOCK_ADJUSTMENT.Count > 0)
-                                {
-                                    @Html.Partial("_T_StockAdj_STK_TYPE_QNTY")
-                                }
-                            </div>
-                        </div>
+                <div class="col-md-9">
+                    <div class="editor-field">
+                        @if (Model.DefaultAction == "A")
+                        {
+                        @Html.DropDownListFor(model => model.T_TXN.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD" })
+                        }
+                        else
+                        {
+                        @Html.DropDownListFor(model => model.T_TXN.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", style = "pointer-events:none;background-color:#eee" })
+                        }
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Document Date")
+                        <b style="color:Red;">*</b>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.T_TXN.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", maxlength = 10, @placeholder = "dd/mm/yyyy", onblur = "DocumentDateCHK(this)" } })
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Document No.")
+                        <b style="color:Red;">*</b>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.T_TXN.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", maxlength = 6, @placeholder = "Doc. No.", @readonly = "readonly" } })
+                    </div>
+                </div>
+                @if ((Model.MENU_PARA == "CNV") && Model.DefaultAction == "V")
+                {
+                <div class="col-md-3">
+                    <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Print_Barcode" value="Print Barcode" title="Click to Print Barcode" onclick="Barcodeprinting()" />
+                </div>
+                }
+            </div>
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Godown")
+                        <b style="color:Red;">*</b>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.T_TXN.GOCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "GOCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GodownName=GONM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GodownName=GONM=0');", @placeholder = "Code", maxlength = 6 } })
+                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGodownDetails", PageControllerName)','Godown Details','GOCD','GOCD=GOCD =1/GodownName =GONM =0')" />
+                    </div>
+                </div>
+                <div class="col-md-10">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.GodownName, new { htmlAttributes = new { @class = "form-control", id = "GodownName", maxlength = 30, @TabIndex = -1, @placeholder = "Godown Name", @readonly = "readonly" } })
                     </div>
                 </div>
             </div>
-            <div class="row" style="margin-top:5px;">
-                <ul class="nav nav-tabs">
-                    <li id="OutTab_LI" class="active"><a data-toggle="tab" href="#OutTab">Out Tab</a></li>
-                    <li id="InTab_LI" class=""><a data-toggle="tab" href="#InTab">In Tab</a></li>
-                    <li id="Remarks_LI" class=""><a data-toggle="tab" href="#Remarks">Remarks</a></li>
-                    <li id="Documents_LI" class=""><a data-toggle="tab" href="#Documents">Documents</a></li>
-                </ul>
-                <div class="tab-content">
-                    <div id="OutTab" class="tab-pane fade in active" style="margin-top: 10px;">
-                        @if (Model.DefaultAction != "V")
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Remarks")
+                    </div>
+                </div>
+                <div class="col-md-11">
+                    <div class="editor-field">
+                        @Html.TextAreaFor(model => model.T_TXNOTH.DOCREM, new { id = "DOCREM1", @class = "form-control", @style = "width:430px;height:60px;resize: none;", @placeholder = "Remarks", maxlength = 100 })
+                    </div>
+                </div>
+                <div class="col-md-6" style="margin-top: 6px;">
+                    <div class="editor-label">
+                        @Html.Label("", "Bar Generation")
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="editor-field">
+                        @Html.DropDownListFor(model => model.T_TXN.BARGENTYPE, new SelectList(Model.BARGEN_TYPE, "Value", "Text"), new { @class = "form-control", id = "BARGENTYPE" })
+                    </div>
+                </div>
+            </div>
+            @if (Model.DefaultAction == "A")
+            {
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Select File")
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        <input type="file" id="file" name="file" required accept=".xlsx" />
+                    </div>
+                </div>
+                <div class="col-md-10">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        <input id="btnExtractFile" type="button" value="Upload Data in Bar Code Grid" name="Command" formtarget="_blank" class="btn btn-success" style="margin-top: 4px;padding: 2px 7px 2px 5px;" />
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+        <div class="col-lg-4" style="margin-left:-10px;margin-top:10px;">
+            <div class="col-md-6" style="width:auto;overflow:no-display;">
+                <div>
+                    <div id="partialdivTOTALQNTY">
+                        @if (Model.STOCK_ADJUSTMENT != null && Model.STOCK_ADJUSTMENT.Count > 0)
                         {
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="GetStock" accesskey="Z" value="Get Stock" title="Click to Get Stock" onclick="GetMobStockData()" />
-                                </div>
-                            </div>
+                        @Html.Partial("_T_StockAdj_STK_TYPE_QNTY")
                         }
-                        <div class="row" style="margin-top: 4px;background-color:#c4b9b9;border:5px groove;">
-                            <div>
-                                <div id="partialdivOUT">
-                                    @Html.Partial("_T_StockAdj_OUT_TAB")
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div>
-                                <div id="popup" class="row" style="margin-top: 11px;top:15%;left:13%;right:2%;position:absolute;width:fit-content;">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="InTab" class="tab-pane fade" style="margin-top: 10px;">
-                        <div class="row" style="margin-top: 4px;background-color:#c4b9b9;border:5px groove;">
-                            <div>
-                                <div id="partialdivIN">
-                                    @Html.Partial("_T_StockAdj_IN_TAB")
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="Remarks" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
-                        <div class="row">
-                            <div>
-                                <div id="partialdivRemarks">
-                                    @Html.Partial("_TRANSACTIONREMARKS")
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="Documents" class="tab-pane fade" style="margin-top: 10px;">
-                        <div class="row" style="background-color:#c4b9b9;border:5px groove;">
-                            <div>
-                                <div id="partialdivDocument" style="margin-top:0px;">
-                                    @Html.Partial("_UPLOADDOCUMENTS")
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="PopUp_Backround">
-                        <div id="popup" class="row" style="margin-top: 11px;top:10%;left:35%;position:absolute;">
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+    <div class="row" style="margin-top:5px;">
+        <ul class="nav nav-tabs">
+            <li id="OutTab_LI" class="active"><a data-toggle="tab" href="#OutTab">Out Tab</a></li>
+            <li id="InTab_LI" class=""><a data-toggle="tab" href="#InTab">In Tab</a></li>
+            <li id="Remarks_LI" class=""><a data-toggle="tab" href="#Remarks">Remarks</a></li>
+            <li id="Documents_LI" class=""><a data-toggle="tab" href="#Documents">Documents</a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="OutTab" class="tab-pane fade in active" style="margin-top: 10px;">
+                @if (Model.DefaultAction != "V")
+                {
+                <div class="row">
+                    <div class="col-md-4">
+                        <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="GetStock" accesskey="Z" value="Get Stock" title="Click to Get Stock" onclick="GetMobStockData()" />
+                    </div>
+                </div>
+                }
+                <div class="row" style="margin-top: 4px;background-color:#c4b9b9;border:5px groove;">
+                    <div>
+                        <div id="partialdivOUT">
+                            @Html.Partial("_T_StockAdj_OUT_TAB")
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div>
+                        <div id="popup" class="row" style="margin-top: 11px;top:15%;left:13%;right:2%;position:absolute;width:fit-content;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="InTab" class="tab-pane fade" style="margin-top: 10px;">
+                <div class="row" style="margin-top: 4px;background-color:#c4b9b9;border:5px groove;">
+                    <div>
+                        <div id="partialdivIN">
+                            @Html.Partial("_T_StockAdj_IN_TAB")
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="Remarks" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                <div class="row">
+                    <div>
+                        <div id="partialdivRemarks">
+                            @Html.Partial("_TRANSACTIONREMARKS")
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="Documents" class="tab-pane fade" style="margin-top: 10px;">
+                <div class="row" style="background-color:#c4b9b9;border:5px groove;">
+                    <div>
+                        <div id="partialdivDocument" style="margin-top:0px;">
+                            @Html.Partial("_UPLOADDOCUMENTS")
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="PopUp_Backround">
+                <div id="popup" class="row" style="margin-top: 11px;top:10%;left:35%;position:absolute;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
     }
     else
     {
         @ViewBag.ErrorMessage
     }
 
-    <div class="container">
-        <div id="helpDIV">
+<div class="container">
+    <div id="helpDIV">
 
-        </div>
     </div>
+</div>
 }

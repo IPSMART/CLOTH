@@ -1,10 +1,15 @@
 ﻿@model Improvar.ViewModels.ReportViewinHtml
-@{   
+@{
     Layout = "~/Views/Shared/_ReportLayout.cshtml";
 }
 
 <script src="~/Scripts/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
 
+        RemoveDate();
+    });
+</script>
 <script>
     $(function () {
         $("#FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
@@ -12,29 +17,37 @@
     });
 </script>
 <script>
-    function Show_rep()
-    {
+    function Show_rep(id) {
         debugger;
         var reptype = $('[id="TEXTBOX3"]:checked').val();
         $("#form1").attr('target', '_blank');
 
-        if (reptype == "PhysicalActualStock")
-        {
+        if (id == "Download Template") {
+            if (!emptyFieldCheck("Please Select / Enter Godown", "GOCD")) { return false; }
+
+            $("#form1").attr('action', 'DownloadPhyStockTemplate');
+            $("#form1").submit();
+        }
+        else if (id == '' && reptype == "PhysicalActualStock") {
             $("#form1").attr('action', 'StockDiffPrint');
             $("#form1").submit();
         }
-        else
-        {
+        else {
             $("#form1").attr('action', 'PhyStockDetailsPrint');
             $("#form1").submit();
         }
     }
     function RemoveDate() {
         var reptype = $('[id="TEXTBOX3"]:checked').val();
-        if (reptype == "PhysicalActualStock")
-        {
+        if (reptype == "PhysicalActualStock") {
             $("#FDT").val("");
+            $(".phydiv").show();
+
         }
+        else {
+            $(".phydiv").hide();
+        }
+        document.getElementById("Checkbox1").checked = false;
     }
 </script>
 @{
@@ -124,7 +137,7 @@
                         <div class="editor-field">
                             @Html.EditorFor(model => model.TEXTBOX1, new { htmlAttributes = new { @class = "form-control textbox_image", id = "GOCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0');", @placeholder = "Code", maxlength = 6 } })
                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGodownDetails", PageControllerName)','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0')" />
-                   </div>
+                        </div>
                     </div>
                     <div class="col-md-10">
                         <div class="editor-field">
@@ -163,7 +176,7 @@
                             @Html.RadioButtonFor(model => model.TEXTBOX3, "Details", new { @checked = "checked", id = "TEXTBOX3", onclick = "RemoveDate();" })  @Html.Label("Details")
                         </label>
                         <label class="radio-inline">
-                            @Html.RadioButtonFor(model => model.TEXTBOX3, "Date Wise Summary", new {  id = "TEXTBOX3" , onclick = "RemoveDate();" })  @Html.Label("Date Wise Summary")
+                            @Html.RadioButtonFor(model => model.TEXTBOX3, "Date Wise Summary", new { id = "TEXTBOX3", onclick = "RemoveDate();" })  @Html.Label("Date Wise Summary")
                         </label>
                         <label class="radio-inline">
                             @Html.RadioButtonFor(model => model.TEXTBOX3, "Super Summary", new { id = "TEXTBOX3", onclick = "RemoveDate();" })  @Html.Label("Super Summary")
@@ -173,10 +186,10 @@
                         </label>
                     </div>
                 </div>
-                @*<div class="row">
-                    <div class="col-lg-2">
+                <div class="phydiv row">
+                    <div class="col-md-8">
                         <div class="editor-field" style="margin-top: 4px;">
-                            @Html.Label("", "Date Wise Club")
+                            @Html.Label("", "Show only Difference")
                         </div>
                     </div>
                     <div class="col-md-1" style="margin-right: -41px;">
@@ -184,17 +197,22 @@
                             @Html.CheckBoxFor(model => model.Checkbox1, new { id = "Checkbox1" })
                         </div>
                     </div>
-                </div>*@
-               <div class="row" style="margin-top:10PX">
+                </div>
+                <div class="row" style="margin-top:10PX">
                     <div class="col-lg-2">
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3" style="width:auto;">
                         <div class="editor-field" style="margin-top:8px;">
-                            <input type="button" value="Show Report" name="Command" class="btn btn-default" sstyle="width:66px;" formtarget="_blank" onclick="Show_rep()"/>
+                            <input type="button" value="Show Report" name="Command" class="btn btn-default" sstyle="width:66px;" formtarget="_blank" onclick="Show_rep('')" />
+                        </div>
+                    </div>
+                    <div class="col-md-3" style="width:auto;">
+                        <div class="editor-field" style="margin-top:8px;">
+                            <input type="button" value="Download Physical Stock Template" name="Command" class="btn btn-primary" sstyle="width:66px;" formtarget="_blank" onclick="Show_rep('Download Template')" />
                         </div>
                     </div>
                 </div>
-               
+
 
 
             </div>

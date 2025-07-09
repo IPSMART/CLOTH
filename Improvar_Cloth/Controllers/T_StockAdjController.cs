@@ -9,6 +9,8 @@ using Microsoft.Ajax.Utilities;
 using System.Data.Entity.Validation;
 using Oracle.ManagedDataAccess.Client;
 using System.IO;
+using System.Web;
+using OfficeOpenXml;
 
 namespace Improvar.Controllers
 {
@@ -200,6 +202,10 @@ namespace Improvar.Controllers
                     string docdt = "";
                     if (VE.T_CNTRL_HDR != null) if (VE.T_CNTRL_HDR.DOCDT != null) docdt = VE.T_CNTRL_HDR.DOCDT.ToString().Remove(10);
                     Cn.getdocmaxmindate(VE.T_TXN.DOCCD, docdt, VE.DefaultAction, VE.T_TXN.DOCNO, VE);
+                    if (op.ToString() == "A" && parkID == "")
+                    {
+                        VE.T_TXN.DOCDT = Cn.getCurrentDate(VE.mindate);
+                    }
                     return View(VE);
                 }
             }
@@ -261,7 +267,7 @@ namespace Improvar.Controllers
                                     BARGENTYPE = dr["BARGENTYPE"].retStr(),
                                     COMMONUNIQBAR = dr["COMMONUNIQBAR"].retStr(),
                                     ITCD = dr["ITCD"].retStr(),
-                                    STYLENO = dr["STYLENO"].retStr() ,
+                                    STYLENO = dr["STYLENO"].retStr(),
                                     ITSTYLE = dr["STYLENO"].retStr() + "" + dr["ITNM"].retStr(),
                                     UOM = dr["UOMCD"].retStr(),
                                     STKTYPE = dr["STKTYPE"].retStr(),
@@ -459,19 +465,19 @@ namespace Improvar.Controllers
                 string callfrm = data[3].retStr();
                 bool exactbarno = callfrm == "bar" ? true : false;
                 string barno = "";
-                if(callfrm == "style")
+                if (callfrm == "style")
                 {
-                    barno = data[4].retStr()==""?"":data[4].retStr().retSqlformat();
+                    barno = data[4].retStr() == "" ? "" : data[4].retStr().retSqlformat();
                 }
-                if(menupara == "SB")
+                if (menupara == "SB")
                 {
-                    if(data[1].retStr() == "")
+                    if (data[1].retStr() == "")
                     {
                         return Content("Enter Godown");
                     }
                 }
                 //string str = Master_Help.T_TXN_BARNO_help(barnoOrStyle, menupara, DOCDT, "C001", GOCD, "WP", MTRLJOBCD);
-                string str = Master_Help.T_TXN_BARNO_help(barnoOrStyle, menupara, DOCDT, "C001", GOCD, "WP", MTRLJOBCD, "", exactbarno, "", barno, "", false,"",true);
+                string str = Master_Help.T_TXN_BARNO_help(barnoOrStyle, menupara, DOCDT, "C001", GOCD, "WP", MTRLJOBCD, "", exactbarno, "", barno, "", false, "", true);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -1781,5 +1787,208 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        public static string RenderRazorViewToString(ControllerContext controllerContext, string viewName, object model)
+        {
+            controllerContext.Controller.ViewData.Model = model;
+
+            using (var stringWriter = new StringWriter())
+            {
+                var viewResult = ViewEngines.Engines.FindPartialView(controllerContext, viewName);
+                var viewContext = new ViewContext(controllerContext, viewResult.View, controllerContext.Controller.ViewData, controllerContext.Controller.TempData, stringWriter);
+                viewResult.View.Render(viewContext, stringWriter);
+                viewResult.ViewEngine.ReleaseView(controllerContext, viewResult.View);
+                return stringWriter.GetStringBuilder().ToString();
+            }
+        }
+
+        public ActionResult UpdateGrid(StockAdjustmentsConversionEntry VE, FormCollection FC)
+        {
+            try
+            {
+                Cn.getQueryString(VE);
+                string msg = ""; string MESSAGE = "", strerrline = "";
+                Stream stream;
+
+                if (Request.Files.Count == 0) return Content("No File Selected");
+                HttpPostedFileBase file = Request.Files[0];
+                if (System.IO.Path.GetExtension(file.FileName) != ".xlsx") return Content(".xlsx file need to choose");
+                stream = file.InputStream;
+
+                DataTable dbfdt = new DataTable();
+                dbfdt.Columns.Add("EXCELROWNUM", typeof(int));
+                dbfdt.Columns.Add("Sl", typeof(int));
+                //Item Code	Style No	Bar No.	Quantity	Stock Type
+
+                dbfdt.Columns.Add("Item Code", typeof(string));
+                dbfdt.Columns.Add("Style No", typeof(string));
+                dbfdt.Columns.Add("Bar No.", typeof(string));
+                dbfdt.Columns.Add("Quantity", typeof(string));
+                dbfdt.Columns.Add("Stock Type", typeof(string));
+                dbfdt.Columns.Add("Material Job", typeof(string));
+
+                using (var package = new ExcelPackage(stream))
+                {
+                    var currentSheet = package.Workbook.Worksheets;
+                    var workSheet = currentSheet.First();
+                    var noOfCol = workSheet.Dimension.End.Column;
+                    var noOfRow = workSheet.Dimension.End.Row;
+                    int rowNum = 2;
+                    for (rowNum = 2; rowNum <= noOfRow; rowNum++)
+                    {
+                        if (workSheet.Cells[rowNum, 1].Value.retStr() != "" && workSheet.Cells[rowNum, 3].Value.retStr() != "" && workSheet.Cells[rowNum, 4].Value.retDbl() != 0 && workSheet.Cells[rowNum, 5].Value.retStr() != "" && workSheet.Cells[rowNum, 6].Value.retStr() != "")
+                        {
+                            DataRow dr = dbfdt.NewRow();
+                            dr["Sl"] = rowNum;
+                            dr["EXCELROWNUM"] = rowNum;
+                            var wsRow = workSheet.Cells[rowNum, 1, rowNum, noOfCol];
+                            for (int colnum = 1; colnum <= noOfCol; colnum++)
+                            {
+                                string colname = workSheet.Cells[1, colnum].Value.retStr().Trim();
+                                string colValue = workSheet.Cells[rowNum, colnum].Value.retStr().Trim();
+                                try
+                                {
+                                    if (colname == "") continue;
+                                    dr[colname] = colValue;
+                                }
+                                catch (ArgumentException ex)
+                                {
+                                    return Content("Wrong ColumnName:" + colname + " Error:" + ex.Message);
+                                }
+                            }
+                            dbfdt.Rows.Add(dr);
+                        }
+                    }
+                }
+                string Scm = CommVar.CurSchema(UNQSNO);
+
+                string selitcd_in = (from DataRow dr in dbfdt.Rows where dr["Quantity"].retDbl() > 0 select dr["Item Code"].retStr()).ToArray().retSqlfromStrarray();
+                string mtrljobcd_in = (from DataRow dr in dbfdt.Rows where dr["Quantity"].retDbl() > 0 select dr["Material Job"].retStr()).ToArray().retSqlfromStrarray();
+
+                string selitcd_out = (from DataRow dr in dbfdt.Rows where dr["Quantity"].retDbl() < 0 select dr["Item Code"].retStr()).ToArray().retSqlfromStrarray();
+                string mtrljobcd_out = (from DataRow dr in dbfdt.Rows where dr["Quantity"].retDbl() < 0 select dr["Material Job"].retStr()).ToArray().retSqlfromStrarray();
+
+                DataTable tbl_Phystk = Salesfunc.GetStock(VE.T_TXN.DOCDT.retDateStr(), "", "", selitcd_in, mtrljobcd_in, "", "", "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", "", false, false, true, false, "");
+                DataTable tbl_Ackstk = Salesfunc.GetStock(VE.T_TXN.DOCDT.retDateStr(), "", "", selitcd_out, mtrljobcd_out, "", "", "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", "", false, false, false, false, "", false);
+
+
+                VE.TBATCHDTL = (from DataRow dr in dbfdt.Rows
+                                where dr["Quantity"].retDbl() > 0
+                                select new TBATCHDTL()
+                                {
+                                    BARNO = dr["Bar No."].retStr(),
+                                    STYLENO = dr["Style No"].retStr(),
+                                    MTRLJOBCD = dr["Material Job"].retStr(),
+                                    QNTY = dr["Quantity"].retDbl(),
+                                    STKTYPE = dr["Stock Type"].retStr(),
+                                    ITSTYLE = dr["Style No"].retStr(),
+                                    ITCD = dr["Item Code"].retStr(),
+                                }).OrderBy(s => s.STYLENO).ToList();
+
+
+
+                VE.TBATCHDTL_OUT = (from DataRow dr in dbfdt.Rows
+                                    where dr["Quantity"].retDbl() < 0
+                                    select new TBATCHDTL()
+                                    {
+                                        BARNO = dr["Bar No."].retStr(),
+                                        STYLENO = dr["Style No"].retStr(),
+                                        MTRLJOBCD = dr["Material Job"].retStr(),
+                                        QNTY = dr["Quantity"].retDbl() * -1,
+                                        STKTYPE = dr["Stock Type"].retStr(),
+                                        ITSTYLE = dr["Style No"].retStr(),
+                                        ITCD = dr["Item Code"].retStr(),
+                                    }).OrderBy(s => s.STYLENO).ToList();
+
+                double count = 1000;
+                for (int i = 0; i <= VE.TBATCHDTL.Count - 1; i++)
+                {
+                    count += 1;
+                    VE.TBATCHDTL[i].SLNO = count.retShort();
+
+                    string barno = VE.TBATCHDTL[i].BARNO;
+                    string itcd = VE.TBATCHDTL[i].ITCD;
+                    var tempdata = (from DataRow dr in tbl_Phystk.Rows
+                                    where dr["BARNO"].retStr() == barno && dr["itcd"].retStr() == itcd
+                                    select new
+                                    {
+                                        ITGRPCD = dr["ITGRPCD"].retStr(),
+                                        ITGRPNM = dr["ITGRPNM"].retStr(),
+                                        BARGENTYPE = dr["BARGENTYPE"].retStr(),
+                                        COMMONUNIQBAR = dr["COMMONUNIQBAR"].retStr(),
+                                        UOMCD = dr["UOMCD"].retStr(),
+                                        MTRLJOBNM = dr["MTRLJOBNM"].retStr(),
+                                        MTBARCODE = dr["MTBARCODE"].retStr(),
+                                        HSNCODE = dr["HSNCODE"].retStr(),
+                                    }).FirstOrDefault();
+
+                    if (tempdata != null)
+                    {
+                        VE.TBATCHDTL[i].ITGRPCD = tempdata.ITGRPCD;
+                        VE.TBATCHDTL[i].ITGRPNM = tempdata.ITGRPNM;
+                        VE.TBATCHDTL[i].BARGENTYPE = tempdata.BARGENTYPE;
+                        VE.TBATCHDTL[i].COMMONUNIQBAR = tempdata.COMMONUNIQBAR;
+                        VE.TBATCHDTL[i].UOM = tempdata.UOMCD;
+                        VE.TBATCHDTL[i].MTRLJOBNM = tempdata.MTRLJOBNM;
+                        VE.TBATCHDTL[i].MTBARCODE = tempdata.MTBARCODE;
+                        VE.TBATCHDTL[i].HSNCODE = tempdata.HSNCODE;
+                    }
+                }
+
+                count = 0;
+                for (int i = 0; i <= VE.TBATCHDTL_OUT.Count - 1; i++)
+                {
+                    count += 1;
+                    VE.TBATCHDTL_OUT[i].SLNO = count.retShort();
+
+
+                    string barno = VE.TBATCHDTL_OUT[i].BARNO;
+                    string itcd = VE.TBATCHDTL_OUT[i].ITCD;
+                    var tempdata = (from DataRow dr in tbl_Ackstk.Rows
+                                    where dr["BARNO"].retStr() == barno && dr["itcd"].retStr() == itcd
+                                    select new
+                                    {
+                                        ITGRPCD = dr["ITGRPCD"].retStr(),
+                                        ITGRPNM = dr["ITGRPNM"].retStr(),
+                                        BARGENTYPE = dr["BARGENTYPE"].retStr(),
+                                        COMMONUNIQBAR = dr["COMMONUNIQBAR"].retStr(),
+                                        UOMCD = dr["UOMCD"].retStr(),
+                                        MTRLJOBNM = dr["MTRLJOBNM"].retStr(),
+                                        MTBARCODE = dr["MTBARCODE"].retStr(),
+                                        HSNCODE = dr["HSNCODE"].retStr(),
+                                    }).FirstOrDefault();
+
+                    if (tempdata != null)
+                    {
+                        VE.TBATCHDTL_OUT[i].ITGRPCD = tempdata.ITGRPCD;
+                        VE.TBATCHDTL_OUT[i].ITGRPNM = tempdata.ITGRPNM;
+                        VE.TBATCHDTL_OUT[i].BARGENTYPE = tempdata.BARGENTYPE;
+                        VE.TBATCHDTL_OUT[i].COMMONUNIQBAR = tempdata.COMMONUNIQBAR;
+                        VE.TBATCHDTL_OUT[i].UOM = tempdata.UOMCD;
+                        VE.TBATCHDTL_OUT[i].MTRLJOBNM = tempdata.MTRLJOBNM;
+                        VE.TBATCHDTL_OUT[i].MTBARCODE = tempdata.MTBARCODE;
+                        VE.TBATCHDTL_OUT[i].HSNCODE = tempdata.HSNCODE;
+                    }
+                }
+                VE.IN_T_QNTY = VE.TBATCHDTL.Sum(a => a.QNTY).retDbl();
+                VE.OUT_T_QNTY = VE.TBATCHDTL_OUT.Sum(a => a.QNTY).retDbl();
+
+                ModelState.Clear();
+                VE.DefaultView = true;
+
+                VE.DropDown_list_StkType = Master_Help.STK_TYPE();
+
+                var IN_DATA = RenderRazorViewToString(ControllerContext, "_T_StockAdj_IN_TAB", VE);
+                var OUT_DATA = RenderRazorViewToString(ControllerContext, "_T_StockAdj_OUT_TAB", VE);
+                return Content(IN_DATA + "^^^^^^^^^^^^~~~~~~^^^^^^^^^^" + OUT_DATA);
+
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+
+        }
+
     }
 }
