@@ -2694,6 +2694,8 @@ namespace Improvar.Controllers
                                            UOM = dr["UOMCD"].retStr(),
                                            HSNCODE = dr["HSNCODE"].retStr(),
                                            NEGSTOCK = dr["NEGSTOCK"].retStr(),
+                                           PREFDT = dr["PREFDT"].retDateStr(),
+                                           PREFNO = dr["PREFNO"].retStr(),
                                        }).ToList();
                     string ITCDLIST = VE.PENDINGORDER.Select(a => a.ITCD).Distinct().ToArray().retSqlfromStrarray();
                     BARMASTERDATA = salesfunc.GetBarHelp(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retStr(), "", ITCDLIST, MTRLJOBCD.retStr(), "", "", "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), "", "", true, false, VE.MENU_PARA);

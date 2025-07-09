@@ -55,5 +55,8 @@ namespace Improvar.Models
         public string MTBARCODE { get; set; }
         public string NEGSTOCK { get; set; }
         public string BARNO { get; set; }
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+        public string PREFDT { get; set; }
+        public string PREFNO { get; set; }
     }
 }
