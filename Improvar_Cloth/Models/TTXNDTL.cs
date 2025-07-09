@@ -222,6 +222,7 @@ namespace Improvar.Models
         public string PROGUOMNM { get; set; }
         public double PROGQNTY { get; set; }
         public string SAMPLE { get; set; }
+        public double tempslno { get; set; }
 
     }
 }
