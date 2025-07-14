@@ -39,6 +39,7 @@ namespace Improvar.Models
         public string HSNCODE { get; set; }
         public double DISCRATE { get; set; }
         public string DISCTYPE { get; set; }
+        public double? INCLRATE { get; set; }
 
 
     }

@@ -1850,6 +1850,7 @@ function GetTTXNDTLDetails() {
     });
 }
 function SelectTTXNDTLDetails() {
+    debugger;
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     var Count = 0;
@@ -1880,8 +1881,9 @@ function SelectTTXNDTLDetails() {
             }
             else {
                 $("#partialdivReturn").html(result);
-                var GridRow = $("#_T_SALE_POS_RETURN > tbody > tr").length;
+                var GridRow = $("#_T_SALE_POS_RETURN_GRID > tbody > tr").length;
                 for (var i = 0; i <= GridRow - 1; i++) {
+                    $("#R_QNTY_" + i).blur();
                     //Sale_GetGstPer(i, '#B_');
                     //RateUpdate(i);
                 }

@@ -2050,7 +2050,7 @@ namespace Improvar.Controllers
                         DB.SaveChanges();
                         string sbarno = getmasterbarno(VE.M_SITEM.ITCD); var arrbarno = sbarno.Split(',');
                         DB.T_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "D"; });
-                        DB.T_BATCH_IMG_HDR_LINK.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "D"; });                        
+                        DB.T_BATCH_IMG_HDR_LINK.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "D"; });
                         DB.T_BATCHMST.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "D"; });
                         DB.T_BATCHMST_PRICE.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "D"; });
                         DB.M_SITEM.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
@@ -2084,7 +2084,7 @@ namespace Improvar.Controllers
                         DB.T_BATCHMST_PRICE.RemoveRange(DB.T_BATCHMST_PRICE.Where(x => arrbarno.Contains(x.BARNO)));
                         DB.SaveChanges();
                         DB.T_BATCHMST.RemoveRange(DB.T_BATCHMST.Where(x => arrbarno.Contains(x.BARNO)));
-                        DB.SaveChanges();                       
+                        DB.SaveChanges();
                         DB.M_CNTRL_HDR_DOC_DTL.RemoveRange(DB.M_CNTRL_HDR_DOC_DTL.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));
                         DB.SaveChanges();
                         DB.M_CNTRL_HDR_DOC.RemoveRange(DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));
@@ -2189,19 +2189,34 @@ namespace Improvar.Controllers
                 Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
                 string dbname = CommVar.CurSchema(UNQSNO).ToString();
                 string dbname1 = CommVar.FinSchema(UNQSNO).ToString();
-                string query = "SELECT distinct A.STYLENO, A.ITNM, A.ITCD, B.ITGRPNM, F.BRANDNM, A.HSNCODE, G.UOMCD, G.UOMNM, h.collcd, h.collnm ";
+                string query = "SELECT distinct A.STYLENO, A.ITNM, A.ITCD, B.ITGRPNM, F.BRANDNM, A.HSNCODE, G.UOMCD, G.UOMNM, h.collcd, h.collnm,i.prccd,i.rate,i.effdt ";
                 query = query + "FROM " + dbname + ".M_SITEM A, " + dbname + ".M_GROUP B, ";
-                query = query + dbname + ".M_CNTRL_HDR E, " + dbname + ".M_BRAND F, " + dbname1 + ".M_UOM G, " + dbname + ".M_COLLECTION h ";
+                query = query + dbname + ".M_CNTRL_HDR E, " + dbname + ".M_BRAND F, " + dbname1 + ".M_UOM G, " + dbname + ".M_COLLECTION h, ";
+
+                query += "(select a.rate,prccd,SIZECD,COLRCD,to_char(a.effdt,'dd/mm/yyyy')effdt,b.itcd from " + dbname + ".T_BATCHMST_PRICE a," + dbname + ".T_BATCHmst b ";
+                query += "where a.barno=b.barno  ";
+                query += "and a.effdt = (select max(effdt) from " + dbname + ".T_BATCHMST_PRICE where barno=a.barno)  ";
+                query += ") i ";
+
                 query = query + "WHERE A.ITGRPCD = B.ITGRPCD(+)   AND ";
-                query = query + "A.M_AUTONO=E.M_AUTONO(+) AND NVL(E.INACTIVE_TAG,'N')='N' AND a.BRANDCD=F.BRANDCD(+) AND A.UOMCD=G.UOMCD(+) AND A.collcd=h.collcd(+)";
+                query = query + "A.M_AUTONO=E.M_AUTONO(+) AND NVL(E.INACTIVE_TAG,'N')='N' AND a.BRANDCD=F.BRANDCD(+) AND A.UOMCD=G.UOMCD(+) AND A.collcd=h.collcd(+) and a.itcd=i.itcd(+) ";
                 // query = query + "A.M_AUTONO='" + VE.M_SITEM.M_AUTONO + "' ";
                 if (itgrpcd.retStr() != "") query += "and B.itgrpcd in(" + itgrpcd + ") ";
                 if (selitcd.retStr() != "") query += "and a.itcd in (" + selitcd + ") ";
                 if (collcd.retStr() != "") query += "and h.collcd in (" + collcd + ") ";
-                query = query + "GROUP BY A.STYLENO, A.ITNM, A.ITCD, B.ITGRPNM, F.BRANDNM, A.HSNCODE, G.UOMCD, G.UOMNM, h.collcd, h.collnm ";
-                query = query + "ORDER BY B.ITGRPNM, A.STYLENO";
+                query = query + "GROUP BY A.STYLENO, A.ITNM, A.ITCD, B.ITGRPNM, F.BRANDNM, A.HSNCODE, G.UOMCD, G.UOMNM, h.collcd, h.collnm,i.prccd,i.rate,i.effdt ";
+                query = query + "ORDER BY B.ITGRPNM, A.STYLENO,a.itcd ";
                 DataTable tbl = masterHelp.SQLquery(query);
                 if (tbl.Rows.Count == 0) return Content("No Records");
+
+                ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+                var M_PRCLST = (from p in DBF.M_PRCLST
+                                select new
+                                {
+                                    PRCCD = p.PRCCD,
+                                    PRCNM = p.PRCNM,
+                                    SEQNO = p.SEQNO
+                                }).OrderBy(S => S.SEQNO).ToList();
 
                 DataTable IR = new DataTable("mstrep");
                 Models.PrintViewer PV = new Models.PrintViewer();
@@ -2218,8 +2233,18 @@ namespace Improvar.Controllers
                 HC.GetPrintHeader(IR, "brandnm", "string", "c,15", "Brand Name");
                 HC.GetPrintHeader(IR, "hsnsaccd", "string", "c,8", "HSN;Code");
                 HC.GetPrintHeader(IR, "collnm", "string", "c,20", "Collection Name");
+                HC.GetPrintHeader(IR, "lasteffdt", "string", "c,10", "Last;Effective Date");
+
+                foreach (var plist in M_PRCLST)
+                {
+                    HC.GetPrintHeader(IR, plist.PRCCD, "double", "n,14,2", plist.PRCNM);
+                }
+
                 string lastgrpnm = ""; string lastbrandnm = ""; Int32 slno = 0;
-                for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+
+                Int32 rNo = 0; Int32 i = 0; Int32 maxR = 0;
+                i = 0; maxR = tbl.Rows.Count - 1;
+                while (i <= maxR)
                 {
                     slno = slno + 1;
                     string grpnm = tbl.Rows[i]["itgrpnm"].ToString();
@@ -2237,9 +2262,23 @@ namespace Improvar.Controllers
                     dr["brandnm"] = tbl.Rows[i]["brandnm"];
                     dr["collnm"] = (tbl.Rows[i]["collnm"]);
                     dr["Flag"] = " class='grid_td'";
+
+                    dr["lasteffdt"] = tbl.Rows[i]["effdt"];
+                    string itcd = tbl.Rows[i]["itcd"].retStr();
+                    while (tbl.Rows[i]["itcd"].retStr() == itcd)
+                    {
+                        string colnm = tbl.Rows[i]["prccd"].retStr();
+                        if (colnm != "")
+                        {
+                            dr[colnm] = tbl.Rows[i]["rate"].retDbl();
+                        }
+                        i++;
+                        if (i > maxR) break;
+                    }
                     IR.Rows.Add(dr);
                     lastgrpnm = grpnm;
                     lastbrandnm = brandnm;
+                    if (i > maxR) break;
                 }
                 string repname = CommFunc.retRepname("Item_master");
                 PV = HC.ShowReport(IR, repname, "Item Master List");

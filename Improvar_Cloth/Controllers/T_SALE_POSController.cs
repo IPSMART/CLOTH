@@ -4136,7 +4136,7 @@ namespace Improvar.Controllers
                             }
                             if (VE.MENU_PARA == "CADV")
                             {
-                                pymtrem = VE.T_TXNMEMO.NM.retStr() == "" ? VE.SLNM : VE.T_TXNMEMO.NM.retStr();                
+                                pymtrem = VE.T_TXNMEMO.NM.retStr() == "" ? VE.SLNM : VE.T_TXNMEMO.NM.retStr();
 
                                 pymtrem = VE.T_TXNMEMO.NM.retStr() == "" ? VE.SLNM : VE.T_TXNMEMO.NM.retStr();
                                 dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(2), cr,
@@ -4358,10 +4358,10 @@ namespace Improvar.Controllers
         {
             Cn.getQueryString(VE); string scm = CommVar.CurSchema(UNQSNO);
             string sql = "select x.autono,x.docno,x.docdt,x.itcd,x.itnm,x.styleno,x.itgrpcd,x.itgrpnm,x.qnty,x.uomcd,x.stktype, ";
-            sql += "x.barno,x.TXBLVAL,x.IGSTPER,x.CGSTPER,x.SGSTPER,x.CESSPER,x.SALGLCD,y.prodgrpgstper,x.HSNCODE,x.DISCTYPE,x.DISCRATE from ";
+            sql += "x.barno,x.TXBLVAL,x.IGSTPER,x.CGSTPER,x.SGSTPER,x.CESSPER,x.SALGLCD,y.prodgrpgstper,x.HSNCODE,x.DISCTYPE,x.DISCRATE,x.INCLRATE,x.rate from ";
 
             sql += "(select a.autono,a.docno,a.docdt,b.itcd,e.itnm,e.styleno,e.prodgrpcd,e.itgrpcd,f.itgrpnm,b.qnty,e.uomcd,b.stktype, ";
-            sql += "d.barno,b.TXBLVAL,b.IGSTPER,b.CGSTPER,b.SGSTPER,b.CESSPER,f.SALGLCD,b.HSNCODE,b.DISCTYPE,b.DISCRATE from  " + scm + ".T_TXN a, ";
+            sql += "d.barno,b.TXBLVAL,b.IGSTPER,b.CGSTPER,b.SGSTPER,b.CESSPER,f.SALGLCD,b.HSNCODE,b.DISCTYPE,b.DISCRATE,d.INCLRATE,b.rate from  " + scm + ".T_TXN a, ";
             sql += "" + scm + ".T_TXNDTL b," + scm + ".T_CNTRL_HDR c, " + scm + ".T_BATCHDTL d ," + scm + ".M_SITEM e ," + scm + ".M_GROUP f," + scm + ".M_DOCTYPE g ";
             sql += "where a.autono = c.autono(+) and a.autono = b.autono(+) and b.autono = d.autono(+) and a.doccd=g.doccd(+) ";
             //sql += "and b.slno = d.txnslno(+)and b.itcd = e.itcd(+) and e.itgrpcd = f.itgrpcd(+) and a.doccd in('" + R_DOCCD + "')  ";
@@ -4415,7 +4415,9 @@ namespace Improvar.Controllers
                                        GLCD = dr["SALGLCD"].retStr(),
                                        HSNCODE = dr["HSNCODE"].retStr(),
                                        DISCTYPE = dr["DISCTYPE"].retStr(),
-                                       DISCRATE = dr["DISCRATE"].retDbl()
+                                       DISCRATE = dr["DISCRATE"].retDbl(),
+                                       INCLRATE = dr["INCLRATE"].retDbl(),
+                                       RATE = dr["RATE"].retDbl()
 
                                    }).ToList();
                 int slno = 0;
@@ -4451,6 +4453,8 @@ namespace Improvar.Controllers
                     tsalePos_TBATCHDTL_RETURN.ITCD = row.ITCD.retStr();
                     tsalePos_TBATCHDTL_RETURN.ITSTYLE = row.ITSTYLE.retStr();
                     tsalePos_TBATCHDTL_RETURN.QNTY = row.QNTY.retDbl();
+                    tsalePos_TBATCHDTL_RETURN.INCLRATE = row.INCLRATE.retDbl();
+                    tsalePos_TBATCHDTL_RETURN.RATE = row.RATE.retDbl();
                     tsalePos_TBATCHDTL_RETURN.UOM = row.UOM.retStr();
                     tsalePos_TBATCHDTL_RETURN.STKTYPE = row.STKTYP.retStr();
                     tsalePos_TBATCHDTL_RETURN.ITGRPCD = row.ITGRPCD.retStr();
