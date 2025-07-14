@@ -700,7 +700,7 @@ namespace Improvar.Controllers
                         i = istore;
                         lslno = 0;
                         auto1 = tbl.Rows[i]["autono"].ToString();
-                        double dbasamt = 0; double ddisc1 = 0; double ddisc2 = 0; double dtxblval = 0; double tincldisc = 0; double tdiscamt = 0;
+                        double dbasamt = 0; double ddisc1 = 0; double ddisc2 = 0; double ddisc3 = 0; double dtxblval = 0; double tincldisc = 0; double tdiscamt = 0;
                         double dcgstamt = 0; double dsgstamt = 0; double dnetamt = 0; double dnos = 0; double dqnty = 0;
                         bool doctotprint = false; bool totalreadyprint = false; bool delvchrg = false;
 
@@ -1474,6 +1474,7 @@ namespace Improvar.Controllers
                                 {
                                     dr1["incl_disc"] = (tbl.Rows[i]["tddiscamt"]).retDbl() + (tbl.Rows[i]["discamt"]).retDbl() + (tbl.Rows[i]["scmdiscamt"]).retDbl();
                                 }
+                                dr1["scmdiscamt"] = negamt == "Y" ? tbl.Rows[i]["scmdiscamt"].retDbl() * -1 : tbl.Rows[i]["scmdiscamt"].retDbl();
                                 dr1["tdiscamt"] = (tbl.Rows[i]["tddiscamt"]).retDbl() + (tbl.Rows[i]["discamt"]).retDbl() + (tbl.Rows[i]["scmdiscamt"]).retDbl();
 
                                 //totals
@@ -1482,6 +1483,7 @@ namespace Improvar.Controllers
                                 dbasamt = dbasamt + (dr1["amt"].ToString()).retDbl();
                                 ddisc1 = ddisc1 + (dr1["tddiscamt"].ToString()).retDbl();
                                 ddisc2 = ddisc2 + (dr1["discamt"].ToString()).retDbl();
+                                ddisc3 = ddisc3 + (dr1["scmdiscamt"].ToString()).retDbl();
                                 dtxblval = dtxblval + (dr1["txblval"].ToString()).retDbl();
                                 tincldisc += (dr1["incl_disc"].ToString()).retDbl();
                                 dcgstamt = dcgstamt + (dr1["cgstamt"].ToString()).retDbl();
@@ -1538,6 +1540,7 @@ namespace Improvar.Controllers
                                             dr1["curr_cd"] = tbl.Rows[i]["curr_cd"].ToString();
                                             dr1["SLMSLNM"] = SLMSLNM;
                                             dr1["incl_disc"] = tincldisc;
+                                            dr1["scmdiscamt"] = ddisc3;
                                             totalreadyprint = true;
                                             goto docstart;
                                         }
@@ -1578,6 +1581,7 @@ namespace Improvar.Controllers
                                         dr1["curr_cd"] = tbl.Rows[i]["curr_cd"].ToString();
                                         dr1["SLMSLNM"] = SLMSLNM;
                                         dr1["incl_disc"] = tincldisc;
+                                        dr1["scmdiscamt"] = ddisc3;
                                         totalreadyprint = true;
                                         goto docstart;
                                     }
@@ -1611,6 +1615,7 @@ namespace Improvar.Controllers
                                     dr1["curr_cd"] = tbl.Rows[i]["curr_cd"].ToString();
                                     dr1["SLMSLNM"] = SLMSLNM;
                                     dr1["incl_disc"] = tincldisc;
+                                    dr1["scmdiscamt"] = ddisc3;
                                     totalreadyprint = true;
                                     goto docstart;
                                 }
