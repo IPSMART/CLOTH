@@ -123,7 +123,7 @@ namespace Improvar.Controllers
                                 VE.TBATCHDTL_OUT = TBATCHDTL_OUT;
 
                                 List<TBATCHDTL> TBATCHDTL = new List<TBATCHDTL>();
-                                for (int i = 1000; i < 1020; i++)
+                                for (int i = 5000; i < 5020; i++)
                                 {
                                     TBATCHDTL IN = new TBATCHDTL();
                                     IN.SLNO = Convert.ToInt16(i + 1);
@@ -253,7 +253,7 @@ namespace Improvar.Controllers
                 str += "from " + Scm + ".T_BATCHDTL i," + Scm + ".T_TXNDTL j," + Scm + ".M_SITEM k," + Scm + ".M_GROUP l," + Scm + ".M_PARTS m, " + Scm + ".M_SIZE n, " + Scm + ".M_COLOR o, ";
                 str += Scm + ".M_MTRLJOBMST p, " + Scm + ".T_BATCHMST q ";
                 str += "where i.autono=j.autono and i.txnslno=j.slno and j.ITCD=k.ITCD and k.ITGRPCD=l.ITGRPCD and i.PARTCD=m.PARTCD(+) and j.SIZECD=n.SIZECD(+) and j.COLRCD=o.COLRCD(+) and i.MTRLJOBCD=p.MTRLJOBCD(+) ";
-                str += "and i.barno=q.barno(+) and i.AUTONO = '" + sl.AUTONO + "' and j.SLNO > 1000 ";
+                str += "and i.barno=q.barno(+) and i.AUTONO = '" + sl.AUTONO + "' and j.SLNO > 5000 ";
                 str += "order by i.SLNO ";
                 DataTable tbl_in = Master_Help.SQLquery(str);
 
@@ -298,7 +298,7 @@ namespace Improvar.Controllers
                     if (VE.TBATCHDTL.Count == 0 && VE.DefaultAction == "E")
                     {
                         List<TBATCHDTL> TBATCHDTL = new List<TBATCHDTL>();
-                        for (int i = 1000; i < 1020; i++)
+                        for (int i = 5000; i < 5020; i++)
                         {
                             TBATCHDTL IN = new TBATCHDTL();
                             IN.SLNO = Convert.ToInt16(i + 1);
@@ -318,7 +318,7 @@ namespace Improvar.Controllers
                 str += "from " + Scm + ".T_BATCHDTL i," + Scm + ".T_TXNDTL j," + Scm + ".M_SITEM k," + Scm + ".M_GROUP l," + Scm + ".M_PARTS m, " + Scm + ".M_SIZE n, " + Scm + ".M_COLOR o, ";
                 str += Scm + ".M_MTRLJOBMST p," + Scm + ".T_MOBDTL q ";
                 str += "where  i.autono=j.autono and i.txnslno=j.slno and j.ITCD=k.ITCD and k.ITGRPCD=l.ITGRPCD and i.PARTCD=m.PARTCD(+) and j.SIZECD=n.SIZECD(+) and j.COLRCD=o.COLRCD(+) and i.MTRLJOBCD=p.MTRLJOBCD(+) and i.autono=q.adjautono(+) and i.barno=q.barno(+) ";
-                str += "and i.AUTONO = '" + sl.AUTONO + "' and j.SLNO < 1000 ";
+                str += "and i.AUTONO = '" + sl.AUTONO + "' and j.SLNO < 5000 ";
                 str += "order by i.SLNO ";
                 DataTable tbl_out = Master_Help.SQLquery(str);
 
@@ -582,7 +582,7 @@ namespace Improvar.Controllers
                 if (TABLE == "_T_StockAdj_IN_TAB_GRID")
                 {
                     List<TBATCHDTL> TBATCHDTL = new List<TBATCHDTL>();
-                    int count = 1000;
+                    int count = 5000;
                     for (int i = 0; i <= VE.TBATCHDTL.Count - 1; i++) { if (VE.TBATCHDTL[i].Checked == false) { count += 1; TBATCHDTL item = new TBATCHDTL(); item = VE.TBATCHDTL[i]; item.SLNO = (count).retShort(); TBATCHDTL.Add(item); } }
                     VE.TBATCHDTL = TBATCHDTL;
                     //VE.TBATCHDTL.ForEach(a => { a.DropDown_list2 = Master_Help.STOCK_TYPE(); });
@@ -855,7 +855,7 @@ namespace Improvar.Controllers
                                                     SLNO = 0,
                                                 }
                                               ).ToList();
-                            int COUNTER_IN = 1000;
+                            int COUNTER_IN = 5000;
                             for (int i = 0; i <= GROUPDATA_IN.Count - 1; i++)
                             {
                                 if (GROUPDATA_IN[i].ITCD.retStr() != "" && GROUPDATA_IN[i].QNTY.retDbl() != 0)
@@ -1383,7 +1383,7 @@ namespace Improvar.Controllers
                             var barno = string.Join("", BARNO.Split(Convert.ToChar(Cn.GCS())));
                             DataTable ITEM_STOCK_DATA = new DataTable();
                             var docdt = CommVar.CurrDate(UNQSNO);
-                            ITEM_STOCK_DATA = salesfunc.GetStock(docdt.retDateStr(), VE.T_TXN.GOCD.retSqlformat(), barno, ITCD, MTRLJOBCD, VE.DefaultAction == "E" ? TTXN.AUTONO.retSqlformat() : "", ITGRPCD, "", "WP", "C001", "", "", true, true, "", "", false, false, true, "", true);
+                            ITEM_STOCK_DATA = salesfunc.GetStock(docdt.retDateStr(), VE.T_TXN.GOCD.retSqlformat(), "", "", MTRLJOBCD, VE.DefaultAction == "E" ? TTXN.AUTONO.retSqlformat() : "", ITGRPCD, "", "WP", "C001", "", "", true, true, "", "", false, false, true, "", true);
 
                             string ERROR_MESSAGE = ""; int ERROR_COUNT = 0;
 
@@ -1861,14 +1861,14 @@ namespace Improvar.Controllers
                 }
                 string Scm = CommVar.CurSchema(UNQSNO);
 
-                string selitcd_in = (from DataRow dr in dbfdt.Rows where dr["Quantity"].retDbl() > 0 select dr["Item Code"].retStr()).ToArray().retSqlfromStrarray();
-                string mtrljobcd_in = (from DataRow dr in dbfdt.Rows where dr["Quantity"].retDbl() > 0 select dr["Material Job"].retStr()).ToArray().retSqlfromStrarray();
+               // string selitcd_in = (from DataRow dr in dbfdt.Rows where dr["Quantity"].retDbl() > 0 select dr["Item Code"].retStr()).Distinct().ToArray().retSqlfromStrarray();
+                string mtrljobcd_in = (from DataRow dr in dbfdt.Rows where dr["Quantity"].retDbl() > 0 select dr["Material Job"].retStr()).Distinct().ToArray().retSqlfromStrarray();
 
-                string selitcd_out = (from DataRow dr in dbfdt.Rows where dr["Quantity"].retDbl() < 0 select dr["Item Code"].retStr()).ToArray().retSqlfromStrarray();
-                string mtrljobcd_out = (from DataRow dr in dbfdt.Rows where dr["Quantity"].retDbl() < 0 select dr["Material Job"].retStr()).ToArray().retSqlfromStrarray();
+              //  string selitcd_out = (from DataRow dr in dbfdt.Rows where dr["Quantity"].retDbl() < 0 select dr["Item Code"].retStr()).Distinct().ToArray().retSqlfromStrarray();
+                string mtrljobcd_out = (from DataRow dr in dbfdt.Rows where dr["Quantity"].retDbl() < 0 select dr["Material Job"].retStr()).Distinct().ToArray().retSqlfromStrarray();
 
-                DataTable tbl_Phystk = Salesfunc.GetStock(VE.T_TXN.DOCDT.retDateStr(), "", "", selitcd_in, mtrljobcd_in, "", "", "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", "", false, false, true, false, "");
-                DataTable tbl_Ackstk = Salesfunc.GetStock(VE.T_TXN.DOCDT.retDateStr(), "", "", selitcd_out, mtrljobcd_out, "", "", "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", "", false, false, false, false, "", false);
+                DataTable tbl_Phystk = Salesfunc.GetStock(VE.T_TXN.DOCDT.retDateStr(), "", "", "", mtrljobcd_in, "", "", "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", "", false, false, true, false, "");
+                DataTable tbl_Ackstk = Salesfunc.GetStock(VE.T_TXN.DOCDT.retDateStr(), "", "", "", mtrljobcd_out, "", "", "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", "", false, false, false, false, "", false);
 
 
                 VE.TBATCHDTL = (from DataRow dr in dbfdt.Rows
@@ -1899,7 +1899,7 @@ namespace Improvar.Controllers
                                         ITCD = dr["Item Code"].retStr(),
                                     }).OrderBy(s => s.STYLENO).ToList();
 
-                double count = 1000;
+                double count = 5000;
                 for (int i = 0; i <= VE.TBATCHDTL.Count - 1; i++)
                 {
                     count += 1;
@@ -1907,8 +1907,9 @@ namespace Improvar.Controllers
 
                     string barno = VE.TBATCHDTL[i].BARNO;
                     string itcd = VE.TBATCHDTL[i].ITCD;
-                    var tempdata = (from DataRow dr in tbl_Phystk.Rows
-                                    where dr["BARNO"].retStr() == barno && dr["itcd"].retStr() == itcd
+                    string mtrljobcd = VE.TBATCHDTL[i].MTRLJOBCD;
+                    var tempdata = (from DataRow dr in tbl_Ackstk.Rows
+                                    where dr["BARNO"].retStr() == barno && dr["itcd"].retStr() == itcd && dr["MTRLJOBCD"].retStr() == mtrljobcd
                                     select new
                                     {
                                         ITGRPCD = dr["ITGRPCD"].retStr(),
@@ -1932,6 +1933,34 @@ namespace Improvar.Controllers
                         VE.TBATCHDTL[i].MTBARCODE = tempdata.MTBARCODE;
                         VE.TBATCHDTL[i].HSNCODE = tempdata.HSNCODE;
                     }
+                    else
+                    {
+                        var tempdata1 = (from DataRow dr in tbl_Phystk.Rows
+                                        where dr["BARNO"].retStr() == barno && dr["itcd"].retStr() == itcd && dr["MTRLJOBCD"].retStr() == mtrljobcd
+                                        select new
+                                        {
+                                            ITGRPCD = dr["ITGRPCD"].retStr(),
+                                            ITGRPNM = dr["ITGRPNM"].retStr(),
+                                            BARGENTYPE = dr["BARGENTYPE"].retStr(),
+                                            COMMONUNIQBAR = dr["COMMONUNIQBAR"].retStr(),
+                                            UOMCD = dr["UOMCD"].retStr(),
+                                            MTRLJOBNM = dr["MTRLJOBNM"].retStr(),
+                                            MTBARCODE = dr["MTBARCODE"].retStr(),
+                                            HSNCODE = dr["HSNCODE"].retStr(),
+                                        }).FirstOrDefault();
+
+                        if (tempdata1 != null)
+                        {
+                            VE.TBATCHDTL[i].ITGRPCD = tempdata1.ITGRPCD;
+                            VE.TBATCHDTL[i].ITGRPNM = tempdata1.ITGRPNM;
+                            VE.TBATCHDTL[i].BARGENTYPE = tempdata1.BARGENTYPE;
+                            VE.TBATCHDTL[i].COMMONUNIQBAR = tempdata1.COMMONUNIQBAR;
+                            VE.TBATCHDTL[i].UOM = tempdata1.UOMCD;
+                            VE.TBATCHDTL[i].MTRLJOBNM = tempdata1.MTRLJOBNM;
+                            VE.TBATCHDTL[i].MTBARCODE = tempdata1.MTBARCODE;
+                            VE.TBATCHDTL[i].HSNCODE = tempdata1.HSNCODE;
+                        }
+                    }
                 }
 
                 count = 0;
@@ -1943,8 +1972,10 @@ namespace Improvar.Controllers
 
                     string barno = VE.TBATCHDTL_OUT[i].BARNO;
                     string itcd = VE.TBATCHDTL_OUT[i].ITCD;
+                    string mtrljobcd = VE.TBATCHDTL_OUT[i].MTRLJOBCD;
+
                     var tempdata = (from DataRow dr in tbl_Ackstk.Rows
-                                    where dr["BARNO"].retStr() == barno && dr["itcd"].retStr() == itcd
+                                    where dr["BARNO"].retStr() == barno && dr["itcd"].retStr() == itcd && dr["MTRLJOBCD"].retStr() == mtrljobcd
                                     select new
                                     {
                                         ITGRPCD = dr["ITGRPCD"].retStr(),

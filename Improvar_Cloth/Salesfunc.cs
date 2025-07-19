@@ -3347,7 +3347,8 @@ namespace Improvar
                 if (selitcd.retStr() != "") sqlc += "d.itcd in (" + selitcd + ") and " + Environment.NewLine;
                 if (unselitcd.retStr() != "") sqlc += "d.itcd not in (" + unselitcd + ") and " + Environment.NewLine;
                 if (itgrpcd.retStr() != "") sqlc += "d.itgrpcd in (" + itgrpcd + ") and " + Environment.NewLine;
-                if (barno.retStr() != "") sql += "a.barno in (" + barno + ") and " + Environment.NewLine;
+                if (barno.retStr() != "") sqlc += "a.barno in (" + barno + ") and " + Environment.NewLine;
+                if (mtrljobcd.retStr() != "") sqlc += "a.mtrljobcd in (" + mtrljobcd + ") and " + Environment.NewLine;
                 sqlc += "h.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) " + Environment.NewLine;
 
                 sql = "";
@@ -3367,8 +3368,8 @@ namespace Improvar
                 {
                     if (tdt.retStr() != "") sql += "and b.docdt <= to_date('" + tdt + "','dd/mm/yyyy') " + Environment.NewLine;
                 }
-                if (skipStkTrnf == true) sql += "and c.doctag not in ('SI','SO') " + Environment.NewLine;
-                sql += "and a.autono = f.autono(+) and a.txnslno = f.slno(+) and c.doctag in ('PB','OP','PD','JR','SI','KH','TR','SR','AD','SB','CN') and c.slcd=g.slcd(+) and a.stkdrcr in ('D') " + Environment.NewLine;
+                if (skipStkTrnf == true) sql += "and c.doctag not in ('TO','TI') " + Environment.NewLine;
+                sql += "and a.autono = f.autono(+) and a.txnslno = f.slno(+) and c.doctag in ('PB','OP','PD','JR','TI','KH','TR','SR','AD','SB','CN') and c.slcd=g.slcd(+) and a.stkdrcr in ('D') " + Environment.NewLine;
                 sql += "and a.autono = g.autono(+) and a.txnslno=g.slno(+) and g.autono is null " + Environment.NewLine;
                 sql += "group by a.autono, A.TXNSLNO,a.slno, c.doctag, conslcd, c.slcd, g.slnm, b.doccd, b.docdt, b.docno, " + Environment.NewLine;
                 sql += "c.prefno,b.docno, c.prefdt,b.docdt,a.mtrljobcd, h.itcd, a.barno, h.pdesign,a.rate,nvl(f.txblval,0) + nvl(f.othramt,0) " + Environment.NewLine;
@@ -3467,8 +3468,8 @@ namespace Improvar
                 {
                     if (tdt.retStr() != "") sql += "and b.docdt <= to_date('" + tdt + "','dd/mm/yyyy') " + Environment.NewLine;
                 }
-                if (skipStkTrnf == true) sql += "and c.doctag not in ('SI','SO') " + Environment.NewLine;
-                sql += "and a.autono = f.autono(+) and a.slno = f.slno(+) and c.doctag in ('PB','OP','PD','JR','SI','KH','TR','SR','AD','SB','CN') and c.slcd=g.slcd(+) and a.stkdrcr in ('D') " + Environment.NewLine;
+                if (skipStkTrnf == true) sql += "and c.doctag not in ('TO','TI') " + Environment.NewLine;
+                sql += "and a.autono = f.autono(+) and a.slno = f.slno(+) and c.doctag in ('PB','OP','PD','JR','TI','KH','TR','SR','AD','SB','CN') and c.slcd=g.slcd(+) and a.stkdrcr in ('D') " + Environment.NewLine;
                 sql += "and a.autono = g.autono(+) and a.slno=g.slno(+) and g.autono is null " + Environment.NewLine;
                 sql += "group by a.autono, A.SLNO,a.slno, c.doctag, conslcd, c.slcd, g.slnm, b.doccd, b.docdt, b.docno, " + Environment.NewLine;
                 sql += "c.prefno,b.docno, c.prefdt,b.docdt,a.mtrljobcd, a.itcd, a.barno, h.pdesign,a.rate,nvl(f.txblval,0) + nvl(f.othramt,0) " + Environment.NewLine;

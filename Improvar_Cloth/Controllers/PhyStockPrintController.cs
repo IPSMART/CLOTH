@@ -523,7 +523,7 @@ namespace Improvar.Controllers
                 string mtrljobcd = "'FS'";
                 if (FC.AllKeys.Contains("mtrljobcdvalue")) mtrljobcd = CommFunc.retSqlformat(FC["mtrljobcdvalue"].ToString());
 
-                DataTable tbl_Phystk = Salesfunc.GetStock(tdate, godown, "", selitcd, mtrljobcd, "", "", "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", "", false, false, true, false, "");
+                DataTable tbl_Phystk = Salesfunc.GetStock(tdate, godown, "", selitcd, mtrljobcd, "", "", "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", "", false, false, true, false, fdate);
                 DataTable tbl_Ackstk = Salesfunc.GetStock(tdate, godown, "", selitcd, mtrljobcd, "", "", "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", "", false, false, false, false, "", false);
 
                 var Item = tbl_Ackstk.AsEnumerable().Union(tbl_Phystk.AsEnumerable()).OrderBy(d => d.Field<string>("itstyle")).Select(A => new
@@ -573,7 +573,7 @@ namespace Improvar.Controllers
                                         pqnty = b != null ? b.balqnty : 0,
                                         aqnty = c != null ? c.balqnty : 0
                                     })
-                  .GroupBy(x => new { x.itcd, x.itstyle, x.uomcd, x.barno, x.stktype,x.mtrljobcd })
+                  .GroupBy(x => new { x.itcd, x.itstyle, x.uomcd, x.barno, x.stktype, x.mtrljobcd })
                   .Select(g => new
                   {
                       itcd = g.Key.itcd,
