@@ -5119,7 +5119,8 @@ namespace Improvar.Controllers
                         case "SBEXP":
                             stkdrcr = "C"; trcd = "SB"; strrem = "Sale Export" + strqty; break;
                         case "PI":
-                            stkdrcr = VE.STOCKHOLD == true ? "C" : "0"; blactpost = false; blgstpost = false; break;
+                            stkdrcr = VE.STOCKHOLD == true ? "C" : "0"; blactpost = false; blgstpost = true; break;
+                        //stkdrcr = VE.STOCKHOLD == true ? "C" : "0"; blactpost = false; blgstpost = false; break;
                         case "PB":
                             stkdrcr = "D"; parglcd = "purdebglcd"; dr = "C"; cr = "D"; trcd = "PB"; strrem = "Purchase Blno " + VE.T_TXN.PREFNO + " dtd. " + VE.T_TXN.PREFDT.ToString().retDateStr() + strqty; break;
                         case "REC":
