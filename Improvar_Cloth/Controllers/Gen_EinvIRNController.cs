@@ -673,11 +673,12 @@ namespace Improvar.Controllers
                         adaequareIRN.ValDtls = valDtls;
                         if (VE.GenEinvIRNGrid[gridindex].WAYBILLChecked == true)// && ewbDtls.Transid != ""
                         {
-                            if (ewbDtls.Distance == 0)
-                            {
-                                VE.GenEinvIRNGrid[gridindex].MESSAGE = "Distance need to Add in Sub Ledger"; continue;
-                            }
-                            else if (ewbDtls.Transid == null && ewbDtls.Transdocno == null && ewbDtls.Vehno == null)
+                            //if (ewbDtls.Distance == 0)
+                            //{
+                            //    VE.GenEinvIRNGrid[gridindex].MESSAGE = "Distance need to Add in Sub Ledger"; continue;
+                            //}
+                            //else 
+                            if (ewbDtls.Transid == null && ewbDtls.Transdocno == null && ewbDtls.Vehno == null)
                             {
                                 VE.GenEinvIRNGrid[gridindex].MESSAGE = "Transid or Transdocno or Vehno  add into your bill for generate EWB"; continue;
                             }
