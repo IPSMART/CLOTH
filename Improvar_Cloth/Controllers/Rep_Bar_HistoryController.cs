@@ -131,12 +131,12 @@ namespace Improvar.Controllers
                         sql1 += "a.STKDRCR,a.QNTY,a.NOS,a.RATE,a.DISCTYPE,A.DISCRATE,nvl(f.cancel,'N')cancel,a.ITREM, k.COLRNM, j.itcd, l.styleno, j.COLRCD, k.colrcd,l.itnm,l.UOMCD, " + Environment.NewLine;
                         sql1 += "a.GOCD,e.GONM,f.LOCCD,g.LOCNM,decode(f.loccd, '" + CommVar.Loccd(UNQSNO) + "', e.GONM, g.LOCNM) LOCANM,f.doccd,h.rtdebcd,i.rtdebnm,a.SCMDISCTYPE,A.SCMDISCRATE,m.DOCREM " + Environment.NewLine;
                         sql1 += "from " + scm + ".t_batchdtl a, " + scm + ".t_txn b, " + scm + ".m_doctype c, ";
-                        sql1 += "" + scmf + ".m_subleg d, " + scmf + ".m_godown e, " + scm + ".t_cntrl_hdr f, " + scmf + ".m_loca g," + scm + ".t_txnmemo h," + scmf + ".M_RETDEB i, " + scm + ".t_batchmst j, " + scm + ".M_COLOR k, " + scm + ".M_SITEM l, "+ scm + ".T_TXNOTH m " + Environment.NewLine;
+                        sql1 += "" + scmf + ".m_subleg d, " + scmf + ".m_godown e, " + scm + ".t_cntrl_hdr f, " + scmf + ".m_loca g," + scm + ".t_txnmemo h," + scmf + ".M_RETDEB i, " + scm + ".t_batchmst j, " + scm + ".M_COLOR k, " + scm + ".M_SITEM l, " + scm + ".T_TXNOTH m " + Environment.NewLine;
                         sql1 += "where a.AUTONO = b.AUTONO(+) and b.DOCCD = c.DOCCD(+) and b.SLCD = d.SLCD(+) and a.GOCD = e.GOCD(+) and b.autono = h.autono(+) and h.rtdebcd = i.rtdebcd(+) and a.barno = j.barno(+) and j.COLRCD = k.colrcd(+) and j.itcd = l.itcd(+) and  b.AUTONO = m.AUTONO(+) and" + Environment.NewLine;
                         sql1 += "f.COMPCD = '" + CommVar.Compcd(UNQSNO) + "' and " + Environment.NewLine;
                         sql1 += "a.AUTONO = f.AUTONO(+) and f.LOCCD = g.LOCCD(+) and f.compcd = g.compcd(+) and (A.STKDRCR in ('D','C') or b.doctag in ('PI')) and upper(a.BARNO) = '" + barno.ToUpper() + "' " + Environment.NewLine;
                         if (VE.MergeLoc == false) sql1 += "and f.loccd = '" + CommVar.Loccd(UNQSNO) + "' " + Environment.NewLine;
-                        if(mtrljobcd.retStr() != "") sql1 += "and a.mtrljobcd = '"+ mtrljobcd + "' " + Environment.NewLine;
+                        if (mtrljobcd.retStr() != "") sql1 += "and a.mtrljobcd = '" + mtrljobcd + "' " + Environment.NewLine;
                         sql1 += "order by b.DOCDT,b.DOCNO " + Environment.NewLine;
 
                         string sql2 = " select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate, b.prcnm from ";
@@ -188,16 +188,21 @@ namespace Improvar.Controllers
 
                         double TINQTY = 0, TOUTQTY = 0, TNOS = 0;
                         for (int p = 0; p <= VE.BARCODEHISTORY.Count - 1; p++)
-                        {
-                            //var INQNTY = (from i in VE.BARCODEHISTORY
-                            //              where i.STKDRCR == "D"
-                            //              select i.QNTY).FirstOrDefault();
-                            //var OUTQNTY = (from i in VE.BARCODEHISTORY
-                            //               where i.STKDRCR == "C"
-                            //               select i.QNTY).FirstOrDefault();
-                            //VE.BARCODEHISTORY[p].INQNTY = INQNTY.retDbl();
-                            //VE.BARCODEHISTORY[p].OUTQNTY = OUTQNTY.retDbl();
-                            TINQTY = TINQTY + VE.BARCODEHISTORY[p].INQNTY.retDbl();
+                        { 
+
+                            if (VE.BARCODEHISTORY[p].STKDRCR.retStr() == "C")
+                            {
+                                VE.BARCODEHISTORY[p].NOS = (VE.BARCODEHISTORY[p].NOS * -1);
+                            }
+                        //var INQNTY = (from i in VE.BARCODEHISTORY
+                        //              where i.STKDRCR == "D"
+                        //              select i.QNTY).FirstOrDefault();
+                        //var OUTQNTY = (from i in VE.BARCODEHISTORY
+                        //               where i.STKDRCR == "C"
+                        //               select i.QNTY).FirstOrDefault();
+                        //VE.BARCODEHISTORY[p].INQNTY = INQNTY.retDbl();
+                        //VE.BARCODEHISTORY[p].OUTQNTY = OUTQNTY.retDbl();
+                        TINQTY = TINQTY + VE.BARCODEHISTORY[p].INQNTY.retDbl();
                             TOUTQTY = TOUTQTY + VE.BARCODEHISTORY[p].OUTQNTY.retDbl();
                             TNOS = TNOS + VE.BARCODEHISTORY[p].NOS.retDbl();
                         }
