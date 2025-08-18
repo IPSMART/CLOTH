@@ -340,6 +340,7 @@ namespace Improvar.Controllers
                 if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("issu_nos", typeof(double), "");
                 if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("issu_cutlength", typeof(double), "");
                 if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("issu_qnty", typeof(double), "");
+                if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("RATE", typeof(double), "");
                 if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("value", typeof(double), "");
                 if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("gstper", typeof(double), "");
                 if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("issu_totqnty", typeof(double), "");
@@ -821,6 +822,7 @@ namespace Improvar.Controllers
                 if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("issu_nos", typeof(double), "");
                 if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("issu_cutlength", typeof(double), "");
                 if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("issu_qnty", typeof(double), "");
+                if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("RATE", typeof(double), "");
                 if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("value", typeof(double), "");
                 if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("gstper", typeof(double), "");
                 if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("issu_totqnty", typeof(double), "");
@@ -1010,6 +1012,7 @@ namespace Improvar.Controllers
                                         IR_PROG.Rows[rNo]["styleno"] = tbleiss.Rows[j]["styleno"];
                                         IR_PROG.Rows[rNo]["hsncode"] = tbleiss.Rows[j]["HSNCODE"];
                                         IR_PROG.Rows[rNo]["issu_qnty"] = tbleiss.Rows[j]["qnty"];
+                                        IR_PROG.Rows[rNo]["RATE"] = tbleiss.Rows[j]["RATE"];
                                         IR_PROG.Rows[rNo]["issu_uomnm"] = tbleiss.Rows[j]["uomcd"];
                                         if (tbleiss.Rows[j]["nos"].retDbl() != 0)
                                         { IR_PROG.Rows[rNo]["issu_nos"] = tbleiss.Rows[j]["nos"]; }

@@ -83,8 +83,8 @@ namespace Improvar.Models
         public string PARTCD { get; set; }
         [StringLength(30)]
         public string PDESIGN { get; set; }
-        
 
+        public double? FRGHTAMT { get; set; }
 
     }
 }

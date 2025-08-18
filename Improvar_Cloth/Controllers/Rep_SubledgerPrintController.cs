@@ -266,7 +266,7 @@ namespace Improvar.Controllers
                     DataTable tblComp = MasterHelp.SQLquery(sql);
 
                     //sql = "select distinct a.slcd, nvl(a.fullname,a.slnm) slnm, a.add1, a.add2, a.add3, a.add4, ";
-                    sql = "select distinct a.slcd, a.slnm, a.add1, a.add2, a.add3, a.add4, ";
+                    sql = "select distinct a.slcd, a.slnm, a.add1, a.add2, a.add3, a.add4,a.slphno,a.gstno, ";
                     sql += "a.add5, a.add6, a.add7, a.regmobile, a.regemailid ";
                     sql += "from " + scmf + ".m_subleg a," + scmf + ".m_subleg_link b where a.slcd=b.slcd(+) ";
                     if (slcd == "")
@@ -296,7 +296,7 @@ namespace Improvar.Controllers
                     IR.Columns.Add("sladd7", typeof(string));
                     IR.Columns.Add("slphno", typeof(string));
                     IR.Columns.Add("slemail", typeof(string));
-
+                    IR.Columns.Add("slgstno", typeof(string));
                     IR.Columns.Add("compnm", typeof(string));
                     IR.Columns.Add("compadd1", typeof(string));
                     IR.Columns.Add("compadd2", typeof(string));
@@ -324,7 +324,9 @@ namespace Improvar.Controllers
                         IR.Rows[rNo]["sladd5"] = tbl.Rows[i]["add5"];
                         IR.Rows[rNo]["sladd6"] = tbl.Rows[i]["add6"];
                         IR.Rows[rNo]["sladd7"] = tbl.Rows[i]["add7"];
-                        IR.Rows[rNo]["slphno"] = tbl.Rows[i]["regmobile"] == DBNull.Value ? "" : "Ph. " + tbl.Rows[i]["regmobile"];
+                        IR.Rows[rNo]["slgstno"] = tbl.Rows[i]["gstno"] == DBNull.Value ? "" : "GSTIN : " + tbl.Rows[i]["gstno"];
+                        IR.Rows[rNo]["slphno"] = tbl.Rows[i]["slphno"] == DBNull.Value ? "" : "Ph. " + tbl.Rows[i]["slphno"];
+                        //IR.Rows[rNo]["slphno"] = tbl.Rows[i]["regmobile"] == DBNull.Value ? "" : "Ph. " + tbl.Rows[i]["regmobile"];
                         IR.Rows[rNo]["slemail"] = tbl.Rows[i]["regemailid"] == DBNull.Value ? "" : "Email : " + tbl.Rows[i]["regemailid"];
                         IR.Rows[rNo]["compnm"] = tblComp.Rows[0]["compnm"];
                         IR.Rows[rNo]["compadd1"] = tblComp.Rows[0]["add1"];

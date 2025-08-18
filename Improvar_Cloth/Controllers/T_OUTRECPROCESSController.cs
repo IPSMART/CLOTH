@@ -1300,9 +1300,9 @@ namespace Improvar.Controllers
             string doccd = DocumentType.Select(i => i.value).ToArray().retSqlfromStrarray();
             string sql = "";
 
-            sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.slcd, c.slnm, c.district,c.gstno,a.jobcd,d.jobnm, nvl(a.blamt,0) blamt,a.PREFNO,a.PREFDT, nvl(b.cancel,'N')cancel,b.docdt tchdocdt ";
-            sql += "from " + scm + ".t_txn a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_subleg c ," + scm + ".m_jobmst d ";
-            sql += "where a.autono=b.autono and a.slcd=c.slcd(+) and a.jobcd=d.jobcd(+) and b.doccd in (" + doccd + ") and ";
+            sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.slcd, c.slnm, c.district,c.gstno,a.jobcd,d.jobnm, nvl(a.blamt,0) blamt,a.PREFNO,e.AMT,a.PREFDT, nvl(b.cancel,'N')cancel,b.docdt tchdocdt ";
+            sql += "from " + scm + ".t_txn a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_subleg c ," + scm + ".m_jobmst d," + scm + ".t_txndtl e ";
+            sql += "where a.autono=b.autono and e.autono=b.autono(+) and a.slcd=c.slcd(+) and a.jobcd=d.jobcd(+) and b.doccd in (" + doccd + ") and ";
             if (SRC_FDT.retStr() != "") sql += "b.docdt >= to_date('" + SRC_FDT.retDateStr() + "','dd/mm/yyyy') and ";
             if (SRC_TDT.retStr() != "") sql += "b.docdt <= to_date('" + SRC_TDT.retDateStr() + "','dd/mm/yyyy') and ";
             if (SRC_DOCNO.retStr() != "") sql += "(b.vchrno like '%" + SRC_DOCNO.retStr() + "%' or b.docno like '%" + SRC_DOCNO.retStr() + "%') and ";
@@ -1312,16 +1312,16 @@ namespace Improvar.Controllers
             DataTable tbl = masterHelp.SQLquery(sql);
 
             System.Text.StringBuilder SB = new System.Text.StringBuilder();
-            var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Party Name" + Cn.GCS() + "Job Name" + Cn.GCS() + "Pblno" + Cn.GCS() + "Pbldt" + Cn.GCS() + "AUTO NO";
+            var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Party Name" + Cn.GCS() + "Job Name" + Cn.GCS() + "Pblno" + Cn.GCS() + "Pbldt" + Cn.GCS() + "Total Amount" + Cn.GCS() + "AUTO NO";
             for (int j = 0; j <= tbl.Rows.Count - 1; j++)
             {
                 string cancel = tbl.Rows[j]["cancel"].retStr() == "Y" ? "<b> (Cancelled)</b>" : "";
                 SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + cancel + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>"
                     + tbl.Rows[j]["slnm"] + "</b> [" + tbl.Rows[j]["district"] + "][" + tbl.Rows[j]["gstno"] + "] (" + tbl.Rows[j]["slcd"] + ") </td><td>"
                     + tbl.Rows[j]["jobnm"] + "(" + tbl.Rows[j]["jobcd"] + ") </td><td>" + tbl.Rows[j]["PREFNO"] + " </td><td>"
-                            + tbl.Rows[j]["PREFDT"].retStr().Remove(10) + " </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
+                            + tbl.Rows[j]["PREFDT"].retStr().Remove(10) + " </td><td>" + tbl.Rows[j]["AMT"] + " </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
             }
-            return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), "6", "6"));
+            return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), "7", "7"));
         }
         public ActionResult GetJobDetails(string val)
         {
@@ -4894,7 +4894,7 @@ namespace Improvar.Controllers
                 jobcd = jobcd.retStr() == "" ? "" : jobcd.retStr().retSqlformat();
                 slcd = slcd.retStr() == "" ? "" : slcd.retStr().retSqlformat();
                 DataTable tbl = salesfunc.getPendProg(DOCDT.retStr(), "", slcd.retStr(), "", jobcd.retStr(), autono.retStr());
-
+               
                 if (VE.TPROGDTL != null)
                 {
                     for (int i = 0; i <= tbl.Rows.Count - 1; i++)
@@ -4919,6 +4919,11 @@ namespace Improvar.Controllers
                         tbl = tbl.Clone();
                     }
                 }
+
+                DataView dv = new DataView(tbl);
+                dv.Sort = "docdt ASC,docno ASC";
+                tbl = dv.ToTable();
+
                 VE.PENDING_POPUP = (from DataRow dr in tbl.Rows
                                     select new PENDING_POPUP
                                     {
@@ -4937,9 +4942,10 @@ namespace Improvar.Controllers
                                         ORDDOCNO = dr["ORDDOCNO"].retStr(),
                                         ORDSLNO = dr["ORDSLNO"].retDbl() == 0 ? (double?)null : dr["ORDSLNO"].retDbl(),
                                         MAKESTYLENO = dr["Makestyleno"].retStr()
-                                    }).Distinct().OrderBy(a => a.DOCDT).ThenBy(a => a.DOCNO).ToList();
+                                    }).ToList();
+            //}).Distinct().OrderBy(a => a.DOCDT).ThenBy(a => a.DOCNO).ToList();
 
-                if (VE.PENDING_POPUP.Count != 0)
+            if (VE.PENDING_POPUP.Count != 0)
                 {
                     VE.DefaultView = true;
                     return PartialView("_T_OUTRECPROCESS_Pending_Prog", VE);

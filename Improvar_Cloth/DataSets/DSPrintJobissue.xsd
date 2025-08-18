@@ -78,6 +78,8 @@
               <xs:element name="blremarks" msprop:Generator_ColumnVarNameInTable="columnblremarks" msprop:Generator_ColumnPropNameInRow="blremarks" msprop:Generator_ColumnPropNameInTable="blremarksColumn" msprop:Generator_UserColumnName="blremarks" type="xs:string" minOccurs="0" />
               <xs:element name="stkdata" msprop:Generator_ColumnVarNameInTable="columnstkdata" msprop:Generator_ColumnPropNameInRow="stkdata" msprop:Generator_ColumnPropNameInTable="stkdataColumn" msprop:Generator_UserColumnName="stkdata" type="xs:string" minOccurs="0" />
               <xs:element name="copymode" msprop:Generator_ColumnVarNameInTable="columncopymode" msprop:Generator_ColumnPropNameInRow="copymode" msprop:Generator_ColumnPropNameInTable="copymodeColumn" msprop:Generator_UserColumnName="copymode" type="xs:string" minOccurs="0" />
+              <xs:element name="RATE" msprop:Generator_ColumnVarNameInTable="columnRATE" msprop:Generator_ColumnPropNameInRow="RATE" msprop:Generator_ColumnPropNameInTable="RATEColumn" msprop:Generator_UserColumnName="RATE" type="xs:double" minOccurs="0" />
+              <xs:element name="totrate" msprop:Generator_ColumnVarNameInTable="columntotrate" msprop:Generator_ColumnPropNameInRow="totrate" msprop:Generator_ColumnPropNameInTable="totrateColumn" msprop:Generator_UserColumnName="totrate" type="xs:string" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>

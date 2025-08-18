@@ -110,5 +110,6 @@ public class ItmDet
     [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
     public double ramt { get; set; }
     public string itrem { get; set; }
+    public double disc { get; set; }
 }
 

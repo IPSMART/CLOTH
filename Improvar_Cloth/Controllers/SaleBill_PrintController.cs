@@ -5236,6 +5236,7 @@ namespace Improvar.Controllers
                 IR.Columns.Add("sladd6", typeof(string));
                 IR.Columns.Add("sladd7", typeof(string));
                 IR.Columns.Add("slphno", typeof(string));
+                IR.Columns.Add("phno", typeof(string));
                 IR.Columns.Add("slemail", typeof(string));
                 IR.Columns.Add("slgstno", typeof(string));
                 IR.Columns.Add("translnm", typeof(string));
@@ -5298,6 +5299,7 @@ namespace Improvar.Controllers
                             IR.Rows[rNo]["slemail"] = tbl.Rows[i]["regemailid"] == DBNull.Value ? "" : "Email : " + tbl.Rows[i]["regemailid"];
                         }
                         IR.Rows[rNo]["slgstno"] = tbl.Rows[i]["gstno"] == DBNull.Value ? "" : "GSTIN : " + tbl.Rows[i]["gstno"];
+                        IR.Rows[rNo]["slphno"] = tbl.Rows[i]["phno"] == DBNull.Value ? "" : "Ph. " + tbl.Rows[i]["phno"];
                     }
                     else
                     {

@@ -29,7 +29,7 @@
                         <th class="" style="width:150px;">Doctype</th>
                         <th class="" style="width:80px;">Color</th>
                         <th class="" style="width:150px;">Item Remarks</th>
-
+                        <th class="" style="width:80px;">Disc%</th>
                         <th class="" style="width:80px;text-align:right;">Sal.Qnty</th>
                         <th class="" style="width:150px;text-align:right;">Sal.Amt</th>
                         <th class="" style="width:80px;text-align:right;">Ret.Qnty</th>
@@ -59,6 +59,9 @@
                                 </td>
                                 <td>
                                     @Html.EditorFor(model => model.ItmDet[i].itrem, new { htmlAttributes = new { @class = "atextBoxFor", id = "itrem_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
+                                </td>
+                                <td>
+                                    @Html.EditorFor(model => model.ItmDet[i].disc, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "disc_" + i, maxlength = 4, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
                                 </td>
                                 <td>
                                     @Html.EditorFor(model => model.ItmDet[i].sqnty, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "sqnty_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
@@ -91,7 +94,7 @@
                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-
+                        <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                         <td style="text-align:right;border:groove;">
                             @Html.EditorFor(model => Model.T_sqntyi, new { htmlattributes = new { id = "T_sqntyi", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
                         </td>

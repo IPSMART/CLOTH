@@ -288,6 +288,7 @@ namespace Improvar.Controllers
                                  docnm = DR["docnm"].retStr(),
                                  colrnm = DR["colrnm"].retStr(),
                                  itrem = DR["itrem"].retStr(),
+                                 disc = DR["scmdiscrate"].retDbl(),
                              } into X
                              select new ItmDet()
                              {
@@ -297,6 +298,7 @@ namespace Improvar.Controllers
                                  docnm = X.Key.docnm.retStr(),
                                  colrnm = X.Key.colrnm.retStr(),
                                  itrem = X.Key.itrem.retStr(),
+                                 disc = X.Key.disc.retDbl(),
                                  sqnty = X.Sum(Z => Z.Field<decimal>("sqnty").retDbl()),
                                  samt = X.Sum(Z => Z.Field<decimal>("samt").retDbl()),
 
@@ -368,7 +370,7 @@ namespace Improvar.Controllers
             //}
             //else
             //{
-            sql += " a.amt,a.scmdiscamt, a.tddiscamt, a.discamt,a.TXBLVAL, " + Environment.NewLine;
+            sql += " a.amt,a.scmdiscrate,a.scmdiscamt, a.tddiscamt, a.discamt,a.TXBLVAL, " + Environment.NewLine;
 
             //}
             sql += " a.conslcd, a.cslnm,a.cgstno, a.cdistrict, " + Environment.NewLine;
@@ -398,7 +400,7 @@ namespace Improvar.Controllers
             sql += " nvl(a.tcsamt, 0) tcsamt, a.blamt, " + Environment.NewLine;
             sql += "   b.slno,b.stkdrcr,o.itgrpnm, b.itcd, " + Environment.NewLine;
             sql += "   b.itnm,b.itstyle, b.itrem,b.barno, b.hsncode,nvl(b.bluomcd,b.uomcd)uomcd, nvl(b.bluomnm,b.uomnm)uomnm, nvl(nullif(b.bldecimals,0),b.decimals) decimals,b.colrcd,b.colrnm, b.nos, " + Environment.NewLine;
-            sql += " nvl(nullif(b.blqnty,0),b.qnty)qnty, b.rate, b.amt,b.scmdiscamt, b.tddiscamt, b.discamt,b.TXBLVAL, g.conslcd, d.slnm cslnm, d.gstno cgstno, d.district cdistrict, " + Environment.NewLine;
+            sql += " nvl(nullif(b.blqnty,0),b.qnty)qnty, b.rate, b.amt,b.scmdiscrate,b.scmdiscamt, b.tddiscamt, b.discamt,b.TXBLVAL, g.conslcd, d.slnm cslnm, d.gstno cgstno, d.district cdistrict, " + Environment.NewLine;
             sql += " e.slnm trslnm, f.lrno,nvl(to_char(f.lrdt,'dd/mm/yyyy'),'')lrdt,f.GRWT,f.TRWT,f.NTWT, '' ordrefno, to_char(nvl('', ''), 'dd/mm/yyyy') ordrefdt, b.igstper, b.igstamt, b.cgstper, " + Environment.NewLine;
             sql += " b.cgstamt,b.sgstamt, b.cessper, b.cessamt,b.blqnty,b.NETAMT,b.sgstper,b.igstper+b.cgstper+b.sgstper gstper,b.igstamt + b.cgstamt + b.sgstamt gstamt,k.ackno,nvl(to_char(k.ackdt,'dd/mm/yyyy'),'')ackdt,b.pageno,b.PAGESLNO,b.baleno,h.docrem,h.bltype,  " + Environment.NewLine;
             sql += "row_number() over(partition by a.autono order by b.slno)rn,j.docnm, y.barimagecount, y.barimage " + Environment.NewLine;
@@ -421,19 +423,19 @@ namespace Improvar.Controllers
 
             sql += "(select distinct a.autono,a.stkdrcr, a.slno, a.itcd, a.itrem,d.barno, " + Environment.NewLine;
             sql += " b.itnm,b.styleno||' '||b.itnm itstyle,nvl(a.hsncode,b.hsncode) hsncode, b.uomcd, c.uomnm, c.decimals,a.colrcd,g.colrnm, " + Environment.NewLine;
-            sql += "  a.nos, a.qnty, a.rate, a.amt,a.scmdiscamt,a.tddiscamt,a.discamt,a.TXBLVAL,a.NETAMT,   " + Environment.NewLine;
+            sql += "  a.nos, a.qnty, a.rate, a.amt,a.scmdiscrate,a.scmdiscamt,a.tddiscamt,a.discamt,a.TXBLVAL,a.NETAMT,   " + Environment.NewLine;
             sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,a.bluomcd,f.uomnm bluomnm,f.decimals bldecimals,a.pageno,a.pageslno,a.baleno  from " + scm1 + ".t_txndtl a, " + Environment.NewLine;
             sql += "" + scm1 + ".m_sitem b, " + scmf + ".m_uom c, " + scm1 + ".t_batchdtl d, " + scm1 + ".t_batchmst e, " + scmf + ".m_uom f, " + scm1 + ".m_color g " + Environment.NewLine;
             sql += " where a.itcd = b.itcd  and b.uomcd = c.uomcd and a.autono = d.autono(+) and a.slno=d.txnslno and d.barno = e.barno(+) and  a.bluomcd= f.uomcd(+) and a.colrcd=g.colrcd(+) " + Environment.NewLine;
             sql += " group by " + Environment.NewLine;
             sql += " a.autono,a.stkdrcr, a.slno, a.itcd, a.itrem,d.barno, " + Environment.NewLine;
-            sql += "  b.itnm, nvl(a.hsncode,b.hsncode), b.uomcd, c.uomnm, c.decimals,a.colrcd,g.colrnm, a.nos, a.qnty, a.rate, a.amt,a.scmdiscamt,  " + Environment.NewLine;
+            sql += "  b.itnm, nvl(a.hsncode,b.hsncode), b.uomcd, c.uomnm, c.decimals,a.colrcd,g.colrnm, a.nos, a.qnty, a.rate, a.amt,a.scmdiscrate,a.scmdiscamt,  " + Environment.NewLine;
             sql += " a.tddiscamt, a.discamt,a.TXBLVAL,a.NETAMT, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,a.bluomcd,f.uomnm,f.decimals,b.styleno||' '||b.itnm,a.pageno,a.PAGESLNO,a.baleno " + Environment.NewLine;
             sql += " union " + Environment.NewLine;
             sql += "select a.autono,";
             sql += "(case when d.doctype in ('SBILD','SPSLP','SBCM','SBPOS','SBCMR','SPRM') then 'C' else 'D' end ) " + Environment.NewLine;
             sql += " stkdrcr, a.slno + 1000 slno, a.amtcd itcd, '' itrem ,'' barno, b.amtnm itnm,b.amtnm itstyle ,a.hsncode,  " + Environment.NewLine;
-            sql += " 'OTH' uomcd, 'OTH' uomnm, 0 decimals,'' colrcd,'' colrnm, 0 nos, 0 qnty, a.amtrate rate, a.amt,0 scmdiscamt, 0 tddiscamt, 0 discamt,a.amt TXBLVAL,0 NETAMT, a.igstper, a.igstamt, " + Environment.NewLine;
+            sql += " 'OTH' uomcd, 'OTH' uomnm, 0 decimals,'' colrcd,'' colrnm, 0 nos, 0 qnty, a.amtrate rate, a.amt,0 scmdiscrate, 0 scmdiscamt, 0 tddiscamt, 0 discamt,a.amt TXBLVAL,0 NETAMT, a.igstper, a.igstamt, " + Environment.NewLine;
             sql += " a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,0 blqnty,'' bluomcd,''bluomnm,0 bldecimals,0 pageno,0 PAGESLNO,''baleno " + Environment.NewLine;
             sql += " from " + scm1 + ".t_txnamt a, " + scm1 + ".m_amttype b, " + scm1 + ".t_cntrl_hdr c, " + scm1 + ".m_doctype d " + Environment.NewLine;
             sql += " where a.amtcd = b.amtcd and a.autono=c.autono(+) and c.doccd=d.doccd(+) " + Environment.NewLine;

@@ -864,6 +864,10 @@ namespace Improvar.DataSets {
             
             private global::System.Data.DataColumn columncopymode;
             
+            private global::System.Data.DataColumn columnRATE;
+            
+            private global::System.Data.DataColumn columntotrate;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public DTProgrammeDataTable() {
@@ -1243,6 +1247,22 @@ namespace Improvar.DataSets {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn RATEColumn {
+                get {
+                    return this.columnRATE;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn totrateColumn {
+                get {
+                    return this.columntotrate;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -1321,7 +1341,9 @@ namespace Improvar.DataSets {
                         string hsncode, 
                         string blremarks, 
                         string stkdata, 
-                        string copymode) {
+                        string copymode, 
+                        double RATE, 
+                        string totrate) {
                 DTProgrammeRow rowDTProgrammeRow = ((DTProgrammeRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         autono,
@@ -1366,7 +1388,9 @@ namespace Improvar.DataSets {
                         hsncode,
                         blremarks,
                         stkdata,
-                        copymode};
+                        copymode,
+                        RATE,
+                        totrate};
                 rowDTProgrammeRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowDTProgrammeRow);
                 return rowDTProgrammeRow;
@@ -1432,6 +1456,8 @@ namespace Improvar.DataSets {
                 this.columnblremarks = base.Columns["blremarks"];
                 this.columnstkdata = base.Columns["stkdata"];
                 this.columncopymode = base.Columns["copymode"];
+                this.columnRATE = base.Columns["RATE"];
+                this.columntotrate = base.Columns["totrate"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1523,6 +1549,10 @@ namespace Improvar.DataSets {
                 base.Columns.Add(this.columnstkdata);
                 this.columncopymode = new global::System.Data.DataColumn("copymode", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columncopymode);
+                this.columnRATE = new global::System.Data.DataColumn("RATE", typeof(double), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnRATE);
+                this.columntotrate = new global::System.Data.DataColumn("totrate", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columntotrate);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -3091,6 +3121,38 @@ namespace Improvar.DataSets {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public double RATE {
+                get {
+                    try {
+                        return ((double)(this[this.tableDTProgramme.RATEColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'RATE\' in table \'DTProgramme\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableDTProgramme.RATEColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string totrate {
+                get {
+                    try {
+                        return ((string)(this[this.tableDTProgramme.totrateColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'totrate\' in table \'DTProgramme\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableDTProgramme.totrateColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public bool IsautonoNull() {
                 return this.IsNull(this.tableDTProgramme.autonoColumn);
             }
@@ -3603,6 +3665,30 @@ namespace Improvar.DataSets {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public void SetcopymodeNull() {
                 this[this.tableDTProgramme.copymodeColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool IsRATENull() {
+                return this.IsNull(this.tableDTProgramme.RATEColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void SetRATENull() {
+                this[this.tableDTProgramme.RATEColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool IstotrateNull() {
+                return this.IsNull(this.tableDTProgramme.totrateColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void SettotrateNull() {
+                this[this.tableDTProgramme.totrateColumn] = global::System.Convert.DBNull;
             }
         }
         
