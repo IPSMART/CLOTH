@@ -94,7 +94,7 @@ namespace Improvar.Controllers
 
                 sql += "( select a.autono, c.doctag, nvl(c.prefno,d.docno) docno, d.docdt, c.slcd, e.slnm, b.slno, b.itcd,f.itgrpcd,k.itgrpnm,f.STYLENO, f.itnm, h.uomnm, ''batchautono, i.batchno,i.barno, " + Environment.NewLine; ;
                 sql += "nvl(a.qnty,b.qnty) qnty, nvl(b.qnty,a.qnty) iqnty, b.rate, nvl(b.discamt,0)-nvl(b.SCMDISCAMT,0) discamt, " + Environment.NewLine; ;
-                sql += "b.amt-nvl(b.discamt,0)-nvl(b.SCMDISCAMT,0) txblval, nvl(j.prefno,l.docno) pblno, l.docdt pdocdt, i.rate+nvl(i.othrate,0) prate " + Environment.NewLine; ;
+                sql += "a.txblval, nvl(j.prefno,l.docno) pblno, l.docdt pdocdt, i.rate+nvl(i.othrate,0) prate " + Environment.NewLine; ;
                 sql += "from " + scm1 + ".t_batchdtl a, " + scm1 + ".t_txndtl b, " + scm1 + ".t_txn c, " + scm1 + ".t_cntrl_hdr d, " + Environment.NewLine; ;
                 sql += scmf + ".m_subleg e, " + scm1 + ".m_sitem f, " + scmf + ".m_uom h, " + Environment.NewLine; ;
                 sql += scm1 + ".t_batchmst i, " + scm1 + ".t_txn j, " + scm1 + ".m_group k, " + scm1 + ".t_cntrl_hdr l " + Environment.NewLine; ;
@@ -115,7 +115,7 @@ namespace Improvar.Controllers
                 sql += "where a.autono=b.autono(+) " + Environment.NewLine; ;
 
                 if (selitcd.retStr() != "") sql += "and a.itcd in (" + selitcd + ")  " + Environment.NewLine;
-                //if (party.retStr() != "") sql += "and a.slcd in (" + party + ") " + Environment.NewLine;
+                if (party.retStr() != "") sql += "and a.slcd in (" + party + ") " + Environment.NewLine;
 
                 sql += "group by a.autono, a.doctag, a.docno, a.docdt, a.slcd, a.slnm, a.slno, a.itcd,a.ITGRPCD,a.itgrpnm,a.STYLENO, a.itnm, a.uomnm, a.batchautono, a.batchno,a.barno, " + Environment.NewLine; ;
                 sql += "a.itnm||' '||a.STYLENO , " + Environment.NewLine; ;
@@ -168,33 +168,34 @@ namespace Improvar.Controllers
                     string purdocno = "";
 
                     var temppur = tblpur.Select("itcd='" + itcd + "' and barno='" + barno + "' and balqnty <> outqnty", "documentdt,itcd,barno asc");
+                    string oldPDocNo = "";
                     if (temppur.Count() > 0)
                     {
                         for (int j = 0; j <= temppur.Count() - 1; j++)
                         {
-
                             balqnty = (temppur[j]["balqnty"].retDbl() - temppur[j]["outqnty"].retDbl()).toRound(3);
-                            double rt = temppur[j]["rate"].retDbl();
+                            double rt = temppur[j]["lastprate"].retDbl();
                             string docno = temppur[j]["docno"].retStr();
                             if (rsTbl.Rows[i]["doctag"].ToString() == "SR" || rsTbl.Rows[i]["doctag"].ToString() == "AD")
                             {
                                 //rt = temppur[j]["lastprate"].retDbl();
-                                docno = temppur[j]["lastpdocno"].retStr();
+                                docno = oldPDocNo != docno? temppur[j]["lastpdocno"].retStr():"";
                             }
                             if (salBalqnty <= balqnty)
                             {
                                 salCostAmt = (salCostAmt + (salBalqnty * rt).toRound(2)).toRound();
                                 temppur[j]["outqnty"] = (temppur[j]["outqnty"].retDbl() + salBalqnty).toRound(3);
                                 salBalqnty = 0;
-                                purdocno += docno + ",";
+                                purdocno += oldPDocNo != docno?docno + ",":"";
                             }
                             else
                             {
                                 salCostAmt = (salCostAmt + (balqnty * rt).toRound(2)).toRound();
                                 salBalqnty = (salBalqnty - balqnty).toRound(3);
                                 temppur[j]["outqnty"] = temppur[j]["balqnty"].retDbl();
-                                purdocno += docno + ",";
+                                purdocno += oldPDocNo != docno?docno + ",":"";
                             }
+                            oldPDocNo = docno;
                             if (salBalqnty <= 0) break;
                         }
                     }
