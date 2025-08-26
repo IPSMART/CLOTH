@@ -54,6 +54,7 @@
                                 }
                                 <th class="" style="width:111px;text-align:right;">Quantity</th>
                                 <th class="" style="width:110px;text-align:right;">Rate</th>
+                                <th class="" style="width:110px;text-align:right;">Freight Amount</th>
                                 <th class="" style="width:83px;">Delivery Date</th>
                                 <th class="">Remarks</th>
                             </tr>
@@ -136,6 +137,9 @@
                                             @*@Html.EditorFor(model => Model.TSORDDTL[i].RATE_DISPLAY, new { htmlAttributes = new { id = "RATE_DISPLAY_" + i, @class = " atextBoxFor", @style = "text-align: right;", @TabIndex = -1, @onkeypress = "return numericOnly(this,2);", @readonly = "readonly" } })*@
                                             @Html.EditorFor(model => Model.TSORDDTL[i].RATE, new { htmlAttributes = new { id = "RATE_" + i, @class = " atextBoxFor", @style = "text-align: right;", maxlength = 12, @onkeypress = "return numericOnly(this,2);", onkeydown = "RepeatAboveRow_TPROGBOM('" + i + "'); ", @onchange = "Calculate_Total();" } })
                                         </td>
+                                        <td class="">                                            
+                                            @Html.EditorFor(model => Model.TSORDDTL[i].FRGHTAMT, new { htmlAttributes = new { id = "FRGHTAMT_" + i, @class = " atextBoxFor", @style = "text-align: right;", maxlength = 12, @onkeypress = "return numericOnly(this,2);", onkeydown = "RepeatAboveRow_TPROGBOM('" + i + "'); ",@onchange = "Calculate_Total();" } })
+                                        </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TSORDDTL[i].DELVDT, new { htmlAttributes = new { id = "DELVDT_" + i, @class = " atextBoxFor", onblur = "DocumentDateCHK(this);", autocomplete = "off", maxlength = 10, onkeydown = "RepeatAboveRow_TPROGBOM('" + i + "'); " } })
                                             @if (Model.DefaultAction != "V")
@@ -167,22 +171,25 @@
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" value="Total:" class="atextBoxFor" style="font-weight:bold;color:red;text-align:right;font-variant:petite-caps;" readonly="readonly" /></td>
                                 @if (Model.M_SYSCNFG.MNTNCOLOR == "Y")
-                                {
+                                            {
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 }
                                 @if (Model.M_SYSCNFG.MNTNSIZE == "Y")
-                                {
+                                            {
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 }
                                 @if (Model.M_SYSCNFG.MNTNPART == "Y")
-                                {
+                                            {
                                     <td style="text-align:right;"></td>
                                 }
                                 <td style="text-align:right;">
                                     @Html.EditorFor(model => Model.TOTAL_QNTY, new { htmlattributes = new { id = "TOTAL_QNTY", @class = "atextBoxFor", @style = "text-align: right;font-weight:bold;", @onkeypress = "return numericOnly(this,3);", @readonly = "readonly" } })
                                 </td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td> @*RATE*@
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.TOTAL_FRGHTAMT, new { htmlattributes = new { id = "TOTAL_FRGHTAMT", @class = "atextBoxFor", @style = "text-align: right;font-weight:bold;", @onkeypress = "return numericOnly(this,3);", @readonly = "readonly" } })
+                                </td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                             </tr>

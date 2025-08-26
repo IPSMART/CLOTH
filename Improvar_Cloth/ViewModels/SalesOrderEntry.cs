@@ -100,6 +100,8 @@ namespace Improvar.ViewModels
         public double TOTAL_NOOFSETS { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double TOTAL_QNTY { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double TOTAL_FRGHTAMT { get; set; }
         public double TOTAL_BOXES { get; set; }
         public double TOTAL_SETS { get; set; }
         public double TOTAL_SIZE_QNTY { get; set; }

@@ -288,7 +288,7 @@ namespace Improvar.Controllers
 
                                     str1 += "select a.SLNO,a.AUTONO, a.STKDRCR, a.STKTYPE, a.FREESTK, a.ITCD, c.ITNM, c.STYLENO, c.PCSPERSET, c.UOMCD, ";
                                     str1 += "a.sizecd, a.rate, a.scmdiscamt, a.discamt, a.qnty,A.DELVDT,a.ITREM,a.PDESIGN,c.itgrpcd, d.itgrpnm,c.fabitcd, ";
-                                    str1 += "e.itnm fabitnm,a.colrcd,a.partcd,f.colrnm,g.sizenm,h.partnm,a.rate from ";
+                                    str1 += "e.itnm fabitnm,a.colrcd,a.partcd,f.colrnm,g.sizenm,h.partnm,a.rate,a.frghtamt from ";
                                     str1 += SCM + ".T_SORDDTL a, " + SCM + ".T_CNTRL_HDR b, ";
                                     str1 += SCM + ".m_sitem c, " + SCM + ".m_group d, " + SCM + ".m_sitem e, " + SCM + ".m_color f, " + SCM + ".m_size g, " + SCM + ".m_parts h ";
                                     str1 += "where a.autono = b.autono(+) and a.itcd = c.itcd(+) and c.itgrpcd=d.itgrpcd and c.fabitcd=e.itcd(+) ";
@@ -325,11 +325,15 @@ namespace Improvar.Controllers
                                                        PARTCD = dr["PARTCD"].ToString(),
                                                        PARTNM = dr["PARTNM"].ToString(),
                                                        RATE = dr["RATE"].retDbl(),
+                                                       FRGHTAMT = dr["FRGHTAMT"].retDbl(),
                                                    }).OrderBy(s => s.SLNO).ToList();
-                                    double tqty = 0;
+                                    double tqty = 0, tFRGHTAMT = 0;
                                     foreach(var v in VE.TSORDDTL)
-                                    { tqty = tqty + v.QNTY.retDbl(); }
+                                    { tqty = tqty + v.QNTY.retDbl();
+                                        tFRGHTAMT = tFRGHTAMT + v.FRGHTAMT.retDbl();
+                                    }
                                     VE.TOTAL_QNTY = tqty;
+                                    VE.TOTAL_FRGHTAMT = tFRGHTAMT;
                                     if (VE.DefaultAction == "E")
                                     {
                                         int ROW_COUNT = 0;
@@ -1038,6 +1042,7 @@ namespace Improvar.Controllers
                                     TSORDDTL.PARTCD = VE.TSORDDTL[i].PARTCD;
                                     TSORDDTL.QNTY = VE.TSORDDTL[i].QNTY;
                                     TSORDDTL.RATE = VE.TSORDDTL[i].RATE;
+                                    TSORDDTL.FRGHTAMT = VE.TSORDDTL[i].FRGHTAMT;
                                     TSORDDTL.SCMDISCAMT = VE.TSORDDTL[i].SCMDISCAMT;
                                     TSORDDTL.DISCAMT = VE.TSORDDTL[i].DISCAMT;
                                     TSORDDTL.TAXAMT = 0;

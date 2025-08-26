@@ -133,7 +133,7 @@ namespace Improvar.Controllers
                 string prnemailid = "";
                 if (VE.TEXTBOX5 != null) prnemailid = "'" + VE.TEXTBOX5 + "' regemailid"; else prnemailid = "e.regemailid";
 
-                var printemail = submitbutton.ToString(); 
+                var printemail = submitbutton.ToString();
                 int maxR = 0; string blhead = "", gocd = "", grpemailid = "";
                 string rptname = "";
 
@@ -193,7 +193,7 @@ namespace Improvar.Controllers
                 sql += " trim(f.regmobile || decode(f.regmobile, null, '', ',') || f.slphno || decode(f.phno1, null, '', ',' || f.phno1)) cphno, f.state cstate, f.statecd cstatecd,  " + Environment.NewLine;
                 sql += " c.translcd trslcd, g.slnm trslnm, g.gstno trgst, g.add1 trsladd1, g.add2 trsladd2, g.add3 trsladd3, g.add4 trsladd4, g.phno1 trslphno, c.lrno,  " + Environment.NewLine;
                 sql += " c.lrdt, c.lorryno, c.ewaybillno, c.grwt, c.ntwt, a.slno, a.itcd, y.styleno, a.itnm, a.itrem, a.batchdtl, a.hsncode,  " + Environment.NewLine;
-                sql += " a.nos, a.qnty, nvl(i.decimals, 0) qdecimal, i.uomnm, a.rate, a.amt, d.docrem, d.docth, d.casenos, d.noofcases,  " + Environment.NewLine;
+                sql += " a.nos, a.qnty, nvl(i.decimals, 0) qdecimal, i.uomnm, a.rate,a.FRGHTAMT, a.amt, d.docrem, d.docth, d.casenos, d.noofcases,  " + Environment.NewLine;
                 sql += " d.agslcd, m.slnm agslnm, a.agdocno, a.agdocdt, j.itgrpnm, j.shortnm,  " + Environment.NewLine;
                 sql += " nvl(a.igstper, 0)igstper, nvl(a.igstamt, 0)igstamt, nvl(a.cgstper, 0)cgstper, nvl(a.cgstamt, 0)cgstamt,  " + Environment.NewLine;
                 sql += " nvl(a.sgstper, 0)sgstper, nvl(a.sgstamt, 0)sgstamt, nvl(a.dutyper, 0)dutyper, nvl(a.dutyamt, 0)dutyamt, nvl(a.cessper, 0)cessper, nvl(a.cessamt, 0)cessamt,  " + Environment.NewLine;
@@ -208,7 +208,7 @@ namespace Improvar.Controllers
                 sql += "x.nm,x.addr addr1,x.city addr2,decode(x.mobile, null, '', 'Ph. # '||x.mobile)addr3,''addr4,''addr5,''addr6,''addr7,''addr8,''addr9,''addr10,''addr11,''addr12,x.mobile from " + Environment.NewLine;
 
                 sql += " (select a.autono, '' addless,a.autono || a.slno autoslno, a.slno, a.itcd, d.itnm,''pdesign, d.styleno, d.uomcd, nvl(d.hsncode, f.hsncode) hsncode,  " + Environment.NewLine;
-                sql += " a.itrem, ''baleno, 0 nos, a.qnty, 0 flagmtr, a.rate,ROUND( (nvl(a.qnty,0)*nvl(a.rate,0)),2)amt, ''agdocno, ''agdocdt,  " + Environment.NewLine;
+                sql += " a.itrem, ''baleno, 0 nos, a.qnty, 0 flagmtr, a.rate,a.FRGHTAMT,ROUND( (nvl(a.qnty,0)*nvl(a.rate,0)),2)amt, ''agdocno, ''agdocdt,  " + Environment.NewLine;
                 sql += " '' batchdtl,  " + Environment.NewLine;
                 sql += " 0 igstper, 0 igstamt, 0 cgstper, 0 cgstamt, 0 sgstper, 0 sgstamt,0 dutyper, 0 dutyamt, 0 cessper, 0 cessamt,0 listprice,0 listdiscper  " + Environment.NewLine;
                 sql += " from " + Scm1 + ".T_SORDDTL a, " + Scm1 + ".T_SORD b, " + Scm1 + ".t_cntrl_hdr c, " + Scm1 + ".m_sitem d, " + Scm1 + ".m_group f, " + Scm1 + ".t_batchdtl  n, " + Scm1 + ".t_batchmst o  " + Environment.NewLine;
@@ -229,7 +229,7 @@ namespace Improvar.Controllers
                 sql += " union all  ";
 
                 sql += " select a.autono,d.addless, a.autono autoslno, nvl(ascii(d.calccode), 0) + 1000 slno, '' itcd, d.amtnm || ' ' || a.amtdesc itnm,'' pdesign, '' styleno, '' uomcd, a.hsncode hsncode,  " + Environment.NewLine;
-                sql += " '' itrem, '' baleno, 0 nos, 0 qnty, 0 flagmtr, a.amtrate rate, decode(d.addless,'L',a.amt*-1,a.amt)amt, '' agdocno, '' agdocdt, '' batchdtl,  " + Environment.NewLine;
+                sql += " '' itrem, '' baleno, 0 nos, 0 qnty, 0 flagmtr, a.amtrate rate,0 FRGHTAMT, decode(d.addless,'L',a.amt*-1,a.amt)amt, '' agdocno, '' agdocdt, '' batchdtl,  " + Environment.NewLine;
                 sql += " a.igstper, decode(d.addless,'L',a.igstamt*-1,a.igstamt) igstamt, a.cgstper, decode(d.addless,'L',a.cgstamt*-1,a.cgstamt)cgstamt, a.sgstper, decode(d.addless,'L',a.sgstamt*-1,a.sgstamt) sgstamt, a.dutyper, decode(d.addless,'L',a.dutyamt*-1,a.dutyamt) dutyamt, a.cessper, decode(d.addless,'L',a.cessamt*-1,a.cessamt) cessamt,0 listprice,0 listdiscper  " + Environment.NewLine;
                 sql += " from " + Scm1 + ".t_txnamt a, " + Scm1 + ".T_SORD b, " + Scm1 + ".t_cntrl_hdr c, " + Scm1 + ".m_amttype d  " + Environment.NewLine;
                 sql += " where a.autono = b.autono and a.autono = c.autono and c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and c.yr_cd = '" + yr_cd + "' and  " + Environment.NewLine;
@@ -594,7 +594,7 @@ namespace Improvar.Controllers
                         auto1 = tbl.Rows[i]["autono"].ToString();
                         double dbasamt = 0; double ddisc1 = 0; double ddisc2 = 0; double ddisc3 = 0; double dtxblval = 0;
                         double dcgstamt = 0; double dsgstamt = 0; double dnetamt = 0; double dnos = 0; double dqnty = 0; double dnqnty = 0;
-                        bool doctotprint = false; bool totalreadyprint = false; bool delvchrg = false;
+                        bool doctotprint = false; bool doctotprint2 = false; bool totalreadyprint = false; bool totalreadyprint2 = false; bool delvchrg = false;
 
                         string dtldsc = "", dtlamt = "";
                         double tqnty = 0, tnos = 0, tamt = 0, tgst = 0, blamt = 0, totalosamt = 0;
@@ -630,12 +630,13 @@ namespace Improvar.Controllers
 
                             Type A_T = tbl.Rows[0]["amt"].GetType(); Type Q_T = tbl.Rows[0]["qnty"].GetType(); Type N_S = tbl.Rows[0]["nos"].GetType(); Type I_T = tbl.Rows[0]["igstamt"].GetType();
                             Type C_T = tbl.Rows[0]["cgstamt"].GetType(); Type S_T = tbl.Rows[0]["sgstamt"].GetType();
-                            Type C_Tt = tbl.Rows[0]["totdiscamt"].GetType();
+                            Type C_Tt = tbl.Rows[0]["totdiscamt"].GetType(); Type T_F = tbl.Rows[0]["FRGHTAMT"].GetType();
                             var GST_DATA = (from DataRow DR in tbl.Rows
                                             where DR["autono"].ToString() == auto1
                                             group DR by new { autono = DR["autono"].ToString() } into X
                                             select new
                                             {
+                                                TFRGHTAMT = T_F.Name == "Double" ? X.Sum(Z => Z.Field<double>("FRGHTAMT")) : Convert.ToDouble(X.Sum(Z => Z.Field<decimal?>("FRGHTAMT") ?? 0)),
                                                 TAMT = (A_T.Name == "Double" ? X.Sum(Z => Z.Field<double>("amt")) : Convert.ToDouble(X.Sum(Z => Z.Field<decimal>("amt")))) - X.Sum(Z => Z.Field<decimal>("totdiscamt").retDbl()),
                                                 //TDISCAMT = (A_T.Name == "Double" ? X.Sum(Z => Z.Field<double>("discamt")) : Convert.ToDouble(X.Sum(Z => Z.Field<decimal>("discamt")))),
                                                 //TSCMDISCAMT = (A_T.Name == "Double" ? X.Sum(Z => Z.Field<double>("SCMdiscamt")) : Convert.ToDouble(X.Sum(Z => Z.Field<decimal>("SCMdiscamt")))),
@@ -650,7 +651,7 @@ namespace Improvar.Controllers
                                     //tnos = tnos + Convert.ToDouble(k.TNOS);
                                     //tamt = tamt + Convert.ToDouble(k.TAMT);
                                     //tgst = tgst + Convert.ToDouble(k.IGSTAMT) + Convert.ToDouble(k.CGSTAMT) + Convert.ToDouble(k.SGSTAMT);
-                                    blamt += k.TAMT.retDbl();
+                                    blamt += k.TAMT.retDbl() + k.TFRGHTAMT.retDbl();
                                 }
                             }
 
@@ -737,7 +738,9 @@ namespace Improvar.Controllers
                             //}
                             uommaxdecimal = tbl.Rows[i]["qdecimal"].retInt();
                         }
-
+                        var FRGHTAMT = (from DataRow DR in tbl.Rows
+                                        where DR["autono"].retStr() == auto1
+                                        select DR["FRGHTAMT"].retDbl()).Sum();
                         while (tbl.Rows[i]["autono"].ToString() == auto1)
                         {
                             var dchrg = (from DataRow dr in tbl.Rows
@@ -1013,7 +1016,7 @@ namespace Improvar.Controllers
 
                             //dr1["blamt"] = (tbl.Rows[i]["blamt"].retDbl() - tbl.Rows[i]["ADVRECDAMT"].retDbl()).ToINRFormat();
 
-                            dr1["rupinword"] = Cn.AmountInWords(blamt.retStr()); 
+                            dr1["rupinword"] = Cn.AmountInWords(blamt.retStr());
                             dr1["agdocno"] = tbl.Rows[i]["agdocno"].ToString();
                             dr1["agdocdt"] = tbl.Rows[i]["agdocdt"] == DBNull.Value ? "" : tbl.Rows[i]["agdocdt"].ToString().Substring(0, 10).ToString();
                             blrem = "";
@@ -1280,9 +1283,15 @@ namespace Improvar.Controllers
                                 else if (tbl.Rows[i + 1]["autono"].ToString() != auto1) doctotprint = true;
                                 else if (tbl.Rows[i + 1]["itcd"].ToString() == "") doctotprint = true;
                             }
+                            if (totalreadyprint2 == false)
+                            {
+                                if (i == maxR) { doctotprint2 = true; }
+                                else if (tbl.Rows[i + 1]["autono"].ToString() != auto1) { doctotprint2 = true; }
+                                else if (tbl.Rows[i + 1]["itcd"].ToString() == "") { doctotprint2 = true; }
+                            }
                             if (delvchrg == true)
                             {
-                                doctotprint = true; totalreadyprint = false; delvchrg = false;
+                                doctotprint = true; totalreadyprint = false; totalreadyprint2 = false; delvchrg = false;
                             }
 
                             if (doctotprint == true && totalreadyprint == false)
@@ -1310,6 +1319,25 @@ namespace Improvar.Controllers
                                 dr1["curr_cd"] = tbl.Rows[i]["curr_cd"].ToString();
                                 totalreadyprint = true;
                                 goto docstart;
+                            }
+
+                            //For Freight Amount New Row Added
+                            if (doctotprint2 == true && totalreadyprint2 == false && FRGHTAMT.retDbl() > 0)
+                            {
+
+                                dr1 = IR.NewRow();
+                                dr1["autono"] = auto1 + copymode;
+                                dr1["copymode"] = copymode;
+                                dr1["docno"] = tbl.Rows[i]["docno"].ToString();
+
+                                dr1["itnm"] = "Freight Amount";
+                                dr1["rate"] = FRGHTAMT.ToINRFormat();
+                                dr1["txblval"] = FRGHTAMT.ToINRFormat();
+                                dr1["curr_cd"] = tbl.Rows[i]["curr_cd"].ToString();
+                                dr1["caltype"] = 1;
+                                totalreadyprint2 = true;
+                                goto docstart;
+
                             }
 
                             doctotprint = false;

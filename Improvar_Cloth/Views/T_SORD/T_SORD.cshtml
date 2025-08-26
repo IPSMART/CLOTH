@@ -1263,16 +1263,21 @@
         debugger;
         var APRXVL = 0;
         var T_QNTY = 0;
+        var T_FRGHTAMT = 0;
         var GridRow = $("#_T_SORD_MAIN_GRID > tbody > tr").length;
         for (var i = 0; i <= GridRow - 1; i++) {
             var RATE_ =retFloat( $("#RATE_" + i).val());
             var QNTY_ = $("#QNTY_" + i).val();
+            var FRGHTAMT_ = $("#FRGHTAMT_" + i).val();
             if (QNTY_ == "") { QNTY_ = parseFloat(0); } else { QNTY_ = parseFloat(QNTY_) }
             if (QNTY_ != "") { T_QNTY = T_QNTY + parseFloat(QNTY_); } else { T_QNTY = T_QNTY + parseFloat(0); }
+            if (FRGHTAMT_ == "") { FRGHTAMT_ = parseFloat(0); } else { FRGHTAMT_ = parseFloat(FRGHTAMT_) }
+            if (FRGHTAMT_ != "") { T_FRGHTAMT = T_FRGHTAMT + parseFloat(FRGHTAMT_); } else { T_FRGHTAMT = T_FRGHTAMT + parseFloat(0); }
             document.getElementById("QNTY_" + i).value = QNTY_.toFixed(3);
-            APRXVL +=(QNTY_ *RATE_);
+            APRXVL += (QNTY_ * RATE_) + FRGHTAMT_;
         }
         document.getElementById("TOTAL_QNTY").value = T_QNTY.toFixed(3);
+        document.getElementById("TOTAL_FRGHTAMT").value = T_FRGHTAMT.toFixed(3);
         document.getElementById("APROXVAL").value = APRXVL.toFixed(2);
     }
 
