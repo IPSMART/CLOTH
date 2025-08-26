@@ -225,7 +225,8 @@ namespace Improvar.Controllers
             string valsrch = docno.ToUpper().Trim();
             string sql = "";
             sql += "select distinct b.DOCNO,to_char(b.DOCDT,'dd/mm/yyyy') DOCDT,a.SLCD,a.AUTONO ,c.SLNM,d.LRNO,to_char(d.LRDT,'dd/mm/yyyy') LRDT,a.PREFNO,to_char(a.PREFDT,'dd/mm/yyyy') PREFDT from " + scm + ".T_TXN a, " + scm + ".T_CNTRL_HDR b,  ";
-            sql += fcm + ".M_SUBLEG c, " + scm + ".T_TXNTRANS d, " + scm + ".m_doctype e where a.AUTONO=b.AUTONO(+) and a.SLCD=c.SLCD(+) and a.AUTONO=d.AUTONO and b.doccd=e.doccd(+) and d.LRNO is not null and d.LRDT is not null and b.compcd='" + COMPCD + "' and b.loccd='" + LOCCD + "' and e.doctype in ('SPBL') ";
+            sql += fcm + ".M_SUBLEG c, " + scm + ".T_TXNTRANS d, " + scm + ".m_doctype e where a.AUTONO=b.AUTONO(+) and a.SLCD=c.SLCD(+) and a.AUTONO=d.AUTONO and b.doccd=e.doccd(+) and d.LRNO is not null  and b.compcd='" + COMPCD + "' and b.loccd='" + LOCCD + "' and e.doctype in ('SPBL') ";
+            //sql += fcm + ".M_SUBLEG c, " + scm + ".T_TXNTRANS d, " + scm + ".m_doctype e where a.AUTONO=b.AUTONO(+) and a.SLCD=c.SLCD(+) and a.AUTONO=d.AUTONO and b.doccd=e.doccd(+) and d.LRNO is not null and d.LRDT is not null and b.compcd='" + COMPCD + "' and b.loccd='" + LOCCD + "' and e.doctype in ('SPBL') ";
             if (valsrch.retStr() != "") sql += " and upper(b.DOCNO) = '" + valsrch + "' ";
             if (autono.retStr() != "") sql += " and (b.autono) = '" + autono + "' ";
             sql += "  order by DOCNO,DOCDT ";

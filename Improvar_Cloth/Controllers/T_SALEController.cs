@@ -7536,7 +7536,9 @@ namespace Improvar.Controllers
                     {
                         flag = false;
                     }
-                    if (VE.MENU_PARA != "PJRC" && VE.MENU_PARA != "PJIS" && VE.MENU_PARA != "PJRT" && VE.MENU_PARA != "OP" && VE.MENU_PARA != "SBPCK" && VE.MENU_PARA != "PI" && flag == true)
+                    var chkfindata = DB1.T_CNTRL_HDR.Where(a => a.AUTONO == VE.T_TXN.AUTONO).Count();
+                    //if (VE.MENU_PARA != "PJRC" && VE.MENU_PARA != "PJIS" && VE.MENU_PARA != "PJRT" && VE.MENU_PARA != "OP" && VE.MENU_PARA != "SBPCK" && VE.MENU_PARA != "PI" && flag == true)
+                    if (chkfindata > 0)
                     {
                         //dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_TXN.AUTONO, "D", "F", null, null, null, VE.T_TXN.DOCDT.retStr(), null, null, null);
                         dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_TXN.AUTONO, "D", "F", null, null, null, VE.T_TXN.DOCDT.retStr(), null, null, null, null, null, null, null, VE.DISPBLAMT, VE.Audit_REM);
