@@ -25,13 +25,14 @@
 <script>
     function ItemDivtoggle() {
         var ItemDetails = $('[name="TEXTBOX3"]:checked').val();
-        if (ItemDetails == "Details") {
-            $(".itemdiv").show();
-        }
-        else {
+        if (ItemDetails == "Supper Summary") {
             $(".itemdiv").hide();
         }
+        else {
+            $(".itemdiv").show();
+        }
     }
+
 </script>
 @using (Html.BeginForm())
 {
@@ -121,7 +122,7 @@
                         @(new HtmlString(Model.Locnm))
                     </div>
                 </div>
-                <div class="itemdiv row" style="margin-top:6px">
+                <div class="row" style="margin-top:6px">
                     <div class="col-md-6">
                         <div class="editor-label" style="margin-top:5px">
                             @Html.Label("", "Item")
@@ -141,7 +142,7 @@
                         @(new HtmlString(Model.Batchno))
                     </div>
                 </div>*@
-                <div class="itemdiv row" style="margin-top:6px">
+                <div class="row" style="margin-top:6px">
                     <div class="col-md-6">
                         <div class="editor-label" style="margin-top:5px">
                             @Html.Label("", "Item Color")

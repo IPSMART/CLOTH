@@ -107,8 +107,8 @@ namespace Improvar.Controllers
                 {
                     slmslcd = FC["slmslcdvalue"].ToString().retSqlformat();
                 }
-                if (ReportType == "Details")
-                {
+                //if (ReportType == "Details" || ReportType == "Summary")
+                //{
                     if (FC.AllKeys.Contains("itcolorvalue"))
                     {
                         colrcd = FC["itcolorvalue"].ToString().retSqlformat();
@@ -118,7 +118,7 @@ namespace Improvar.Controllers
                     {
                         item = FC["itcdvalue"].ToString().retSqlformat();
                     }
-                }
+                //}
                 if (FC.AllKeys.Contains("loccdvalue"))
                 {
                     loccd = FC["loccdvalue"].ToString().retSqlformat();
@@ -131,7 +131,7 @@ namespace Improvar.Controllers
                 bool showasperpslip = false;
                 if (VE.TEXTBOX2 == "PSLIP") showasperpslip = true;
                 bool showcolor = false, ShowBatchNumber = false, ShowSLCol = false;
-                if (ReportType == "Details")
+                if (ReportType == "Details" || ReportType == "Summary")
                 {
                     showcolor = VE.Checkbox4;
                     ShowBatchNumber = VE.Checkbox5;
@@ -139,9 +139,9 @@ namespace Improvar.Controllers
                 }
                 string sort = "agslnm, agslcd ";
                 if (ReportType == "Details") sort += ",slcd,slnm";
-                sort += ",docdt, docno,STYLENO,  itnm, itcd,rate";
+                sort += ",D_docdt,docno,STYLENO,itnm,itcd,rate";
                 if (showcolor == true) sort += ",colrcd";
-                if (ReportType == "Supper Summary") sort = "agslnm, agslcd,slnm,slcd";
+                if (ReportType == "Supper Summary") sort = "agslnm, agslcd,slnm,slcd";               
 
                 DataTable tbl = Salesfunc.GetPendOrder(slcd, tdt, "", "", "", "", "SB", "", VE.Checkbox1, fdt, item, agslcd);
                 tbl.DefaultView.Sort = sort;
@@ -199,7 +199,7 @@ namespace Improvar.Controllers
                     sql += "and c.loccd in (" + loccd + ") ";
                 }
                 sql += "and nvl(c.cancel, 'N')= 'N' and d.doctype in ('SBEXP') " + Environment.NewLine;
-                sql += "group by b.ordautono,b.ordslno,c.docno ,c.docdt ,c.autono ,b.slno " + Environment.NewLine;
+                sql += "group by b.ordautono,b.ordslno,c.docno ,c.docdt ,c.autono ,b.slno " + Environment.NewLine;                
                 tbl1 = MasterHelp.SQLquery(sql);
 
                 Int32 maxR = 0, i = 0, rNo = 0;
@@ -235,9 +235,9 @@ namespace Improvar.Controllers
                     }
                     HC.GetPrintHeader(IR, "prefno", "string", "c,45", "Party Ref");                    
                     HC.GetPrintHeader(IR, "itnm", "string", "c,15", "Item Name");
-                    if (showcolor == true) HC.GetPrintHeader(IR, "colrnm", "string", "c,50", "Color");
+                    if (showcolor == true) HC.GetPrintHeader(IR, "colrnm", "string", "c,15", "Color");
                     //if (ReportType == "Details")
-                    //{                                             
+                    //{
                     //    if (showcolor == true) HC.GetPrintHeader(IR, "colrnm", "string", "c,50", "Color");
                     //}
                     if (VE.Checkbox1 == true && VE.Checkbox7 == false)
@@ -250,7 +250,7 @@ namespace Improvar.Controllers
                     }
 
                     HC.GetPrintHeader(IR, "rate", "double", "n,17,2:####,##,##,##0.00", "Rate");
-                    HC.GetPrintHeader(IR, "amt", "double", "n,17,2:####,##,##,##0.00", "Order Value");
+                    HC.GetPrintHeader(IR, "amt", "double", "n,17,2:####,##,##,##0.00", "Order Value");                    
                     if (!(VE.Checkbox1 == true && VE.Checkbox7 == false))
                     {
                         //HC.GetPrintHeader(IR, "cancqnty", "double", "n,12,3:##,##,##,##0.000", "Cancel Qnty");
@@ -270,8 +270,8 @@ namespace Improvar.Controllers
                             HC.GetPrintHeader(IR, "balordqnty", "double", "n,12,3:##,##,##,##0.000", "Total Qnty");                            
                         }
                         if (ReportType == "Details")
-                        {                          
-                            HC.GetPrintHeader(IR, "DELVDT", "string", "c,20", "Delivary Date");                           
+                        {
+                            HC.GetPrintHeader(IR, "DELVDT", "string", "c,20", "Delivary Date");
                         }
 
                     }
@@ -315,7 +315,10 @@ namespace Improvar.Controllers
                                         IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].ToString() + (tbl.Rows[i]["cancel"].retStr() == "Y" ? " (Cancel)" : "");
                                         IR.Rows[rNo]["prefno"] = tbl.Rows[i]["prefno"].ToString();
                                         IR.Rows[rNo]["PREFDT"] = tbl.Rows[i]["PREFDT"].retDateStr();
-                                        IR.Rows[rNo]["DELVDT"] = tbl.Rows[i]["DELVDT"].retDateStr();
+                                        if (!(VE.Checkbox1 == true && VE.Checkbox7 == false))
+                                        {
+                                            IR.Rows[rNo]["DELVDT"] = tbl.Rows[i]["DELVDT"].retDateStr();
+                                        }
                                         IR.Rows[rNo]["itnm"] = tbl.Rows[i]["STYLENO"].ToString() + " "+tbl.Rows[i]["itnm"].ToString();
 
                                         double cnt = 0;
@@ -644,7 +647,7 @@ namespace Improvar.Controllers
 
                     }
                     else
-                    {
+                    {                        
                         HC.GetPrintHeader(IR, "qnty", "double", "n,12,3:##,##,##,##0.000", "Order;Qnty");
                         //HC.GetPrintHeader(IR, "cancqnty", "double", "n,12,3:##,##,##,##0.000", "Cancel;Qnty");
                         if (VE.Checkbox7 == true)

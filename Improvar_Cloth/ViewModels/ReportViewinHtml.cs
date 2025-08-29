@@ -33,6 +33,7 @@ namespace Improvar.ViewModels
         public bool Checkbox17 { get; set; }
         public bool Checkbox18 { get; set; }
         public bool Checkbox19 { get; set; }
+        public bool Checkbox20 { get; set; }
         public string DOCNO { get; set; }
         public string FDOCNO { get; set; }
         public string TDOCNO { get; set; }

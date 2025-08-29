@@ -1996,7 +1996,7 @@ namespace Improvar
 
             string sql = "";
 
-            sql += "select a.autono,a.slno, n.slcd, j.slnm, j.district, j.slarea, o.doccd, o.docno, to_char(o.docdt,'dd/mm/yyyy') docdt, nvl(m.stktype,'') stktype, nvl(m.freestk,'') freestk, nvl(m.rate,0) rate, ";
+            sql += "select a.autono,a.slno, n.slcd, j.slnm, j.district, j.slarea, o.doccd, o.docno, to_char(o.docdt,'dd/mm/yyyy') docdt,o.docdt D_docdt, nvl(m.stktype,'') stktype, nvl(m.freestk,'') freestk, nvl(m.rate,0) rate, ";
             sql += "n.agslcd, n.slmslcd, k.slnm agslnm, l.slnm slmslnm, ";
             sql += "d.styleno, m.itcd, m.sizecd, m.colrcd, d.itnm, m.delvdt, m.itrem, ";
             sql += "d.uomcd, g.uomnm, g.decimals, d.itgrpcd, h.itgrpnm,h.bargentype, d.brandcd, i.brandnm, ";

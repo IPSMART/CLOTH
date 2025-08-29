@@ -127,6 +127,7 @@ namespace Improvar.Controllers
                 VE.Checkbox3 = false;
                 VE.Checkbox5 = false;
                 VE.Checkbox6 = false;
+                VE.Checkbox20 = true;
                 VE.TEXTBOX5 = "0";
                 VE.DefaultView = true;
                 VE.ExitMode = 1;
@@ -468,7 +469,10 @@ namespace Improvar.Controllers
                     }
                     HC.GetPrintHeader(IR, "bldt", "string", "c,10", "Bill Date");
                     HC.GetPrintHeader(IR, "blno", "string", "c,18", "Bill No.");
-                    if (bltype == true) HC.GetPrintHeader(IR, "bltype", "string", "c,5", "Bill Type");
+                    if (VE.Checkbox20 == true)
+                    {
+                        if (bltype == true) HC.GetPrintHeader(IR, "bltype", "string", "c,5", "Bill Type");
+                    }
                     if (FcSorting == "DOCDT")
                     {
                         HC.GetPrintHeader(IR, "slcd", "string", "c,8", "Party Cd");
@@ -674,7 +678,10 @@ namespace Improvar.Controllers
                                     IR.Rows[rNo]["docno"] = tbl.Rows[i]["tchdocno"].ToString();
                                 }
                                 if (VE.Checkbox15 == true) IR.Rows[rNo]["agshortnm"] = tbl.Rows[i]["agshortnm"].retStr() + (tbl.Rows[i]["sagshortnm"].retStr() == "" ? "" : " - " + tbl.Rows[i]["sagshortnm"].retStr());
-                                if (bltype == true) IR.Rows[rNo]["bltype"] = tbl.Rows[i]["bltype"].retStr();
+                                if (VE.Checkbox20 == true)
+                                {
+                                    if (bltype == true) IR.Rows[rNo]["bltype"] = tbl.Rows[i]["bltype"].retStr();
+                                }
                                 if (tbl.Rows[i]["blno"].ToString() == "") IR.Rows[rNo]["blno"] = tbl.Rows[i]["doccd"].ToString() + tbl.Rows[i]["docno"].ToString();
                                 else IR.Rows[rNo]["blno"] = tbl.Rows[i]["blno"].ToString();
                                 if (tbl.Rows[i]["bldt"].ToString() == "") IR.Rows[rNo]["bldt"] = tbl.Rows[i]["docdt"].ToString().Substring(0, 10);
