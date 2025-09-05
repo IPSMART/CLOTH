@@ -7536,7 +7536,7 @@ namespace Improvar.Controllers
                     {
                         flag = false;
                     }
-                    var chkfindata = DB1.T_CNTRL_HDR.Where(a => a.AUTONO == VE.T_TXN.AUTONO).Count();
+                    var chkfindata = DBF1.T_CNTRL_HDR.Where(a => a.AUTONO == VE.T_TXN.AUTONO).Count();
                     //if (VE.MENU_PARA != "PJRC" && VE.MENU_PARA != "PJIS" && VE.MENU_PARA != "PJRT" && VE.MENU_PARA != "OP" && VE.MENU_PARA != "SBPCK" && VE.MENU_PARA != "PI" && flag == true)
                     if (chkfindata > 0)
                     {
