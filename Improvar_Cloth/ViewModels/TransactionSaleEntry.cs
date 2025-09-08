@@ -298,6 +298,7 @@ namespace Improvar.ViewModels
         public string Last_DOCDT { get; set; }
         public string PARGLNM { get; set; }
         public string ChildData { get; set; }
+        public string ChildDataMsg { get; set; }
         public string PI_tag { get; set; }
         public string Last_TAXGRPCD { get; set; }
         public string Last_PRCCD { get; set; }

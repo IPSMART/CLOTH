@@ -283,6 +283,7 @@ namespace Improvar.Controllers
                                 }
                             }
                             if (VE.T_CNTRL_HDR.DOCNO != null) ViewBag.formname = ViewBag.formname + " (" + VE.T_CNTRL_HDR.DOCNO + ")";
+                            if (VE.ChildDataMsg.retStr() != "") ViewBag.formname = ViewBag.formname + " [" + VE.ChildDataMsg + "]";
                         }
                         if (op.ToString() == "A" && loadOrder == "N")
                         {
@@ -1186,7 +1187,11 @@ namespace Improvar.Controllers
                     if (chk_child != "")
                     {
                         v.ChildData = "Y";
-                        if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC") VE.ChildData = "child record found";
+                        if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC")
+                        {
+                            VE.ChildData = "child record found";
+                            VE.ChildDataMsg = chk_child;
+                        }
                     }
 
                     if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") && (syscnfgdata != null && syscnfgdata.Rows.Count > 0))
