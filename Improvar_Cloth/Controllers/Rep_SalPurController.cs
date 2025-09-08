@@ -173,8 +173,8 @@ namespace Improvar.Controllers
                     {
                         for (int j = 0; j <= temppur.Count() - 1; j++)
                         {
-                            balqnty = (temppur[j]["balqnty"].retDbl() - temppur[j]["outqnty"].retDbl()).toRound(3);
-                            double rt = temppur[j]["lastprate"].retDbl();
+                            balqnty = (temppur[j]["balqnty"].retDbl() - temppur[j]["outqnty"].retDbl()).toRound(3);                           
+                            double rt = temppur[j]["lastprate"].retDbl() == 0 ? temppur[j]["rate"].retDbl() : temppur[j]["lastprate"].retDbl();
                             string docno = temppur[j]["docno"].retStr();
                             if (rsTbl.Rows[i]["doctag"].ToString() == "SR" || rsTbl.Rows[i]["doctag"].ToString() == "AD")
                             {
