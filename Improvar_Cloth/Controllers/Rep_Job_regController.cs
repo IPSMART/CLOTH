@@ -100,7 +100,7 @@ namespace Improvar.Controllers
                 {
 
                     sql += "select a.autono, c.slcd, a.slno, c.nos, c.qnty, c.cutlength, i.itnm, i.styleno,h.ourdesign, h.pdesign, i.itgrpcd, j.itgrpnm,k.uomnm, " + Environment.NewLine;
-                    sql += "c.itremark, c.sample, g.slnm, g.regmobile, ptch.docno , ptch.docdt, y.issamt, " + Environment.NewLine;
+                    sql += "c.itremark, c.sample, g.slnm, g.regmobile, ptch.docno , ptch.docdt, y.issamt,m.docno ORDDOCNO, " + Environment.NewLine;
                     sql += "b.autono recautono, rtch.docno recdocno, rtch.docdt recdocdt, b.prefno, b.prefdt, b.doctag,b.nos recnos, b.qnty recqnty, " + Environment.NewLine;
                     sql += "c.nos, c.qnty, c.nos-nvl(z.nos,0) balnos, c.qnty-nvl(z.qnty,0) balqnty,h.itcd,i.fabitcd,l.itnm fabitnm from " + Environment.NewLine;
 
@@ -140,9 +140,9 @@ namespace Improvar.Controllers
                     sql += "group by a.progautono||a.progslno ) z, " + Environment.NewLine;
 
                     sql += scm + ".t_progmast c, " + scm + ".t_cntrl_hdr ptch, " + scm + ".t_cntrl_hdr rtch, " + Environment.NewLine;
-                    sql += scmf + ".m_subleg g, " + scm + ".t_batchmst h, " + scm + ".m_sitem i, " + scm + ".m_group j, " + scmf + ".m_uom k, " + scm + ".m_sitem l " + Environment.NewLine;
+                    sql += scmf + ".m_subleg g, " + scm + ".t_batchmst h, " + scm + ".m_sitem i, " + scm + ".m_group j, " + scmf + ".m_uom k, " + scm + ".m_sitem l, " + scm + ".t_cntrl_hdr m, " + scm + ".t_sord n "+ Environment.NewLine;
                     sql += "where a.autono=c.autono(+) and a.slno=c.slno(+) and a.autoslno = b.progautoslno(+) and a.autoslno = y.progautoslno(+) and a.autoslno = z.progautoslno(+) and " + Environment.NewLine;
-                    sql += "a.autono = ptch.autono(+) and b.autono = rtch.autono(+) and C.JOBCD='" + JOBCD + "' and i.fabitcd=l.itcd(+) and " + Environment.NewLine;
+                    sql += "a.autono = ptch.autono(+) and b.autono = rtch.autono(+) and C.JOBCD='" + JOBCD + "' and i.fabitcd=l.itcd(+) and c.ordautono=m.autono(+) and c.ordautono=n.autono(+) and  " + Environment.NewLine;
                     if (ShowPending == "PENDING") sql += "c.qnty-nvl(z.qnty,0) <> 0 and " + Environment.NewLine;
                     sql += "c.slcd = g.slcd(+) and c.barno = h.barno(+) and h.itcd = i.itcd(+) and i.itgrpcd = j.itgrpcd(+) and i.uomcd = k.uomcd(+) " + Environment.NewLine;
                     sql += "order by slnm, slcd, docdt, docno, autono, slno, recdocdt, recdocno " + Environment.NewLine;
@@ -171,6 +171,10 @@ namespace Improvar.Controllers
                         HC.GetPrintHeader(IR, "itremarks", "string", "c,15", "itremark");
 
                         string rechdr = (ReportType == "SUMMARY" ? "Last " : "");
+                        if(VE.Checkbox2 == true)
+                        {
+                            HC.GetPrintHeader(IR, "ORDDOCNO", "string", "c,13", "Order Number");
+                        }
                         HC.GetPrintHeader(IR, "recdocdt", "string", "c,10", rechdr + "Rec Date");
                         HC.GetPrintHeader(IR, "recdocno", "string", "c,13", rechdr + "Rec No");
 
@@ -214,7 +218,11 @@ namespace Improvar.Controllers
                                         {
                                             IR.Rows[rNo]["Slnm"] = "" + tbl.Rows[i]["slnm"].retStr() + "[" + tbl.Rows[i]["slcd"].retStr() + "]";
                                         }
-                                        if (frstreco == true || RepFormat == "STANDARD")
+                                        if (VE.Checkbox2 == true)
+                                        {
+                                            IR.Rows[rNo]["ORDDOCNO"] = tbl.Rows[i]["ORDDOCNO"].retStr();
+                                        }
+                                            if (frstreco == true || RepFormat == "STANDARD")
                                         {
                                             IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].retDateStr();
                                             IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].retStr();

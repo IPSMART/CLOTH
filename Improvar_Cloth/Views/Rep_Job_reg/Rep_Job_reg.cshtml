@@ -179,6 +179,20 @@
                             @Html.CheckBoxFor(model => model.Checkbox1)  @Html.Label("Show Value")
                         </label>
                     </div>
+                  
+                </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Show Order No")
+                        </div>
+                    </div>
+                    <div class="col-lg-2" style="border: 2px groove;">
+                        <label class="checkbox-inline">
+                            @Html.CheckBoxFor(model => model.Checkbox2)  @Html.Label("Show Order No")
+                        </label>
+                    </div>
+
                 </div>
                 <div class="row" style="margin-top: 8px;">
                     <div class="col-lg-2">
@@ -192,7 +206,7 @@
                         </label>
                         <label class="radio-inline">
                             @Html.RadioButtonFor(g => g.TEXTBOX2, "PENDING")  @Html.Label("Pending")
-                        </label>
+                        </label>                       
                     </div>
                 </div>
                 <div class="row" style="margin-top: 8px;">

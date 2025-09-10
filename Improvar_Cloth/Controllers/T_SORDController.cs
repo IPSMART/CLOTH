@@ -398,30 +398,30 @@ namespace Improvar.Controllers
             VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
             string doccd = VE.DocumentType.Select(i => i.value).ToArray().retSqlfromStrarray();
             string sql = "select  a.autono, a.doccd, c.docno, to_char(a.docdt,'dd/mm/yyyy') docdt, to_char(e.DELVDT,'dd/mm/yyyy') DELVDT, ";
-            sql += "c.docdt ddocdt, a.slcd, d.slnm, d.district, a.prefno, 0 tbox,a.aproxval,sum(e.QNTY)QNTY,e.ITCD,f.ITCD,f.STYLENO,f.ITNM,a.PREFDT,g.SIZECD,g.SIZENM ";
-            sql += " from " + scm + ".t_sord a, " + scm + ".t_cntrl_hdr c, " + scmf + ".m_subleg d, " + scm + ".t_sorddtl e, " + scm + ".M_SITEM f, " + scm + ".m_size g ";
-            sql += "where a.autono = c.autono and a.autono = e.autono and e.ITCD = f.ITCD and e.sizecd=g.sizecd(+) and c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and ";
+            sql += "c.docdt ddocdt, a.slcd, d.slnm, d.district, a.prefno, 0 tbox,a.aproxval,sum(e.QNTY)QNTY,e.ITCD,f.ITCD,f.STYLENO,f.ITNM,a.PREFDT,g.SIZECD,g.SIZENM, h.colrnm ";
+            sql += " from " + scm + ".t_sord a, " + scm + ".t_cntrl_hdr c, " + scmf + ".m_subleg d, " + scm + ".t_sorddtl e, " + scm + ".M_SITEM f, " + scm + ".m_size g, " + scm + ".m_color h "; 
+             sql += "where a.autono = c.autono and a.autono = e.autono and e.ITCD = f.ITCD and e.sizecd=g.sizecd(+) and e.colrcd=h.colrcd(+) and c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and ";
             if (SRC_FDT.retStr() != "") sql += "c.docdt >= to_date('" + SRC_FDT.retDateStr() + "','dd/mm/yyyy') and ";
             if (SRC_TDT.retStr() != "") sql += "c.docdt <= to_date('" + SRC_TDT.retDateStr() + "','dd/mm/yyyy') and ";
             if (SRC_DOCNO.retStr() != "") sql += "(c.vchrno like '%" + SRC_DOCNO.retStr() + "%' or c.docno like '%" + SRC_DOCNO.retStr() + "%') and ";
             if (SRC_SLCD.retStr() != "") sql += "(a.slcd like '%" + SRC_SLCD.retStr() + "%' or upper(d.slnm) like '%" + SRC_SLCD.retStr().ToUpper() + "%') and ";
             sql += "a.slcd = d.slcd and c.yr_cd='" + CommVar.YearCode(UNQSNO) + "' and c.doccd in(" + doccd + ") ";
             sql += "group by  a.autono, a.doccd, c.docno, to_char(a.docdt,'dd/mm/yyyy') , ";
-            sql += "c.docdt , a.slcd, d.slnm, d.district, a.prefno, 0 ,a.aproxval,e.ITCD,f.ITCD,f.STYLENO,f.ITNM,a.PREFDT,e.DELVDT,g.SIZECD,g.SIZENM ";
+            sql += "c.docdt , a.slcd, d.slnm, d.district, a.prefno, 0 ,a.aproxval,e.ITCD,f.ITCD,f.STYLENO,f.ITNM,a.PREFDT,e.DELVDT,g.SIZECD,g.SIZENM,h.colrnm ";
             sql += "order by c.docdt, docno ";
             var tbl = Master_Help.SQLquery(sql);
 
             System.Text.StringBuilder SB = new System.Text.StringBuilder(); 
              var hdr = "Order Number" + Cn.GCS() + "Order Date" + Cn.GCS() + "Party Ref Number" + Cn.GCS() + "Party Ref Date" + Cn.GCS() + "Delivery Date" + Cn.GCS() 
-                + "Party Name"+ Cn.GCS() + "Order Approx Value" + Cn.GCS() + "Design Number" + Cn.GCS() + "Size" + Cn.GCS() + "Total Quantity"  + Cn.GCS() + "AUTO NO";
+                + "Party Name"+ Cn.GCS() + "Order Approx Value" + Cn.GCS() + "Design Number" + Cn.GCS() + "Color" + Cn.GCS() + "Size" + Cn.GCS() + "Total Quantity"  + Cn.GCS() + "AUTO NO";
             for (int j = 0; j <= tbl.Rows.Count - 1; j++)
             {                
                 SB.Append("<tr><td>" + tbl.Rows[j]["docno"] + "</td><td>" + tbl.Rows[j]["docdt"] + " </td><td>" + tbl.Rows[j]["prefno"] + " </td><td>"
                     + tbl.Rows[j]["PREFDT"].retDateStr() + " </td><td>" + tbl.Rows[j]["DELVDT"] + " </td><td><b>" + tbl.Rows[j]["slnm"] + "</b> ["+ tbl.Rows[j]["district"] + "]  (" + tbl.Rows[j]["slcd"] + ") "
-                    + " </td><td>" + tbl.Rows[j]["aproxval"] + " </td><td>" + tbl.Rows[j]["STYLENO"] + " " + tbl.Rows[j]["ITNM"] + " </td><td>" + tbl.Rows[j]["SIZECD"] +" "+ tbl.Rows[j]["SIZENM"] + " </td><td>" + tbl.Rows[j]["QNTY"] + "</td><td>"
+                    + " </td><td>" + tbl.Rows[j]["aproxval"] + " </td><td>" + tbl.Rows[j]["STYLENO"] + " " + tbl.Rows[j]["ITNM"] + " </td><td>" + tbl.Rows[j]["colrnm"] + " </td><td>" + tbl.Rows[j]["SIZECD"] +" "+ tbl.Rows[j]["SIZENM"] + " </td><td>" + tbl.Rows[j]["QNTY"] + "</td><td>"
                     + tbl.Rows[j]["autono"] + " </td></tr>");
             }
-            return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "10", "10"));
+            return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "11", "11"));
         }
         public ActionResult changeDocumentType(Permission VE, string DOC_CD, string DOCDT = "", bool AllowBDATE = false, string DOCNO = "")
         {

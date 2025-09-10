@@ -233,7 +233,11 @@ namespace Improvar.Controllers
                     {
                         HC.GetPrintHeader(IR, "DELVDT", "string", "c,20", "Delivary Date");
                     }
-                    HC.GetPrintHeader(IR, "prefno", "string", "c,45", "Party Ref");                    
+                    HC.GetPrintHeader(IR, "prefno", "string", "c,45", "Party Ref");
+                    if (VE.Checkbox1 == true && VE.Checkbox7 == false)
+                    {
+                        HC.GetPrintHeader(IR, "pdesign", "string", "c,15", "Party Order Number");
+                    }
                     HC.GetPrintHeader(IR, "itnm", "string", "c,15", "Item Name");
                     if (showcolor == true) HC.GetPrintHeader(IR, "colrnm", "string", "c,15", "Color");
                     //if (ReportType == "Details")
@@ -242,7 +246,7 @@ namespace Improvar.Controllers
                     //}
                     if (VE.Checkbox1 == true && VE.Checkbox7 == false)
                     {
-                        HC.GetPrintHeader(IR, "qnty", "double", "n,12,3:##,##,##,##0.000", "Balance Order Qnty");
+                        HC.GetPrintHeader(IR, "qnty", "double", "n,12,3:##,##,##,##0.000", "Balance Order Qnty");                        
                     }
                     else
                     {
@@ -315,6 +319,10 @@ namespace Improvar.Controllers
                                         IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].ToString() + (tbl.Rows[i]["cancel"].retStr() == "Y" ? " (Cancel)" : "");
                                         IR.Rows[rNo]["prefno"] = tbl.Rows[i]["prefno"].ToString();
                                         IR.Rows[rNo]["PREFDT"] = tbl.Rows[i]["PREFDT"].retDateStr();
+                                        if (VE.Checkbox1 == true && VE.Checkbox7 == false)
+                                        {
+                                            IR.Rows[rNo]["pdesign"] = tbl.Rows[i]["pdesign"].ToString();
+                                        }
                                         if (!(VE.Checkbox1 == true && VE.Checkbox7 == false))
                                         {
                                             IR.Rows[rNo]["DELVDT"] = tbl.Rows[i]["DELVDT"].retDateStr();
@@ -488,6 +496,10 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].ToString();
                                 IR.Rows[rNo]["rate"] = tbl.Rows[i]["rate"].retDbl();
                                 IR.Rows[rNo]["itnm"] = tbl.Rows[i]["STYLENO"].ToString() + " " + tbl.Rows[i]["itnm"].ToString();
+                                if (VE.Checkbox1 == true && VE.Checkbox7 == false)
+                                {
+                                    IR.Rows[rNo]["pdesign"] = tbl.Rows[i]["pdesign"].ToString();
+                                }
                                 if (showcolor == true) IR.Rows[rNo]["colrnm"] = tbl.Rows[i]["colrnm"];
 
                                 string chk1 = tbl.Rows[i]["autono"].ToString();
