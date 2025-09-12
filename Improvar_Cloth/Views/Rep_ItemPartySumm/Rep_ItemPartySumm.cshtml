@@ -2,7 +2,7 @@
 @{
     ViewBag.Title = "Party & Design Summary";
     Layout = "~/Views/Shared/_ReportLayout.cshtml";
-    string PageControllerName = "Rep_PartyItemSumm";
+    string PageControllerName = "Rep_ItemPartySumm";
 }
 <script src="~/Scripts/jquery.min.js"></script>
 <link rel="stylesheet" href="~/Content/jquery.stickytable.css">
@@ -573,21 +573,21 @@
 </script>
 <script>
     function btn_submit() {
-        debugger;
         if (!emptyFieldCheck("Please Select / Enter Party Code", "SLCD")) { return false; }
-        var party = $("#SLCD").val(), frmdt = $("#FDT").val(), todt = $("#TDT").val(), group = $("#ITGRPCDvalue").val(), loc = $("#loccdvalue").val(), sp = $('[id="SALPUR"]:checked').val();
+
+        var party = $("#SLCD").val();
         var partynm = $("#SLNM").val();
-        var chkbx = "";
-        var CHECK = document.getElementById("CHECK").checked;
-        if (CHECK == true) {
-            chkbx = "Y";
-        }
+        //var chkbx = "";
+        //var CHECK = document.getElementById("CHECK").checked;
+        //if (CHECK == true) {
+        //    chkbx = "Y";
+        //}
         $.ajax({
             type: 'get',
             url: $("#urlbtnsubmit").val(),
             beforesend: $("#WaitingMode").show(),
             data: {
-                slcd: party, fdt: frmdt, tdt: todt, check: chkbx, itgrpcd: group, slnm: partynm, location: loc, salpur: sp
+                slcd: party, slnm: partynm
             },
             success: function (result) {
                 result = result;
@@ -605,9 +605,9 @@
 
     function GetItemDetails() {
         debugger;
-        var party = $("#SLCD2").val(), frmdt = $("#FDT2").val(), todt = $("#TDT2").val(), group = $("#ITGRPCD2").val(), loc = $("#LOCATION2").val(), salpur = $("#SALPUR2").val();
+        var party = $("#SLCD2").val(), frmdt = $("#FDT2").val(), todt = $("#TDT2").val(), group = $("#ITGRPCD2").val();
         var CHECK = $("#ONLYSALES2").val();
-        var item = "", itemnm = "";
+        var item = "",itemnm="";
         var GridRow = $("#available_GRP > tbody > tr").length;
         if (GridRow != 0) {
             for (var i = 0; i <= GridRow - 1; i++) {
@@ -633,7 +633,7 @@
                 url: "@Url.Action("GetItemData", PageControllerName)",
                 beforesend: $("#WaitingMode").show(),
                 data: {
-                    slcd: party, fdt: frmdt, tdt: todt, check: CHECK, itgrpcd: group, itcd: item, itnm: itemnm, LOCATION: loc, SALPUR: salpur
+                    slcd: party, fdt: frmdt, tdt: todt, check: CHECK, itgrpcd: group, itcd: item, itnm: itemnm
                 },
                 success: function (result) {
                     $("#WaitingMode").hide();
@@ -1499,33 +1499,33 @@
 
 </script>
 <script>
-    let sortDirection = {};
+let sortDirection = {};
 
-    function sortable(colIndex) {
-        const table = document.getElementById("available_GRP");
-        const tbody = table.tBodies[0];
-        const rows = Array.from(tbody.querySelectorAll("tr"));
+function sortable(colIndex) {
+  const table = document.getElementById("available_GRP");
+  const tbody = table.tBodies[0];
+  const rows = Array.from(tbody.querySelectorAll("tr"));
 
-        sortDirection[colIndex] = !sortDirection[colIndex];
-        const asc = sortDirection[colIndex];
+  sortDirection[colIndex] = !sortDirection[colIndex];
+  const asc = sortDirection[colIndex];
 
-        rows.sort((a, b) => {
-            let aInput = a.cells[colIndex].querySelector("input");
-            let bInput = b.cells[colIndex].querySelector("input");
-            let aVal = aInput ? aInput.value.trim() : a.cells[colIndex].innerText.trim();
-            let bVal = bInput ? bInput.value.trim() : b.cells[colIndex].innerText.trim();
+  rows.sort((a, b) => {
+    let aInput = a.cells[colIndex].querySelector("input");
+    let bInput = b.cells[colIndex].querySelector("input");
+    let aVal = aInput ? aInput.value.trim() : a.cells[colIndex].innerText.trim();
+    let bVal = bInput ? bInput.value.trim() : b.cells[colIndex].innerText.trim();
 
-            if (!isNaN(aVal) && !isNaN(bVal)) {
-                return asc ? aVal - bVal : bVal - aVal;
-            }
-            return asc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-        });
-
-        rows.forEach(row => tbody.appendChild(row));
-
-        table.querySelectorAll("th").forEach(th => th.classList.remove("sort-asc", "sort-desc"));
-        table.querySelectorAll("th")[colIndex].classList.add(asc ? "sort-asc" : "sort-desc");
+    if (!isNaN(aVal) && !isNaN(bVal)) {
+      return asc ? aVal - bVal : bVal - aVal;
     }
+    return asc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+  });
+
+  rows.forEach(row => tbody.appendChild(row));
+
+  table.querySelectorAll("th").forEach(th => th.classList.remove("sort-asc", "sort-desc"));
+  table.querySelectorAll("th")[colIndex].classList.add(asc ? "sort-asc" : "sort-desc");
+}
 </script>
 @using (Html.BeginForm())
 {
@@ -1546,7 +1546,7 @@
         if (Model.SLCD.retStr() == "")
         {
             <div id="outer">
-                <div id="inner" style="height:330px;width:602px;">
+                <div id="inner" style="height:158px;width:450px;">
                     @*<div class="row">
                             <div class="tabtitle">
                                 Select B/L Main Group
@@ -1554,38 +1554,33 @@
                         </div>*@
                     <input type="hidden" id="urlbtnsubmit" name="urlbtnsubmit" value="@Url.Action("BtnSubmit", PageControllerName)" />
                     <div class="row">
-                        <div style="padding:14px 0px;background-color:#ffffff;margin-top:25px;height:230px;overflow-y:auto">
+                        <div style="padding:14px 0px;background-color:#ffffff;margin-top:25px;height:60px;overflow-y:auto">
 
                             <div class="row">
-                                <div class="col-lg-2">
+                                <div class="col-md-9">
                                     <div class="editor-label" style="margin-top: 6px;">
-                                        @Html.Label("", "Party Code")
+                                        @Html.Label("", "Design Number")
                                         <b style="color:Red;">*</b>
                                     </div>
                                 </div>
                                 <div class="col-lg-3">
                                     <div class="editor-field">
-                                        @*@Html.EditorFor(model => model.T_SORD.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeyup = "GetHelp_WithId('" + @Url.Action("GetPartyDetails", PageControllerName) + "','SLCD/PartyName','1/0','Party Details','SLCD','BRANDCD')", onblur = "SelectSubLedgerCode(this.value,SLCD,PartyName,'urlnamePARTY');", @placeholder = "Code", maxlength = 8 } })
-                                            <img src="~/Image/search.png" id="PARTY_HELP" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp_WithId('@Url.Action("GetPartyDetails", PageControllerName )','SLCD/PartyName','1/0','Party Details','SLCD','BRANDCD')" />*@
+                                        
                                         @Html.EditorFor(model => model.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", @autocomplete = "off", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=SLAREA','partylinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=SLAREA','partylinkcd');", @placeholder = "Code", maxlength = 8 } })
                                         <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=SLAREA','partylinkcd')" />
                                     </div>
                                 </div>
-                                <div class="col-lg-7">
+                                <div class="col-lg-6">
                                     <div class="editor-field">
                                         @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", maxlength = 45, @title = "Only for View", @placeholder = "Party Name", @readonly = "readonly", tabindex = "-1" } })
-                                        @*@Html.HiddenFor(model => model.PARTYCD, new { @class = "form-control", id = "PARTYCD_H" })
-                                            @Html.HiddenFor(model => model.PARTYNM, new { @class = "form-control", id = "PARTYNM_H" })
-                                            @Html.HiddenFor(model => model.AREACD, new { @class = "form-control", id = "AREACD_H" })
-                                            @Html.HiddenFor(model => model.AREANM, new { @class = "form-control", id = "AREANM_H" })
-                                            @Html.HiddenFor(model => model.AGTCD, new { @class = "form-control", id = "AGTCD_H" })
-                                            @Html.HiddenFor(model => model.AGTNM, new { @class = "form-control", id = "AGTNM_H" })
-                                            @Html.HiddenFor(model => model.TRNSCD, new { @class = "form-control", id = "TRNSCD_H" })
-                                            @Html.HiddenFor(model => model.TRNSNM, new { @class = "form-control", id = "TRNSNM_H" })*@
+                                       
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
+
+
+
+                            @*<div class="row">
                                 <div class="col-lg-2">
                                     <div class="editor-label" style="margin-top: 6px;">
                                         @Html.Label("", "From Date")
@@ -1611,25 +1606,12 @@
                             </div>
 
                             <div class="row">
-                                <div class="col-md-8">
-                                    <div class="editor-label" style="margin-top: 6px;">
-                                        @Html.Label("", "Debtors/Creditors")
-                                    </div>
-                                </div>
-                                <div class="col-lg-9" style="margin-top:6px;width:auto;border: groove;">
-                                    <label class="radio-inline">
-                                        @Html.RadioButtonFor(model => model.SALPUR, "S", new { @checked = "checked", id = "SALPUR" })  @Html.Label("Debtors")
-                                    </label>
-                                    <label class="radio-inline">
-                                        @Html.RadioButtonFor(model => model.SALPUR, "P", new { id = "SALPUR" })  @Html.Label("Creditors")
-                                    </label>
-                                </div>
-                                <div class="col-lg-2" style="width:auto;">
+                                <div class="col-lg-2">
                                     <div class="editor-label" style="margin-top:6px">
-                                        @Html.Label("", "Is Only Sales/Purchase")
+                                        @Html.Label("", "Is Only Sales")
                                     </div>
                                 </div>
-                                <div class="col-md-6" style="margin-top:6px;width:auto;">
+                                <div class="col-md-6" style="margin-top:6px">
                                     @Html.CheckBoxFor(model => model.CHECK, new { id = "CHECK" })
                                 </div>
                             </div>
@@ -1643,38 +1625,12 @@
                                 <div class="col-md-6">
                                     @(new HtmlString(Model.ITGRPCD))
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-2">
-                                    <div class="editor-label" style="margin-top:6px">
-                                        @Html.Label("", "Location")
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    @(new HtmlString(Model.LOCATION))
-                                </div>
-                            </div>
-                            @*<table cellpadding="2px" cellspacing="2px" style="color:black;width:100%">
-                                    @for (int i = 0; i <= Model.MGRPLIST.Count - 1; i++)
-                                    {
-                                        <tr style="border-bottom:1pt solid #dbd7d7;height:0px">
-                                            <td style="padding-left:10px">
-                                                <label class="containerCK" title="@Model.MGRPLIST[i].MGRPNM.toProper()">
-                                                    @Model.MGRPLIST[i].MGRPNM.toProper()
-                                                    <input type="radio" checked="checked" name="radio" value="@Model.MGRPLIST[i].MGRPCD">
-                                                    <span class="checkmark"></span>
-                                                </label>
-                                                @Html.HiddenFor(a => a.MGRPLIST[i].MGRPCD)
-                                                @Html.HiddenFor(a => a.MGRPLIST[i].MGRPNM)
-                                                @Html.HiddenFor(a => a.MGRPLIST[i].MGRPTYPE)
-                                            </td>
-                                        </tr>
-                                    }
-                                </table>*@
+                            </div>*@
+                          
                         </div>
                     </div>
                     <div style="background:linear-gradient(#eeeeee,#dbd7d7);height:42px;width:100%; position:absolute;bottom:0;left:0; border-bottom-left-radius:10px;border-bottom-right-radius:10px;text-align:center">
-                        <button type="button" class="btn btn-danger" style="margin-top:4px" onclick="btn_submit();">Submit</button>
+                        <button type="button" class="btn btn-danger" style="margin-top:4px" onclick="btn_submit();">Cloth Show DesignDesign Number</button>
                     </div>
                 </div>
             </div>
@@ -1682,84 +1638,7 @@
         else
         {
 
-            @*<menu class="menu">
-                    <li class="menu-item">
-                        <button type="button" class="menu-btn" onclick="createMain();"> <i class="fa fa-plus-square"></i> <span class="menu-text">Create Main Group</span> </button>
-                    </li>
-                    @if (Model.FOUNDMGRP)
-                    {
-                        <li class="menu-item">
-                            <button type="button" class="menu-btn" onclick="createIndex();"> <i class="fa fa-sort-numeric-asc"></i> <span class="menu-text">Indexing</span> </button>
-                        </li>
-                        <li class="menu-item">
-                            <button type="button" class="menu-btn" onclick="Texpand();"> <i class="fa fa-expand"></i><span class="menu-text">Tree Expand</span> </button>
-                        </li>
-                        <li class="menu-item">
-                            <button type="button" class="menu-btn" onclick="TCollaps();"> <i class="fa fa-compress"></i><span class="menu-text">Tree Collapse</span> </button>
-                        </li>
-                    }
-                    else
-                    {
-                        <li class="menu-item disabled">
-                            <button type="button" class="menu-btn"> <i class="fa fa-sort-numeric-asc"></i> <span class="menu-text">Indexing</span> </button>
-                        </li>
-                        <li class="menu-item disabled">
-                            <button type="button" class="menu-btn"> <i class="fa fa-expand"></i><span class="menu-text">Tree Expand</span> </button>
-                        </li>
-                        <li class="menu-item disabled">
-                            <button type="button" class="menu-btn"> <i class="fa fa-compress"></i><span class="menu-text">Tree Collapse</span> </button>
-                        </li>
-                    }
-                </menu>
-                <br />
-                <div style="margin-top:-30px;">
-                    <menu class="menu1">
-                        <li class="menu-item">
-                            <button type="button" class="menu-btn" onclick="createSub();"> <i class="fa fa-plus-square"></i> <span class="menu-text">Create Sub Group</span> </button>
-                        </li>
-                        <li class="menu-item">
-                            <button type="button" class="menu-btn" onclick="addaccount();"> <i class="fa fa-plus-square"></i> <span class="menu-text">Add Account Into Group</span> </button>
-                        </li>
-                        <li class="menu-item">
-                            <button type="button" class="menu-btn" onclick="deleteaccount();"> <i class="fa fa-minus-square"></i> <span class="menu-text">Remove Account From Group</span> </button>
-                        </li>
-                        <li class="menu-separator"></li>
-                        <li class="menu-item">
-                            <button type="button" class="menu-btn" onclick="DeleteGRP();"> <i class="fa fa-minus-square"></i> <span class="menu-text">Remove Group</span> </button>
-                        </li>
-                        <li class="menu-item">
-                            <button type="button" class="menu-btn" onclick="Rename();"> <i class="fa fa-edit"></i> <span class="menu-text">Edit Group</span> </button>
-                        </li>
-                    </menu>
-                    <menu class="menu2">
-                        <li class="menu-item">
-                            <button type="button" class="menu-btn" onclick="createSub();"> <i class="fa fa-plus-square"></i> <span class="menu-text">Create Sub Group</span> </button>
-                        </li>
-                        <li class="menu-item">
-                            <button type="button" class="menu-btn" onclick="DeleteGRP();"> <i class="fa fa-minus-square"></i> <span class="menu-text">Remove Group</span> </button>
-                        </li>
-                        <li class="menu-item">
-                            <button type="button" class="menu-btn" onclick="Rename();"> <i class="fa fa-edit"></i> <span class="menu-text">Edit Group</span> </button>
-                        </li>
-                    </menu>*@
-            @*<div style="width:33%;display:inline-block;float:left">
-                    <input type="text" value="" class="form-control" autocomplete="off" id="search" placeholder="Search From Tree" style="width:260px; margin-left:10px" />
-                    <span class="fa fa-search" style="margin-top:-18px;margin-left:251px;float:left"></span>
-                    <div id="MTREE" class="noselect" style="height:66vh;margin-top:3px;padding-left:10px;border-top-left-radius:15px;border-bottom-left-radius:15px;border-top:2px solid #86abd8;border-bottom:2px solid #86abd8;border-left:2px solid #86abd8;border-right:1px solid #86abd8;background-color:#f7fab3">
-                        <div class="tabtitle1">
-                            Hierarchical Grouping
-                        </div>
-                        <div id="ConMenu" style="display:inline-block;margin-top:8px">
-                            <span style="cursor:pointer;font-weight:bold;font-size:16px">@Model.MGRPNM.toProper()</span>
-                            @Html.HiddenFor(a => a.MGRPCD)
-
-                            <script>Rmenu("ConMenu", "", 1);</script>
-                        </div>
-                        <div id="treebody" style="font-size:14px;font-weight:bold;overflow-y:auto;height:350px;width:100%">
-                            @Html.Partial("_tree_BsgroupCreate")
-                        </div>
-                    </div>
-                </div>*@
+           
             <div class="row">
                 <div style="width:15%;display:inline-block;float:left;margin-top:5px">
                     <div class="col-lg-4">
@@ -1786,14 +1665,6 @@
                             @Html.HiddenFor(model => model.SLCD2, new { id = "SLCD2" })
                             @Html.HiddenFor(model => model.ITGRPCD2, new { id = "ITGRPCD2" })
                             @Html.HiddenFor(model => model.ONLYSALES2, new { id = "ONLYSALES2" })
-                            @Html.HiddenFor(model => model.LOCATION2, new { id = "LOCATION2" })
-                            @Html.HiddenFor(model => model.SALPUR2, new { id = "SALPUR2" })
-
-
-
-
-
-
 
 
                         </div>
@@ -1812,30 +1683,20 @@
             </div>
 
             <div style="width:38%;display:inline-block;float:left">
-                <input type="text" value="" class="form-control" autocomplete="off" id="searchAV" placeholder="Search From Available Item Details" style="width:260px; margin-left:10px" onkeyup="filterTable(event, 'available_GRP');" />
-                <span class="fa fa-search" style="margin-top:-18px;margin-left:251px;float:left"></span>
-
-                @*<input type="text" value="" class="form-control" autocomplete="off" id="searchAV" placeholder="Search From Available Accounts" style="width:260px; margin-left:10px" onkeyup="filterTable(event, 'available_GRP');" />*@
-                @*<span class="fa fa-search" style="margin-top:-18px;margin-left:251px;float:left"></span>*@
+               
                 <div style="height:66vh;margin-top:10px;border-top-right-radius:15px;border-top-left-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;border-top:2px solid #86abd8;border-bottom:2px solid #86abd8;border-right:2px solid #86abd8;border-left:2px solid #86abd8;background-color:#d9ebf1">
                     <div class="tabtitle">
                         Item Details
                     </div>
                     <div style="margin-top: 7px;margin-left: 20px;font-size: 14px;font-weight: bold;">
-                        @*@if (Model.AvailableGroup != null)
-                            {
-                                <span>Number of Available Accounts : @Model.AvailableGroup.Count</span>
-                            }
-                            else
-                            {
-                                <span>Number of Available Accounts : 0</span>
-                            }*@
+                      
                         <span>Party : @ViewBag.SLNM</span>
                     </div>
-                    @*@if (Model.AvailableGroup != null)
-                        {*@
+                    
                     <div class="sticky-table sticky-ltr-cells" style="margin-left:4px;margin-right:4px;margin-top:7px;border-radius:10px;transform: translate(0%, 0%);z-index:1100">
                         <div style="height:58vh;overflow-y:auto;">
+                            <input type="text" value="" class="form-control" autocomplete="off" id="searchAV" placeholder="Search From Available Accounts" style="width:260px; margin-left:10px" onkeyup="filterTable(event, 'available_GRP');" />
+                            <span class="fa fa-search" style="margin-top:-18px;margin-left:251px;float:left"></span>
                             <table id="available_GRP" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:1143px;" onkeydown="checkKey(event,'available_GRP','Checked_');">
                                 <thead>
                                     <tr class="sticky-header" style="height:30px;">
@@ -1843,12 +1704,15 @@
                                             All
                                             <input type="checkbox" name="Test" onclick="SetAllCheckBoxesFilterParty(this, 'available_GRP', 'Checked_')" />
                                         </th>
-                                        <th class="" onclick="sortable(1)">Design</th>
-                                        <th class="" onclick="sortable(2)" style="width:30px;">Img</th>
-                                        <th class="" onclick="sortable(3)" style="width:40px;">UOM</th>
-                                        <th class="" onclick="sortable(4)" style="width:80px;">Sal.Qnty</th>
-                                        <th class="" onclick="sortable(5)" style="width:80px;">Net.Qnty</th>
-                                        <th class="" onclick="sortable(6)" style="width:100px;">Net.Amt</th>
+                                        <th class="" onclick="sortable(1)">Sale Rate</th>
+                                        <th class="" onclick="sortable(2)" style="width:30px;">Making Rate</th>
+                                       
+                                        <th class="" onclick="sortable(3)" style="width:80px;">Design Image</th>
+                                       
+                                        <th class="" onclick="sortable(4)" style="width:80px;">Design No</th>
+                                        <th class="" onclick="sortable(5)" style="width:100px;">WP Rateth>
+                                        <th class="" onclick="sortable(6)" style="width:100px;">RP Rate</th>
+                                       
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1868,20 +1732,21 @@
                                                     <input type="button" onclick="FillImageModal('BarImages_@i')" data-toggle="modal" data-target="#ViewImageModal" id="BarImagesCount_@i" name="billdet[@i].BarImagesCount" class="btn atextBoxFor text-info" style="padding:0px" value="@Model.billdet[i].BarImagesCount" />
                                                     @Html.HiddenFor(model => model.billdet[i].BarImages, new { id = "BarImages_" + i })
                                                 </td>
-                                                <td>
-                                                    @Html.EditorFor(model => model.billdet[i].uom, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "uom_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
-                                                </td>
+                                              
                                                 <td>
                                                     @Html.EditorFor(model => model.billdet[i].sqnty, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "sqnty_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
                                                 </td>
-
+                                               
                                                 <td>
                                                     @Html.EditorFor(model => model.billdet[i].netqnty, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "netqnty_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
                                                 </td>
                                                 <td>
                                                     @Html.EditorFor(model => model.billdet[i].netamt, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "netamt_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
                                                 </td>
-
+                                                <td>
+                                                    @Html.EditorFor(model => model.billdet[i].netamt, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "netamt_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
+                                                </td>
+                                                
                                             </tr>
                                         }
                                     }
@@ -1891,19 +1756,18 @@
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                        <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-
+                                        
                                         <td style="text-align:right;border:groove;">
                                             @Html.EditorFor(model => Model.T_sqnty, new { htmlattributes = new { id = "T_sqnty", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
-
+                                       
                                         <td style="text-align:right;border:groove;">
                                             @Html.EditorFor(model => Model.T_netqnty, new { htmlattributes = new { id = "T_netqnty", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
                                         <td style="text-align:right;border:groove;">
                                             @Html.EditorFor(model => Model.T_netamt, new { htmlattributes = new { id = "T_netamt", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
-
+                                        <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -1912,12 +1776,7 @@
                 </div>
             </div>
             <div style="width:62%;display:inline-block;float:left">
-                <input type="text" value="" class="form-control" autocomplete="off" id="searchAV" placeholder="Search From Available Bill Details" style="width:260px; margin-left:10px" onkeyup="filterTable(event, 'exist_GRP');" />
-                <span class="fa fa-search" style="margin-top:-18px;margin-left:251px;float:left"></span>
-
-                @*<input type="text" value="" class="form-control" autocomplete="off" id="searchEX" placeholder="Search From Tag Accounts" style="width:260px; margin-left:10px" onkeyup="filterTable(event, 'exist_GRP');" />*@
-                @*<span class="fa fa-search" style="margin-top:-18px;margin-left:251px;float:left"></span>*@
-                @*<div style="height:66vh;margin-top:28px;border-top:2px solid #86abd8;border-bottom:2px solid #86abd8;border-right:1px solid #86abd8;background-color:#d9ebf1">*@
+               
                 <div style="height:66vh;margin-top:10px;border-top-right-radius:15px;border-top-left-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;border-top:2px solid #86abd8;border-bottom:2px solid #86abd8;border-right:2px solid #86abd8;border-left:2px solid #86abd8;background-color:#d9ebf1">
                     <div class="tabtitle">
                         Bill Details
@@ -1982,70 +1841,7 @@
     {
         @ViewBag.ErrorMessage
     }
-    @*<div id="outerT">
-            <div id="innerT" style="height:350px;width:500px;padding-left:5px;">
-                <div class="row">
-                    <div class="tabtitle">
-                        Indexing<span class="fa fa-times-circle" title="Close" style="float:right;font-weight:bold;color:black;font-size:20px;margin-top:2px;margin-right:5px" onclick="MGClose3();"></span>
-                    </div>
-                </div>
-                <div class="row" style="overflow-y:auto;height:250px">
-                    @if (Model.MLIST != null)
-                    {
-                        <table>
-                            @for (int i = 0; i <= Model.MLIST.Count - 1; i++)
-                        {
-                                <tr>
-                                    @if (Model.MLIST[i].Space.Length <= 0)
-                                    {
-                                        <td>
-                                            @Html.EditorFor(a => a.MLIST[i].GRPSLNO, new { htmlAttributes = new { style = "width:30px;font-weight:bold", maxlength = 3, onkeypress = "return numericOnly(this,-1);" } })
-                                        </td>
-                                        <td>
-                                            &nbsp;@(new HtmlString(Model.MLIST[i].Space))
-                                            <span style="margin-top:6px;font-weight:bold">@Model.MLIST[i].GRPNM</span>
-                                            @Html.HiddenFor(a => a.MLIST[i].GCD)
-                                            @Html.HiddenFor(a => a.MLIST[i].GRPCDFULL)
-                                            @Html.HiddenFor(a => a.MLIST[i].PARENTCD)
-                                            @Html.HiddenFor(a => a.MLIST[i].GRPNM)
-                                            @Html.HiddenFor(a => a.MLIST[i].ROOTCD)
-                                        </td>
-                                    }
-                                    else
-                                    {
-                                        <td>
-                                            @Html.EditorFor(a => a.MLIST[i].GRPSLNO, new { htmlAttributes = new { style = "width:30px;", maxlength = 3, onkeypress = "return numericOnly(this,-1);" } })
-                                        </td>
-                                        <td>
-                                            &nbsp;@(new HtmlString(Model.MLIST[i].Space))
-                                            @Html.Label("", Model.MLIST[i].GRPNM, new { htmlAttributes = new { style = "margin-top:6px;" } })
-                                            @Html.HiddenFor(a => a.MLIST[i].GCD)
-                                            @Html.HiddenFor(a => a.MLIST[i].GRPCDFULL)
-                                            @Html.HiddenFor(a => a.MLIST[i].PARENTCD)
-                                            @Html.HiddenFor(a => a.MLIST[i].GRPNM)
-                                            @Html.HiddenFor(a => a.MLIST[i].ROOTCD)
-                                        </td>
-                                    }
-
-                                </tr>
-                            }
-                        </table>
-                    }
-
-                </div>
-                <br />
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", " ")
-                        </div>
-                    </div>
-                    <div class="col-md-9">
-                        <button type="button" class="btn btn-danger" style="width:104px" onclick="Indexing();" title="Save">Save</button>
-                    </div>
-                </div>
-            </div>
-        </div>*@
+   
 }
 
 <div id="outerP">

@@ -27,6 +27,7 @@ namespace Improvar.ViewModels
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public string TDT { get; set; }
         public string ITGRPCD { get; set; }
+        public string LOCATION { get; set; }
         public bool CHECK { get; set; }
         public List<DropDown_list_ITGRP> DropDown_list_ITGRP { get; set; }
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
@@ -51,16 +52,20 @@ namespace Improvar.ViewModels
         public List<ItmDet> ItmDet { get; set; }
 
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
-        public double T_sqntyi { get; set; }
+        public double T_qnty { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double T_samti { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
-        public double T_rqntyi { get; set; }
+        public double T_amt { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double T_ramti { get; set; }
         public string SLCD2 { get; set; }
         public string ITGRPCD2 { get; set; }
         public string ONLYSALES2 { get; set; }
+        public List<DropDown_list> DropDown_list { get; set; }
+        public string LOCATION2 { get; set; }
+        public string SALPUR { get; set; }
+        public string SALPUR2 { get; set; }
 
     }
 }
@@ -91,6 +96,7 @@ public class billdet
     [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
     public double netrate { get; set; }
     public string BarImages { get; set; }
+    public string uom { get; set; }
     public string BarImagesCount { get; set; }
 }
 
@@ -98,15 +104,16 @@ public class ItmDet
 {
     public string refdt { get; set; }
     public string refno { get; set; }
+    public string Design { get; set; }
     public string slnm { get; set; }
     public string docnm { get; set; }
     public string colrnm { get; set; }
     [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
-    public double sqnty { get; set; }
+    public double qnty { get; set; }
     [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
-    public double samt { get; set; }
+    public double rate { get; set; }
     [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
-    public double rqnty { get; set; }
+    public double amt { get; set; }
     [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
     public double ramt { get; set; }
     public string itrem { get; set; }

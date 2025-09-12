@@ -1998,7 +1998,7 @@ namespace Improvar
 
             sql += "select a.autono,a.slno, n.slcd, j.slnm, j.district, j.slarea, o.doccd, o.docno, to_char(o.docdt,'dd/mm/yyyy') docdt,o.docdt D_docdt, nvl(m.stktype,'') stktype, nvl(m.freestk,'') freestk, nvl(m.rate,0) rate, ";
             sql += "n.agslcd, n.slmslcd, k.slnm agslnm, l.slnm slmslnm, ";
-            sql += "d.styleno, m.itcd, m.sizecd, m.colrcd, d.itnm, m.delvdt, m.itrem, ";
+            sql += "d.styleno, m.itcd, m.sizecd, m.colrcd, d.itnm, m.delvdt,nvl(m.delvdt,o.docdt) dlvdocdt, m.itrem, ";
             sql += "d.uomcd, g.uomnm, g.decimals, d.itgrpcd, h.itgrpnm,h.bargentype, d.brandcd, i.brandnm, ";
             sql += "e.sizenm, e.print_seq, f.colrnm, nvl(a.qnty,0) ordqnty, ";
             sql += "nvl(a.qnty,0) - nvl(b.qnty,0) -nvl(c.qnty,0) balqnty,m.pdesign,m.partcd,p.partnm ,p.prtbarcode,f.clrbarcode,e.szbarcode,nvl(d.hsncode,h.hsncode)hsncode,nvl(d.negstock,h.negstock)negstock,n.PREFNO,n.PREFDT,nvl(o.cancel, 'N')cancel from ";

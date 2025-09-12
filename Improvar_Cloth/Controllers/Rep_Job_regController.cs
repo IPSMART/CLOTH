@@ -170,11 +170,8 @@ namespace Improvar.Controllers
                         if (showValue == true) HC.GetPrintHeader(IR, "issamt", "double", "n,15,2", "Iss Amt.");
                         HC.GetPrintHeader(IR, "itremarks", "string", "c,15", "itremark");
 
-                        string rechdr = (ReportType == "SUMMARY" ? "Last " : "");
-                        if(VE.Checkbox2 == true)
-                        {
-                            HC.GetPrintHeader(IR, "ORDDOCNO", "string", "c,13", "Order Number");
-                        }
+                        string rechdr = (ReportType == "SUMMARY" ? "Last " : "");                        
+                        HC.GetPrintHeader(IR, "ORDDOCNO", "string", "c,13", "Order Number");                        
                         HC.GetPrintHeader(IR, "recdocdt", "string", "c,10", rechdr + "Rec Date");
                         HC.GetPrintHeader(IR, "recdocno", "string", "c,13", rechdr + "Rec No");
 
@@ -218,10 +215,8 @@ namespace Improvar.Controllers
                                         {
                                             IR.Rows[rNo]["Slnm"] = "" + tbl.Rows[i]["slnm"].retStr() + "[" + tbl.Rows[i]["slcd"].retStr() + "]";
                                         }
-                                        if (VE.Checkbox2 == true)
-                                        {
                                             IR.Rows[rNo]["ORDDOCNO"] = tbl.Rows[i]["ORDDOCNO"].retStr();
-                                        }
+                                        
                                             if (frstreco == true || RepFormat == "STANDARD")
                                         {
                                             IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].retDateStr();

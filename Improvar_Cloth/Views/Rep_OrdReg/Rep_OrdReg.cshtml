@@ -41,7 +41,7 @@
     <div class="form-horizontal">
         @Html.HiddenFor(s => s.DefaultAction)
         <div class="row">
-            <div class="col-lg-9">
+            <div class="col-lg-10">
                 <div class="row" style="margin-top: 8px;">
                     <div class="col-md-6">
                         <div class="editor-label" style="margin-top: 6px;">
@@ -199,13 +199,28 @@
 
                     </div>
                 </div>
+                <div class="row" style="margin-top: 8px;">
+                    <div class="col-md-6">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Sorting On")
+                        </div>
+                    </div>
+                    <div class="col-md-8" style="border: 2px groove;width:auto;">
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(g => g.TEXTBOX5, "Docdt", new { @checked = "checked" })  @Html.Label("Document Date Wise")
+                        </label>
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(g => g.TEXTBOX5, "Dlvdt")@Html.Label("Delivery Date Wise")
+                        </label>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-md-6">
                         <input type="submit" formtarget="_blank" name="Show_rep" value="Show Report" title="Show report in a new tab" class="btn btn-default" />
                     </div>
                 </div>
             </div>
-            <div class=" col-lg-3">
+            <div class="col-lg-2">
                 <table style="border:1px solid;margin-top: 8px;">
                     <tr>
                         <td style="border:1px groove;">Only Balance Order</td>

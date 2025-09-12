@@ -90,7 +90,7 @@ namespace Improvar.Controllers
                 string slcd = "", agslcd = "", slmslcd = "", brandcd = "", fdt, tdt = "", colrcd = "", batchno = "", item = "", mtrlsupplby = "", seldoccd = "",loccd = "", pghdr2 = "";
                 fdt = VE.FDT;
                 tdt = VE.TDT;
-                string ReportType = VE.TEXTBOX3;
+                string ReportType = VE.TEXTBOX3, ShowReport = VE.TEXTBOX5;
                 if (FC.AllKeys.Contains("agslcdvalue"))
                 {
                     agslcd = FC["agslcdvalue"].ToString().retSqlformat();
@@ -139,7 +139,14 @@ namespace Improvar.Controllers
                 }
                 string sort = "agslnm, agslcd ";
                 if (ReportType == "Details") sort += ",slcd,slnm";
-                sort += ",D_docdt,docno,STYLENO,itnm,itcd,rate";
+                if(ShowReport == "Dlvdt")
+                {
+                    sort += ",dlvdocdt,docno,STYLENO,itnm,itcd,rate";
+                }
+                else
+                {
+                    sort += ",D_docdt,docno,STYLENO,itnm,itcd,rate";
+                }                
                 if (showcolor == true) sort += ",colrcd";
                 if (ReportType == "Supper Summary") sort = "agslnm, agslcd,slnm,slcd";               
 
