@@ -1,6 +1,6 @@
 ﻿@model Improvar.ViewModels.PartyitemSummReport
 @{
-    ViewBag.Title = "Design & Party Summary";
+    ViewBag.Title = "Design Summary";
     Layout = "~/Views/Shared/_ReportLayout.cshtml";
     string PageControllerName = "Rep_ItemPartySumm";
 }
@@ -436,259 +436,6 @@
         transition-delay: 300ms;
     }
 </style>
-<script>
-    var start = null;
-    var totalRow = null;
-    //$(document).ready(function () {
-    //    resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('available_GRP'));
-    //    $("td").on("mouseover", function (e)
-    //    {
-    //        var titlee = $(this).find("input").val();
-    //        $(this).attr('title', titlee);
-    //    });
-    //});
-
-    function dotheneedful(sibling) { //for row selection
-        if (sibling != null) {
-            start.focus();
-            start.style.backgroundColor = '';
-            start.style.color = '';
-            sibling.focus();
-            sibling.style.backgroundColor = '#86d2f7';
-            sibling.style.color = 'white';
-            start = sibling;
-        }
-    }
-    function dotheneedfulDown(sibling, index, CheckBoxNM) {
-        if (sibling != null) {
-            sibling.focus();
-            sibling.style.backgroundColor = '#86d2f7';
-            sibling.style.color = 'white';
-            start = sibling;
-            document.getElementById(CheckBoxNM + index).checked = true;
-        }
-    }
-    function dotheneedfulUp(sibling, index, CheckBoxNM) {
-        if (sibling != null) {
-            start.focus();
-            start.style.backgroundColor = '';
-            start.style.color = '';
-            start = sibling;
-            document.getElementById(CheckBoxNM + index).checked = false;
-        }
-    }
-    function checkKey(e, tableNM, checkboxNM) {
-        e = e || window.event;
-        var keyCode = e.keyCode || e.which,
-      arrow = { left: 37, up: 38, right: 39, down: 40 };
-        if (e.ctrlKey) {
-            switch (keyCode) {
-                case arrow.up:
-                    var idx = start.rowIndex;
-                    idx -= 1;
-                    if (idx >= 1) {
-                        var sibling = document.getElementById(tableNM + idx);
-                        dotheneedfulUp(sibling, idx, checkboxNM);
-                    }
-                    else {
-                        idx += 1;
-                        var sibling = document.getElementById(tableNM + idx);
-                        dotheneedfulUp(sibling, idx - 1, checkboxNM);
-                    }
-                    break;
-                case arrow.down:
-                    var idx = start.rowIndex;
-                    idx += 1;
-                    if (idx <= totalRow) {
-                        var sibling = document.getElementById(tableNM + idx);
-                        dotheneedfulDown(sibling, idx - 1, checkboxNM);
-                    }
-                    else {
-                        idx -= 1;
-                    }
-                    break;
-            }
-        }
-    }
-    function Rmenu(id, val, flg, liid) {
-        var menu = null;
-        if (flg == 1) {
-            menu = document.querySelector('.menu');
-        }
-        else if (flg == 2) {
-            menu = document.querySelector('.menu1');
-        }
-        else {
-            menu = document.querySelector('.menu2');
-        }
-        function showMenu(x, y) {
-            var position = $('#MTREE').position();
-            var sh = position.top + 395;
-            var ch = menu.clientHeight;
-            menu.style.left = x + 'px';
-            if (y + ch > sh) {
-                menu.style.top = (y - ch) + 'px';
-            }
-            else {
-                menu.style.top = y + 'px';
-            }
-            menu.classList.add('show-menu');
-        }
-        function hideMenu() {
-            menu.classList.remove('show-menu');
-            menu.style.left = '-1000px';
-            menu.style.top = '-1000px';
-        }
-
-        function onContextMenu(e, val, liid) {
-            e.preventDefault();
-            showMenu(e.pageX, e.pageY);
-            document.addEventListener('click', onClick, false);
-            document.getElementById("ParameterVal").value = val;
-            document.getElementById("ParameterVal1").value = liid;
-        }
-
-        function onClick(e) {
-            hideMenu();
-            document.removeEventListener('click', onClick);
-        }
-
-        document.getElementById(id).addEventListener('contextmenu', function () { onContextMenu(event, val, liid) }, false);
-
-    }
-    function IndivedulaCheckBoxCheck(obj, index, tablename) {
-        totalRow = $("#" + tablename + " tbody tr").length;
-        if (obj.checked == true) {
-            start = document.getElementById(tablename + (index + 1));
-            //start.style.backgroundColor = '#86d2f7';
-            start.focus();
-        }
-        else {
-            start = document.getElementById(tablename + (index + 1));
-            start.style.backgroundColor = '';
-            start.focus();
-        }
-        GetItemDetails();
-    }
-</script>
-<script>
-    function btn_submit() {
-        debugger;
-        if (!emptyFieldCheck("Please Select / Enter Party Code", "ITCD")) { return false; }
-        var party = $("#ITCD").val(), frmdt = $("#FDT").val(), todt = $("#TDT").val(), group = $("#ITGRPCDvalue").val(), loc = $("#loccdvalue").val(), sp = $('[id="SALPUR"]:checked').val();
-        var partynm = $("#ITNM").val();
-        var chkbx = "";
-        var CHECK = document.getElementById("CHECK").checked;
-        if (CHECK == true) {
-            chkbx = "Y";
-        }
-        $.ajax({
-            type: 'get',
-            url: $("#urlbtnsubmit").val(),
-            beforesend: $("#WaitingMode").show(),
-            data: {
-                itcd: party, fdt: frmdt, tdt: todt, check: chkbx, itgrpcd: group, itnm: partynm, location: loc, salpur: sp
-            },
-            success: function (result) {
-                result = result;
-                $("#WaitingMode").hide();
-                window.location = result;
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                $('#helpDIV').html("");
-                msgError("Error: " + textStatus + "," + errorThrown);
-            }
-        });
-        return false;
-    }
-
-
-    function GetItemDetails() {
-        debugger;
-        if (!emptyFieldCheck("Please Select / Enter Party Code", "ITCD")) { return false; }
-        if (!emptyFieldCheck("Please Select / Enter Party Code", "SLCD")) { return false; }
-        var party = $("#SLCD").val(), frmdt = $("#FDT").val(), todt = $("#TDT").val(), group = $("#ITGRPCD").val(), loc = $("#LOCATION").val(), salpur = $("#SALPUR").val();
-        var CHECK = $("#ONLYSALES").val(), item = $("#ITCD").val(), itemnm = $("#ITNM").val();
-        //var item = "", itemnm = "";
-        //var GridRow = $("#exist_GRP > tbody > tr").length;
-        //if (GridRow != 0) {
-        //    for (var i = 0; i <= GridRow - 1; i++) {
-        //        var chaked = document.getElementById("CHECK").checked;
-        //        if (chaked == true) {
-        //            if (item != "") {
-        //                item += ",";
-        //                itemnm += ",";
-        //            }
-        //            item += "'" + $("#ITCD" + i).val() + "'";
-        //            itemnm += $("#ITNM" + i).val();
-        //        }
-        //    }
-        //}
-        //if (item == "") {
-        //    $("#ItemBody").html('');
-        //    $("#ItemFoot").html('');
-        //    $("#ItemHead").html('Item :');
-        //}
-        //else {
-        $.ajax({
-            type: 'get',
-            url: "@Url.Action("GetItemData", PageControllerName)",
-            beforesend: $("#WaitingMode").show(),
-            data: {
-                slcd: party, fdt: frmdt, tdt: todt, itgrpcd: group, check: CHECK, itcd: item, itnm: itemnm, LOCATION: loc, SALPUR: salpur
-            },
-            success: function (result) {
-                $("#WaitingMode").hide();
-                $("#partial_existing").html(result);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError("Error: " + textStatus + "," + errorThrown);
-            }
-        });
-        //}
-
-    }
-
-</script>
-<script>
-    function input(id, id1) {
-        var str = $("#tempHDD").val().split(String.fromCharCode(181));
-        $("#" + id.id).val(str[0]);
-        $("#" + id1.id).val(str[1].toString());
-    }
-    function SelectGLHDGRPCD(id, GLHDGRPCD, GLHDGRPNM) {
-        if (id == "") {
-            $("#GLHDGRPNM").val("");
-        }
-        else {
-            $.ajax({
-                type: 'GET',
-                url: $("#urlname").val(),
-                data: {
-                    val: id
-                },
-                success: function (result) {
-                    if (result == "0") {
-                        msgInfo("Invalid Code!");
-                        $("#GLHDGRPCD").val("");
-                        $("#GLHDGRPNM").val("");
-                        message_value = "GLHDGRPCD";
-                    }
-                    else {
-                        $("#tempHDD").val(result);
-                        input(GLHDGRPCD, GLHDGRPNM);
-                    }
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    $("#WaitingMode").hide();
-                    msgError("Error: " + textStatus + "," + errorThrown);
-                }
-            });
-        }
-    }
-</script>
 <style>
     /* ————————————————————–
                     Tree core styles
@@ -907,672 +654,10 @@
 </style>
 
 <script>
-    function createMain() {
-        $("#outerP").show();
-        document.getElementById("MGNM").focus();
-    }
-    function createSub() {
-        $("#outerS").show();
-        document.getElementById("SGNM").focus();
-    }
-    function createIndex() {
-        $("#outerT").show();
-    }
-    function Rename() {
-        debugger;
-        //Parent: $("#ParameterVal").val(),
-        var id = $("#ParameterVal").val();
-        $.ajax({
-            type: 'get',
-            url: "@Url.Action("GetGRPCDDTL", PageControllerName)",
-            beforesend: $("#WaitingMode").show(),
-            data: {
-                Parent: id,
-            },
-            success: function (result) {
-                $("#RENM").val(returncolvalue(result, "GRPNM"));
-                $("#SEGNMDTL").val(returncolvalue(result, "GRPNMDTL"));
-                $("#SEGBA").val(returncolvalue(result, "BUDGTAMT"));
-                $("#WaitingMode").hide();
-                //window.location = result;
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                $('#helpDIV').html("");
-                msgError("Error: " + textStatus + "," + errorThrown);
-            }
-        });
-
-        $("#outerR").show();
-        document.getElementById("RENM").focus();
-    }
-    function MGClose() {
-        $("#outerP").hide();
-        MGClear();
-    }
-    function MGClose1() {
-        $("#outerS").hide();
-        MGClear1();
-    }
-    function MGClose2() {
-        $("#outerR").hide();
-        MGClear2();
-    }
-    function MGClose3() {
-        $("#outerT").hide();
-    }
-    function MGClear() {
-        $("#MGNM").val("");
-        $("#MGBA").val("");
-        $("#GLHDGRPCD").val("");
-        $("#GLHDGRPNM").val("");
-        $("#MGNMDTL").val("");
-    }
-    function MGClear1() {
-        $("#SGNM").val("");
-        $("#SGBA").val("");
-        $("#SGNMDTL").val("");
-    }
-    function MGClear2() {
-        $("#RENM").val("");
-        $("#SEGBA").val("");
-        $("#SEGNMDTL").val("");
-    }
-    function MGCreate() {
-        var name = $("#MGNM").val();
-        var budgt = $("#MGBA").val();
-        var bscode = $("#GLHDGRPCD").val();
-        var details = $("#MGNMDTL").val();
-        var mpgrpcd = $("#MGRPCD").val();
-        if (name == "") {
-            msgInfo("Group Name Can't Be Empty !");
-            message_value = "MGNM";
-            return false;
-        }
-        if (bscode == "") {
-            msgInfo("Select B/S Group !");
-            message_value = "GLHDGRPCD";
-            return false;
-        }
-        $.ajax({
-            type: 'Post',
-            url: $("#urlMGCreate").val(),
-            beforesend: $("#WaitingMode").show(),
-            data: {
-                Gname: name,
-                Budgt: budgt,
-                BSCode: bscode,
-                Gdetails: details,
-                MGRPCD: mpgrpcd
-            },
-            success: function (result) {
-                $("#WaitingMode").hide();
-                if (result == "0") {
-                    msgSuccess1("Main group created sucessfully");
-                    message_value = "showbtn";
-                }
-                else {
-                    msgWarning(result);
-                    message_value = "showbtn";
-                }
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError("Error: " + textStatus + "," + errorThrown);
-            }
-        });
-    }
-    function SGCreate() {
-        debugger;
-        var name = $("#SGNM").val();
-        var budgt = $("#SGBA").val();
-        var details = $("#SGNMDTL").val();
-        var mpgrpcd = $("#MGRPCD").val();
-        var legdtlskp = $("#innerS_LEGDTLSKP").val();
-        var schdl = $("#innerS_SCHDL option:selected").val();
-        if (name == "") {
-            msgInfo("Sub-Group Name Can't be Empty !");
-            message_value = "SGNM";
-            return false;
-        }
-        debugger;
-        $.ajax({
-            type: 'Post',
-            url: $("#urlSGCreate").val(),
-            beforesend: $("#WaitingMode").show(),
-            data: {
-                Gname: name,
-                Budgt: budgt,
-                Gdetails: details,
-                MGRPCD: mpgrpcd,
-                Parent: $("#ParameterVal").val(),
-                Liid: $("#ParameterVal1").val(),
-                legdtlskp: legdtlskp,
-                schdl: schdl
-            },
-            success: function (result) {
-                debugger;
-                $("#WaitingMode").hide();
-                if (result == "0") {
-                    msgSuccess1("Sub group created sucessfully");
-                    message_value = "showbtn";
-                }
-                else {
-                    msgWarning(result);
-                    message_value = "showbtn";
-                }
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError("Error: " + textStatus + "," + errorThrown);
-            }
-        });
-    }
-    function GRename() {
-        debugger;
-        var name = $("#RENM").val();
-        var budgt = $("#SEGBA").val();
-        var details = $("#SEGNMDTL").val();
-        var mpgrpcd = $("#MGRPCD").val();
-        var legdtlskp = $("#innerR_LEGDTLSKP").val();
-        var schdl = $("#innerR_SCHDL option:selected").val();
-        if (name == "") {
-            msgInfo("Name Can't Be Empty !");
-            message_value = "RENM";
-            return false;
-        }
-        $.ajax({
-            type: 'Post',
-            url: $("#urlRename").val(),
-            beforesend: $("#WaitingMode").show(),
-            data: {
-                Gname: name,
-                MGRPCD: mpgrpcd,
-                Parent: $("#ParameterVal").val(),
-                Details: details,
-                Budgt: budgt,
-                Liid: $("#ParameterVal1").val(),
-                legdtlskp: legdtlskp,
-                schdl: schdl
-            },
-            success: function (result) {
-                $("#WaitingMode").hide();
-                if (result == "0") {
-                    msgSuccess1("Sucessfully Rename");
-                    message_value = "showbtn";
-                }
-                else {
-                    msgWarning(result);
-                    message_value = "showbtn";
-                }
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError("Error: " + textStatus + "," + errorThrown);
-            }
-        });
-    }
-    function Texpand() {
-        $("#tree").find("li").each
-        (
-            function () {
-                $(this).parent().find('li input[type=checkbox]').prop('checked', true);
-                $(this).parent().prev().prop('checked', true);
-            }
-        )
-    }
-    function TCollaps() {
-        $("#tree").find("li").each
-        (
-            function () {
-                $(this).parent().find('li input[type=checkbox]').prop('checked', false);
-                $(this).parent().prev().prop('checked', false);
-            }
-        )
-    }
-    function DeleteGRP() {
-        var ui = deletegroup();
-        return false;
-    }
-    function delete_GRP() {
-        var mpgrpcd = $("#MGRPCD").val();
-        $.ajax({
-            type: 'Post',
-            url: $("#urlDelete").val(),
-            beforesend: $("#WaitingMode").show(),
-            data: {
-                MGRPCD: mpgrpcd,
-                Parent: $("#ParameterVal").val(),
-                Liid: $("#ParameterVal1").val()
-            },
-            success: function (result) {
-                $("#WaitingMode").hide();
-                if (result == "0") {
-                    $("#Msgdiv1").show();
-                    $('#success1').show();
-                    $("#msgbody_success1").html("Group Delete Sucessfully");
-                    $("#btnok_success1").focus();
-                    message_value = "showbtn";
-                }
-                else {
-                    $("#Msgdiv1").show();
-                    $("#warning").show();
-                    $("#msgbody_warning").html(result);
-                    $("#btnok_warning").focus();
-                    message_value = "showbtn";
-                }
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError("Error: " + textStatus + "," + errorThrown);
-            }
-        });
-    }
-    function Indexing() {
-        var mpgrpcd = $("#MGRPCD").val();
-        $.ajax({
-            type: 'Post',
-            url: $("#urlIndex").val(),
-            beforesend: $("#WaitingMode").show(),
-            data: $('form').serialize() + "&MGRPCD=" + mpgrpcd,
-            success: function (result) {
-                $("#WaitingMode").hide();
-                if (result == "0") {
-                    $("#Msgdiv1").show();
-                    $('#success1').show();
-                    $("#msgbody_success1").html("Indexing Sucessfully");
-                    $("#btnok_success1").focus();
-                    message_value = "showbtn";
-                }
-                else {
-                    $("#Msgdiv1").show();
-                    $("#warning").show();
-                    $("#msgbody_warning").html(result);
-                    $("#btnok_warning").focus();
-                    message_value = "showbtn";
-                }
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError("Error: " + textStatus + "," + errorThrown);
-            }
-        });
-    }
-    function ExistTag(id) {
-        var mpgrpcd = $("#MGRPCD").val();
-        $.ajax({
-            type: 'Post',
-            url: $("#urlexistaccount").val(),
-            beforesend: $("#WaitingMode").show(),
-            data: $('form').serialize() + "&MGRPCD=" + mpgrpcd + "&Parent=" + id,
-            success: function (result) {
-                $("#WaitingMode").hide();
-                var ss = result.split('^');
-                if (ss.length == 2) {
-                    msgInfo(ss[1]);
-                    message_value = "available_GRP";
-                }
-                else {
-                    $("#partial_existing").html(result);
-                }
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError("Error: " + textStatus + "," + errorThrown);
-            }
-        });
-    }
-    function addaccount() {
-        var flag = 0;
-        var GridRowMain = $("#available_GRP > tbody > tr").length;
-        for (i = 0; i <= GridRowMain - 1; i++) {
-            var chaked = document.getElementById("Checked_" + i).checked;
-            if (chaked == true) {
-                flag = 1;
-                break;
-            }
-        }
-        if (flag == 0) {
-            msgIngo("Select accounts to tag!");
-            message_value = "available_GRP";
-            return false;
-        }
-        var mpgrpcd = $("#MGRPCD").val();
-        var Parent = $("#ParameterVal").val();
-        var liid = $("#ParameterVal1").val();
-        $.ajax({
-            type: 'Post',
-            url: $("#urladdaccount").val(),
-            beforesend: $("#WaitingMode").show(),
-            data: $('form').serialize() + "&MGRPCD=" + mpgrpcd + "&Parent=" + Parent + "&Liid=" + liid,
-            success: function (result) {
-                $("#WaitingMode").hide();
-                if (result == "0") {
-                    msgSuccess1("Sucessfully Add Account");
-                    message_value = "showbtn";
-                }
-                else {
-                    msgWarning(result);
-                    message_value = "showbtn";
-                }
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError("Error: " + textStatus + "," + errorThrown);
-            }
-        });
-    }
-    function deleteaccount() {
-        var flag = 0;
-        var GridRowMain = $("#exist_GRP > tbody > tr").length;
-        for (i = 0; i <= GridRowMain - 1; i++) {
-            var chaked = document.getElementById("EChecked_" + i).checked;
-            if (chaked == true) {
-                flag = 1;
-                break;
-            }
-        }
-        if (flag == 0) {
-            msgInfo("Select accounts to remove!");
-            message_value = "exist_GRP";
-            return false;
-        }
-        var mpgrpcd = $("#MGRPCD").val();
-        var Parent = $("#ParameterVal").val();
-        var liid = $("#ParameterVal1").val();
-        $.ajax({
-            type: 'Post',
-            url: $("#urldeleteaccount").val(),
-            beforesend: $("#WaitingMode").show(),
-            data: $('form').serialize() + "&MGRPCD=" + mpgrpcd + "&Parent=" + Parent + "&Liid=" + liid,
-            success: function (result) {
-                $("#WaitingMode").hide();
-                if (result == "0") {
-                    msgSuccess1("Sucessfully Remove Account");
-                    message_value = "showbtn";
-                }
-                else {
-                    $("#Msgdiv1").show();
-                    $("#warning").show();
-                    $("#msgbody_warning").html(result);
-                    $("#btnok_warning").focus();
-                    message_value = "showbtn";
-                }
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError("Error: " + textStatus + "," + errorThrown);
-            }
-        });
-    }
-
-    function CheckBoxCheck(id, Index, TAG) {
-        if (TAG == "available_GRP") {
-            var index = Index + 1;
-            var CHK_STATE = document.getElementById("Checked_" + Index).checked;
-            totalRow = $("#available_GRP tbody tr").length;
-            if (CHK_STATE == false) {
-                start = document.getElementById('available_GRP' + index);
-                start.focus();
-                start.style.backgroundColor = '#86d2f7';
-                start.style.color = 'white';
-                document.getElementById("Checked_" + Index).checked = true;
-            }
-            else {
-                start = document.getElementById('available_GRP' + index);
-                start.focus();
-                start.style.backgroundColor = '';
-                start.style.color = '';
-                document.getElementById("Checked_" + Index).checked = false;
-            }
-            GetItemDetails();
-        }
-        else {
-            var index = Index + 1;
-            var CHK_STATE = document.getElementById("EChecked_" + Index).checked;
-            totalRow = $("#exist_GRP tbody tr").length;
-            if (CHK_STATE == false) {
-                start = document.getElementById('exist_GRP' + index);
-                start.focus();
-                start.style.backgroundColor = '#86d2f7';
-                start.style.color = 'white';
-                document.getElementById("EChecked_" + Index).checked = true;
-            }
-            else {
-                start = document.getElementById('exist_GRP' + index);
-                start.focus();
-                start.style.backgroundColor = '';
-                start.style.color = '';
-                document.getElementById("EChecked_" + Index).checked = false;
-            }
-        }
-    }
-    function GetGridData(id, Index, TAG) {
-        if (TAG == "available_GRP") {
-            var index = Index + 1;
-            var CHK_STATE = document.getElementById("Checked_" + Index).checked;
-            totalRow = $("#available_GRP tbody tr").length;
-            if (CHK_STATE == false) {
-                start = document.getElementById('available_GRP' + index);
-                start.focus();
-                start.style.backgroundColor = '#86d2f7';
-                start.style.color = 'white';
-                document.getElementById("Checked_" + Index).checked = true;
-            }
-            else {
-                start = document.getElementById('available_GRP' + index);
-                start.focus();
-                start.style.backgroundColor = '';
-                start.style.color = '';
-                document.getElementById("Checked_" + Index).checked = false;
-            }
-            GetItemDetails();
-        }
-        else {
-            var index = Index + 1;
-            var CHK_STATE = document.getElementById("EChecked_" + Index).checked;
-            totalRow = $("#exist_GRP tbody tr").length;
-            if (CHK_STATE == false) {
-                start = document.getElementById('exist_GRP' + index);
-                start.focus();
-                start.style.backgroundColor = '#86d2f7';
-                start.style.color = 'white';
-                document.getElementById("EChecked_" + Index).checked = true;
-            }
-            else {
-                start = document.getElementById('exist_GRP' + index);
-                start.focus();
-                start.style.backgroundColor = '';
-                start.style.color = '';
-                document.getElementById("EChecked_" + Index).checked = false;
-            }
-        }
-    }
-</script>
-
-<script>
-    $(function () {
-        debugger;
-        @*$('#navbarli_1').append('<a style="color: aqua;" href="@Url.Action("DownloadExcel", PageControllerName)?MGRPCD=@Model.MGRPCD"><span class="fa fa-file-excel-o"></span> Download Excel</a>');*@
-        if ("@CommVar.FinSchemaPrevYr(Model.UNQSNO)" != "")
-        { $('#navbarli_2').append('<a style="color: darkblue;" onclick="AddToPrivious();"><span class="fa fa-exchange"></span> Add last year</a>'); }
-
-
-        $('#search').on('keyup', function () {
-            var val = $(this).val().toLowerCase()
-            if (val) {
-                $('ul li span').each(function (idx, obj) {
-                    if ($(obj).text().toLowerCase().indexOf(val) !== -1) {
-                        var id = obj.id;
-                        if (id != "") {
-                            $(obj).addClass('highlight')
-                            Texpand();
-                        }
-                    }
-                    else {
-                        $(obj).removeClass('highlight')
-                    }
-                })
-            }
-            else
-                $('ul li span').removeClass('highlight')
-        })
-    })
-    function SetAllCheckBoxesFilterCUSTOM(obj, tablename, RowCheckID, searchF) {
-        var filter = $("#" + searchF).val().toLowerCase();
-        totalRow = $("#" + tablename + " tbody tr").length;
-        var rows = document.querySelector("#" + tablename + " tbody").rows;
-        for (var i = 0; i <= rows.length - 1; i++) {
-            var flag = 0;
-            for (var x = 0; x <= rows[i].cells.length - 1; x++) {
-                var firstCol = rows[i].cells[x].children[0].value.toLowerCase();
-                if (firstCol.indexOf(filter) > -1) {
-                    flag = 1;
-                }
-            }
-            if (flag == 1) {
-                var chkbox = document.getElementById(RowCheckID + i);
-                chkbox.checked = obj.checked;
-                if (chkbox.checked == true) {
-                    start = document.getElementById(tablename + (i + 1));
-                    start.style.backgroundColor = '#86d2f7';
-                    start.focus();
-                }
-                else {
-                    start = document.getElementById(tablename + (i + 1));
-                    start.style.backgroundColor = '';
-                    start = document.getElementById(tablename + 1);
-                    start.focus();
-                }
-            }
-        }
-    }
-</script>
-<script>
-    function AddToPrivious() {
-        $.ajax({
-            type: 'post',
-            url: "@Url.Action("SavePreviousYrData", PageControllerName)",
-            beforesend: $("#WaitingMode").show(),
-            data: $('form').serialize(),
-            success: function (result) {
-                $("#WaitingMode").hide();
-                if (result == "1") {
-                    msgSuccess1("Previous year data save sucessfully");
-                    // message_value = "btnPrvyr";
-                }
-                else {
-                    msgWarning(result);
-                    //message_value = "btnPrvyr";
-                }
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
-</script>
-<script>
-    function ConfirmInDivGRP(message, okcallback, cancelcallback) {
-        $('#Msgdiv1').show();
-        $('#confirm').show();
-        $("#msgbody_confirm").text(message);
-        $('#Confirmation_Ok').unbind('click');
-        $('#Confirmation_Ok').click(okcallback);
-        $('#Confirmation_Ok').unbind('keypress');
-        $('#Confirmation_Ok').keypress(okcallback);
-        $('#Confirmation_Cancel').unbind('click');
-        $('#Confirmation_Cancel').click(cancelcallback);
-        $('input').blur();
-        $('#Confirmation_Ok').focus();
-    }
-    function HideConfirmOkGRP() {
-        $('#Msgdiv1').hide();
-        $('#confirm').hide();
-        delete_GRP();
-        return false;
-    }
-    function HideConfirmCancelGRP() {
-        $('#Msgdiv1').hide();
-        $('#confirm').hide();
-        return false;
-    }
-
-    function deletegroup() {
-        function ok() {
-            console.log('deleted');
-            HideConfirmOkGRP();
-        }
-        function cancel() {
-            console.log('delete cancelled');
-            HideConfirmCancelGRP();
-        }
-        ConfirmInDivGRP('Are you sure to delete?', ok, cancel);
-    }
-</script>
-<script>
     $(function () {
         $("#FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
         $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
     });
-</script>
-<script>
-    function SetAllCheckBoxesFilterParty(obj, tablename, RowCheckID, FILTER_ID) {
-        var filter = $("#" + FILTER_ID).val() || '';
-        var rows = document.querySelector("#" + tablename + " tbody").rows;
-        for (var i = 0; i <= rows.length - 1; i++) {
-            var flag = 0;
-            for (var x = 0; x <= rows[i].cells.length - 1; x++) {
-                var firstCol = rows[i].cells[x].children[0].value.toUpperCase();
-                if (firstCol.indexOf(filter.toUpperCase()) > -1) {
-                    flag = 1;
-                }
-            }
-            if (flag == 1) {
-                if ($("#" + RowCheckID + i).is(":visible")) {
-                    var chkbox = document.getElementById(RowCheckID + i);
-                    var isdisable = chkbox.getAttribute("disabled");
-                    if (isdisable == null) {
-                        chkbox.checked = obj.checked;
-                    }
-                }
-            }
-        }
-        GetItemDetails();
-    }
-
-</script>
-
-<script>
-    let sortDirection = {};
-
-    function sortable(colIndex) {
-        const table = document.getElementById("available_GRP");
-        const tbody = table.tBodies[0];
-        const rows = Array.from(tbody.querySelectorAll("tr"));
-
-        sortDirection[colIndex] = !sortDirection[colIndex];
-        const asc = sortDirection[colIndex];
-
-        rows.sort((a, b) => {
-            let aInput = a.cells[colIndex].querySelector("input");
-            let bInput = b.cells[colIndex].querySelector("input");
-            let aVal = aInput ? aInput.value.trim() : a.cells[colIndex].innerText.trim();
-            let bVal = bInput ? bInput.value.trim() : b.cells[colIndex].innerText.trim();
-
-            if (!isNaN(aVal) && !isNaN(bVal)) {
-                return asc ? aVal - bVal : bVal - aVal;
-            }
-            return asc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-        });
-
-        rows.forEach(row => tbody.appendChild(row));
-
-        table.querySelectorAll("th").forEach(th => th.classList.remove("sort-asc", "sort-desc"));
-        table.querySelectorAll("th")[colIndex].classList.add(asc ? "sort-asc" : "sort-desc");
-    }
 </script>
 <script>
     function SelectBARCODEDetail(id) {
@@ -1626,8 +711,7 @@
             });
         }
     }
-</script>
-<script>
+
     $(document).on('click', '.arrow-left, .arrow-right', function () {
         var next;
         var circler;
@@ -1656,7 +740,7 @@
             var ImageDesc = (value.split('~')[1]);
             var htm = ''; if (index == 0) { actt = "active"; } else { actt = ""; }
             htm += '<div id="' + id + '" class="item ' + actt + '">';
-            htm += '    <img src="' + imgname + '"  alt="Img Not Found" style="width:100%;height:300px;">';
+            htm += '    <img src="' + imgname + '"  alt="Img Not Found" style="width:100%;height:200px;">';
             htm += '    <span class="carousel-caption">';
             htm += '    <p> ' + ImageDesc + ' </p>';
             htm += '    </span>';
@@ -1665,6 +749,34 @@
         });
     }
 </script>
+<script>
+    function GetItemDetails() {
+        debugger;
+        if (!emptyFieldCheck("Please Select / Enter Party Code", "ITCD")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter Party Code", "SLCD")) { return false; }
+        var party = $("#SLCD").val(), frmdt = $("#FDT").val(), todt = $("#TDT").val(), group = $("#ITGRPCDvalue").val(), loc = $("#loccdvalue").val(), sp = $('[id="SALPUR"]:checked').val();
+        var CHECK = $("#ONLYSALES").val(), item = $("#ITCD").val(), itemnm = $("#ITNM").val();
+
+        $.ajax({
+            type: 'get',
+            url: "@Url.Action("GetItemData", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: {
+                slcd: party, fdt: frmdt, tdt: todt, itgrpcd: group, check: CHECK, itcd: item, itnm: itemnm, LOCATION: loc, SALPUR: sp
+            },
+            success: function (result) {
+                $("#WaitingMode").hide();
+                $("#partial_existing").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+
+    }
+</script>
+
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -1692,10 +804,6 @@
                     </div>
                 </div>
                 <div class="col-lg-4">
-                    @*<div class="editor-field">
-                            @Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItem", PageControllerName) + "','DesignWise Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1','itgrptype')", onblur = "GetHelpBlur('" + @Url.Action("GetItem", PageControllerName) + "','DesignWise Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1','itgrptype');", @placeholder = "Code", maxlength = 10 } })
-                            <img src="~/Image/search.png" id="ITCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItem", PageControllerName)','DesignWise Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1','itgrptype')" />
-                        </div>*@
                     <div class="editor-field">
                         @Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", "Rep_ItemPartySumm") + "','Bar Code Details','ITCD','ITCD=ITCD=2/ITNM=STYLENO=0/WPrate=WPRATE/RPrate=RPRATE')", onblur = "SelectBARCODEDetail(this.value);", @placeholder = "Design No./Item", maxlength = 25 } })
                         <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", "Rep_ItemPartySumm")','Bar Code Details','ITCD','ITCD=ITCD=2/ITNM=STYLENO=0/WPrate=WPRATE/RPrate=RPRATE')" />
@@ -1708,19 +816,6 @@
                     </div>
                 </div>
             </div>
-            @*<div class="row">
-                <div class="col-lg-2">
-                    <div class="editor-label" style="margin-top: 6px;">
-                        @Html.Label("", "Job Rate")
-
-                    </div>
-                </div>
-                <div class="col-md-11">
-                    <div class="editor-field">
-                        @Html.EditorFor(model => model.Jobrate, new { htmlAttributes = new { @class = "form-control", id = "Jobrate", maxlength = 60, @TabIndex = -1, @title = "Only for View", @placeholder = "Item Name", @readonly = "readonly" } })
-                    </div>
-                </div>
-            </div>*@
             <div class="row">
                 <div class="col-lg-2">
                     <div class="editor-label" style="margin-top: 6px;">
@@ -1728,20 +823,18 @@
 
                     </div>
                 </div>
-                <div class="col-md-11">
+                <div class="col-lg-3">
                     <div class="editor-field">
                         @Html.EditorFor(model => model.WPrate, new { htmlAttributes = new { @class = "form-control", id = "WPrate", maxlength = 60, @TabIndex = -1, @title = "Only for View", @placeholder = "Sales Rate", @readonly = "readonly" } })
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-2">
+                <div class="col-lg-2" style="width:auto;">
                     <div class="editor-label" style="margin-top: 6px;">
                         @Html.Label("", "Making Rate")
 
                     </div>
                 </div>
-                <div class="col-md-11">
+                <div class="col-lg-3">
                     <div class="editor-field">
                         @Html.EditorFor(model => model.RPrate, new { htmlAttributes = new { @class = "form-control", id = "RPrate", maxlength = 60, @TabIndex = -1, @title = "Only for View", @placeholder = "Making Rate", @readonly = "readonly" } })
                     </div>
@@ -1755,7 +848,7 @@
                         </div>
                     </div>
                     @Html.HiddenFor(model => model.BarImages, new { id = "BarImages" })
-                    <div class="row" style="text-align:-webkit-center;width: 260px;height:300px">
+                    <div class="row" style="text-align:-webkit-center;width: 200px;height:200px">
                         <div id="myCarousel" class="carousel" data-ride="carousel">
                             <div class="carousel-inner" id="div_carousel_inner">
                                 <div class="item active">
@@ -1862,16 +955,11 @@
                     @Html.CheckBoxFor(model => model.CHECK, new { id = "CHECK" })
                 </div>
             </div>
-
-
             <div class="row">
-                <button type="button" class="btn btn-danger" style="margin-top:4px" onclick="GetItemDetails();">Show</button>
+                <button type="button" class="btn btn-success" style="margin-top:4px" onclick="GetItemDetails();">Show</button>
             </div>
 
         </div>
-
-
-
         <div style="width:62%;display:inline-block;float:left">
             <input type="text" value="" class="form-control" autocomplete="off" id="searchAV" placeholder="Search From Available Bill Details" style="width:260px; margin-left:10px" onkeyup="filterTable(event, 'exist_GRP');" />
             <span class="fa fa-search" style="margin-top:-18px;margin-left:251px;float:left"></span>
@@ -1885,262 +973,12 @@
             </div>
         </div>
 
-
-
-        
-
-
-
     }
     else
     {
         @ViewBag.ErrorMessage
     }
 }
-
-<div id="outerP">
-    <div id="innerP" style="height:295px;width:621px;padding-left:5px;">
-        <div class="row">
-            <div class="tabtitle">
-                Create Main Group<span class="fa fa-times-circle" title="Close" style="float:right;font-weight:bold;color:black;font-size:20px;margin-top:2px;margin-right:5px" onclick="MGClose();"></span>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Main Group Name")
-                    <b style="color:Red;">*</b>
-                </div>
-            </div>
-            <div class="col-md-11">
-                <input type="text" id="MGNM" value="" placeholder="Main Group Name" class="form-control" />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Group Details")
-                </div>
-            </div>
-            <div class="col-md-11">
-                <textarea id="MGNMDTL" placeholder="Group Details" class="form-control" style="height:80px"></textarea>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Leg Dtls Skip")
-                </div>
-            </div>
-            <div class="col-md-11">
-                @Html.CheckBoxFor(model => Model.LEGDTLSKP, new { id = "innerP_LEGDTLSKP" })
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Schedule")
-                </div>
-            </div>
-            <div class="col-md-11">
-                @*@Html.DropDownListFor(model => Model.SCHDL, new SelectList(Model.SchedulePart, "Value", "Text", Model.SCHDL), new { id = "innerP_SCHDL", @class = " form-control" })*@
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Budget Amount")
-                </div>
-            </div>
-            <div class="col-md-11">
-                <input type="text" id="MGBA" value="" placeholder="Budget Amount" class="form-control" onkeypress="return numericOnly(this,2);" />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Select Head")
-                    <b style="color:Red;">*</b>
-                </div>
-            </div>
-            <div class="col-md-7">
-                <input type="text" id="GLHDGRPCD" value="" placeholder="Code" class="form-control" maxlength="3" onblur="SelectGLHDGRPCD(this.value,GLHDGRPCD,GLHDGRPNM)" />
-                <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:-23px;float:right;margin-right:2px" title="Help" onclick="GetHelp('@Url.Action("GetBSGroupCode", PageControllerName)','GLHDGRPCD/GLHDGRPNM','1/0','Select B / S Group','GLHDGRPCD')" />
-            </div>
-            <div class="col-md-10">
-                <input type="text" id="GLHDGRPNM" value="" placeholder="Head Name" readonly="readonly" tabindex=-1 class="form-control" style="width:205px" />
-            </div>
-        </div>
-        <br />
-        <div class="row">
-            <div class="col-md-8">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", " ")
-                </div>
-            </div>
-            <div class="col-md-8">
-                <button type="button" class="btn btn-danger" style="width:104px" onclick="MGCreate();" title="Save">Save</button>
-            </div>
-            <div class="col-md-2">
-                <button type="button" class="btn btn-danger" style="width:104px" onclick="MGClear();" title="Clear">Clear</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id="outerS">
-    <div id="innerS" style="height:295px;width:621px;padding-left:5px;">
-        <div class="row">
-            <div class="tabtitle">
-                Create Sub Group<span class="fa fa-times-circle" title="Close" style="float:right;font-weight:bold;color:black;font-size:20px;margin-top:2px;margin-right:5px" onclick="MGClose1();"></span>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Sub Group Name")
-                    <b style="color:Red;">*</b>
-                </div>
-            </div>
-            <div class="col-md-11">
-                <input type="text" id="SGNM" value="" placeholder="Sub Group Name" class="form-control" />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Group Details")
-                </div>
-            </div>
-            <div class="col-md-11">
-                <textarea id="SGNMDTL" placeholder="Group Details" class="form-control" style="height:80px"></textarea>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Leg Dtls Skip")
-                </div>
-            </div>
-            <div class="col-md-11">
-                @Html.CheckBoxFor(model => Model.LEGDTLSKP, new { id = "innerS_LEGDTLSKP" })
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Schedule")
-                </div>
-            </div>
-            <div class="col-md-11">
-                @*@Html.DropDownListFor(model => Model.SCHDL, new SelectList(Model.SchedulePart, "Value", "Text", Model.SCHDL), new { id = "innerS_SCHDL", @class = " form-control" })*@
-
-
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Budget Amount")
-                </div>
-            </div>
-            <div class="col-md-11">
-                <input type="text" id="SGBA" value="" placeholder="Budget Amount" class="form-control" onkeypress="return numericOnly(this,2);" />
-            </div>
-        </div>
-
-        <br />
-        <div class="row">
-            <div class="col-md-8">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", " ")
-                </div>
-            </div>
-            <div class="col-md-8">
-                <button type="button" class="btn btn-danger" style="width:104px" onclick="SGCreate();" title="Save">Save</button>
-            </div>
-            <div class="col-md-2">
-                <button type="button" class="btn btn-danger" style="width:104px" onclick="MGClear1();" title="Clear">Clear</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id="outerR">
-    <div id="innerR" style="height:295px;width:500px;padding-left:5px;">
-        <div class="row">
-            <div class="tabtitle">
-                Re-name<span class="fa fa-times-circle" title="Close" style="float:right;font-weight:bold;color:black;font-size:20px;margin-top:2px;margin-right:5px" onclick="MGClose2();"></span>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Enter Name")
-                    <b style="color:Red;">*</b>
-                </div>
-            </div>
-            <div class="col-md-11">
-                <input type="text" id="RENM" value="" placeholder="ReName" class="form-control" />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Group Details")
-                </div>
-            </div>
-            <div class="col-md-11">
-                <textarea id="SEGNMDTL" placeholder="Group Details" class="form-control" style="height:80px"></textarea>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Leg Dtls Skip")
-                </div>
-            </div>
-            <div class="col-md-11">
-                @Html.CheckBoxFor(model => Model.LEGDTLSKP, new { id = "innerR_LEGDTLSKP" })
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Schedule")
-                </div>
-            </div>
-            <div class="col-md-11">
-                @*@Html.DropDownListFor(model => Model.SCHDL, new SelectList(Model.SchedulePart, "Value", "Text", Model.SCHDL), new { id = "innerR_SCHDL", @class = " form-control" })*@
-
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Budget Amount")
-                </div>
-            </div>
-            <div class="col-md-11">
-                <input type="text" id="SEGBA" value="" placeholder="Budget Amount" class="form-control" onkeypress="return numericOnly(this,2);" />
-            </div>
-        </div>
-        <br />
-        <div class="row">
-            <div class="col-md-8">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", " ")
-                </div>
-            </div>
-            <div class="col-md-9">
-                <button type="button" class="btn btn-danger" style="width:104px" onclick="GRename();" title="Save">Save</button>
-            </div>
-            <div class="col-md-2">
-                <button type="button" class="btn btn-danger" style="width:104px" onclick="MGClear2();" title="Clear">Clear</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 
 <div class="container">

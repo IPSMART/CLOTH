@@ -22,7 +22,7 @@ namespace Improvar.Controllers
         DropDownHelp dropDownHelp = new DropDownHelp();
         Salesfunc Sales_func = new Salesfunc();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
-        public ActionResult Rep_ItemPartySumm(string ITCD = "", string ITNM = "", string FDT = "", string TDT = "", string CHECK = "", string ITGRPCD = "", string LOCCD = "", string SALPUR = "")
+        public ActionResult Rep_ItemPartySumm()
         {
 
             try
@@ -34,163 +34,20 @@ namespace Improvar.Controllers
                 else
                 {
                     string com = CommVar.Compcd(UNQSNO);
-                    ViewBag.formname = "Design & Party Summary";
+                    ViewBag.formname = "Design Summary";
                     PartyitemSummReport VE = new PartyitemSummReport();
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
-                    string scmf = CommVar.FinSchema(UNQSNO);
-                    ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                     ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
 
-                    if (ITCD.retStr() == "")
-                    {
-                        VE.DropDown_list_ITGRP = dropDownHelp.GetItgrpcdforSelection();
-                        VE.ITGRPCD = masterHelp.ComboFill("ITGRPCD", VE.DropDown_list_ITGRP, 0, 1);
+                    VE.DropDown_list_ITGRP = dropDownHelp.GetItgrpcdforSelection();
+                    VE.ITGRPCD = masterHelp.ComboFill("ITGRPCD", VE.DropDown_list_ITGRP, 0, 1);
 
-                        VE.DropDown_list = (from i in DBF.M_LOCA
-                                            where i.COMPCD == com
-                                            select new DropDown_list() { value = i.LOCCD, text = i.LOCNM }).Distinct().OrderBy(s => s.text).ToList();// location
-                        VE.LOCATION = masterHelp.ComboFill("loccd", VE.DropDown_list, 0, 1);
-                    }
-                    else
-                    {
-                        VE.ITCD = ITCD; VE.FDT2 = FDT; VE.TDT2 = TDT; VE.ITGRPCD = ITGRPCD;
+                    VE.DropDown_list = (from i in DBF.M_LOCA
+                                        where i.COMPCD == com
+                                        select new DropDown_list() { value = i.LOCCD, text = i.LOCNM }).Distinct().OrderBy(s => s.text).ToList();// location
+                    VE.LOCATION = masterHelp.ComboFill("loccd", VE.DropDown_list, 0, 1);
 
-                        VE.ITCD2 = ITCD; VE.ITGRPCD2 = ITGRPCD; VE.ONLYSALES2 = CHECK; VE.LOCATION2 = LOCCD; VE.SALPUR2 = SALPUR;
-
-                        if (CHECK == "Y")
-                        {
-                            VE.CHECK = true;
-                        }
-                        else
-                        {
-                            VE.CHECK = false;
-                        }
-                        ViewBag.ITNM = ITNM + " [" + ITCD + "]";
-                        if (ITCD.retStr() != "") ITCD = ITCD.retSqlformat();
-                        if (ITGRPCD.retStr() != "") ITGRPCD = ITGRPCD.retSqlformat();
-                        if (LOCCD.retStr() != "") LOCCD = LOCCD.retSqlformat();
-                        DataTable dt = GetData(ITCD, FDT, TDT, ITGRPCD, CHECK, "", LOCCD, SALPUR);
-
-                        VE.billdet = (from DataRow DR in dt.Rows
-                                      select new billdet()
-                                      {
-                                          WPrate = DR["wprate"].ToString().retStr(),
-                                          RPrate = DR["rprate"].ToString().retStr(),
-                                          BarImages = DR["barimage"].ToString().retStr(),
-                                          DesignNo = DR["itstyle"].ToString().retStr(),
-                                      }).Distinct().OrderBy(A => A.styleno).ToList();
-                        //sqnty = X.Sum(Z => Z.Field<decimal>("sqnty").retDbl()),
-                        //samt = X.Sum(Z => Z.Field<decimal>("samt").retDbl()),
-                        //srate = X.Sum(Z => Z.Field<decimal>("sqnty").retDbl()) == 0 ? 0 : (X.Sum(Z => Z.Field<decimal>("samt").retDbl()) / X.Sum(Z => Z.Field<decimal>("sqnty").retDbl())).toRound(2),
-
-                        //rqnty = X.Sum(Z => Z.Field<decimal>("srqnty").retDbl()),
-                        //ramt = X.Sum(Z => Z.Field<decimal>("sramt").retDbl()),
-                        //rrate = X.Sum(Z => Z.Field<decimal>("srqnty").retDbl()) == 0 ? 0 : (X.Sum(Z => Z.Field<decimal>("sramt").retDbl()) / X.Sum(Z => Z.Field<decimal>("srqnty").retDbl())).toRound(2),
-
-                        //netqnty = (X.Sum(Z => Z.Field<decimal>("sqnty").retDbl()) - X.Sum(Z => Z.Field<decimal>("srqnty").retDbl())).toRound(2),
-                        //netamt = (X.Sum(Z => Z.Field<decimal>("samt").retDbl()) - X.Sum(Z => Z.Field<decimal>("sramt").retDbl())).toRound(2),
-                        //netrate = ((X.Sum(Z => Z.Field<decimal>("sqnty").retDbl()) - X.Sum(Z => Z.Field<decimal>("srqnty").retDbl())).toRound(2)) == 0 ? 0 : (((X.Sum(Z => Z.Field<decimal>("samt").retDbl()) - X.Sum(Z => Z.Field<decimal>("sramt").retDbl())).toRound(2)) / ((X.Sum(Z => Z.Field<decimal>("sqnty").retDbl()) - X.Sum(Z => Z.Field<decimal>("srqnty").retDbl())).toRound(2))).toRound(2),
-
-
-                        foreach (var v in VE.billdet)
-                        {
-                            if (v.BarImages.retStr() != "")
-                            {
-                                var brimgs = v.BarImages.retStr().Split((char)179);
-                                v.BarImagesCount = brimgs.Length == 0 ? "" : brimgs.Length.retStr();
-                                string BarImages = "";
-                                foreach (var barimg in brimgs)
-                                {
-                                    string barfilename = barimg.Split('~')[0];
-                                    string barimgdesc = barimg.Split('~')[1];
-                                    BarImages += (char)179 + CommVar.WebUploadDocURL(barfilename) + "~" + barimgdesc;
-                                    string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
-                                    FROMpath = Path.Combine(FROMpath, "");
-                                    string TOPATH = CommVar.LocalUploadDocPath() + barfilename;
-                                    Cn.CopyImage(FROMpath, TOPATH);
-                                }
-                                v.BarImages = BarImages.retStr().TrimStart((char)179);
-                            }
-                        }
-
-
-                        //VE.T_sqnty = VE.billdet.Sum(a => a.sqnty).retDbl();
-                        //VE.T_samt = VE.billdet.Sum(a => a.samt).retDbl();
-                        //VE.T_rqnty = VE.billdet.Sum(a => a.rqnty).retDbl();
-                        //VE.T_ramt = VE.billdet.Sum(a => a.ramt).retDbl();
-                        //VE.T_netqnty = VE.billdet.Sum(a => a.netqnty).retDbl();
-                        //VE.T_netamt = VE.billdet.Sum(a => a.netamt).retDbl();
-
-                        //VE.MGRPNM = DB.M_TMGRP.Where(a => a.MGRPCD == MGRPCD).Select(a => a.MGRPNM).SingleOrDefault();
-                        //var base64 = DB.M_TGRP.Where(a => a.MGRPCD == MGRPCD).ToList();
-                        //if (base64.Any())
-                        //{
-                        //    VE.FOUNDMGRP = true;
-                        //}
-                        //var group = (from i in DB.M_TGRP
-                        //             where (i.MGRPCD == MGRPCD && i.GLCD == null)
-                        //             select i).OrderBy(a => a.ROOTCD).ThenBy(a => a.GRPCDFULL).ToList();
-
-                        //if (group.Any())
-                        //{
-                        //    List<Temp_TGRP> MLIST = new List<Temp_TGRP>();
-                        //    VE.Tree = GenerateTree(group, ref MLIST);
-                        //    VE.MLIST = MLIST;
-                        //}
-                        //var Mtype = DB.M_TMGRP.Where(a => a.MGRPCD == MGRPCD).Select(a => a.MGRPTYPE).SingleOrDefault();
-                        //DataTable dt = new DataTable();
-                        //if (Mtype == "SL")
-                        //{
-                        //    //string str = "select * from (select glcd, '' slcd, '' class1cd, glnm,'' slnm, '' class1nm from " + scmf + ".m_genleg where nvl(slcdmust,'N') = 'N' union all ";
-                        //    //str = str + " select a.glcd, '', '' class1cd, a.glnm, c.slnm, '' class1nm from " + CommVar.CurSchema(UNQSNO) + ".m_genleg a, " + scmf + ".m_subleg_gl b, " + scmf + ".m_subleg c where a.glcd = b.glcd ";
-                        //    //str = str + " and nvl(slcdmust,'N') = 'Y' and b.slcd = c.slcd) where glcd||slcd||class1cd not in (select glcd||slcd||class1cd from " + CommVar.CurSchema(UNQSNO) + ".m_tgrp where mgrpcd = '" + MGRPCD + "' and glcd||slcd||class1cd is not null)";
-                        //    //DataTable dt = masterHelp.SQLquery(str);
-                        //    //VE.AvailableGroup = (from i in dt.AsEnumerable()
-                        //    //                     select new AvailableACGroup()
-                        //    //                     {
-                        //    //                         Checked = false,
-                        //    //                         CLASS1CD = i.Field<string>("class1cd"),
-                        //    //                         CLASS1NM = i.Field<string>("class1nm"),
-                        //    //                         GLCD = i.Field<string>("glcd"),
-                        //    //                         GLNM = i.Field<string>("glnm"),
-                        //    //                         SLCD = i.Field<string>("slcd"),
-                        //    //                         SLNM = i.Field<string>("slnm"),
-                        //    //                     }).ToList();
-                        //}
-                        //else if (Mtype == "GL")
-                        //{
-                        //    string str = "select glcd, '' class1cd, glnm, '' class1nm from " + scmf + ".m_genleg where glcd not in (select glcd from " + scmf + ".m_tgrp where mgrpcd = '" + MGRPCD + "' and glcd is not null) order by glnm";
-                        //    dt = masterHelp.SQLquery(str);
-                        //}
-                        //else if (Mtype == "CL" || Mtype == "SL")
-                        //{
-                        //    string str = "select * from (select glcd, '' class1cd, glnm, '' class1nm from " + scmf + ".m_genleg where nvl(class1cdmust,'N') = 'N' union all ";
-                        //    str = str + "select distinct a.glcd, b.class1cd, c.glnm, e.class1nm from " + scmf + ".t_vch_det a, " + scmf + ".t_vch_class b, " + scmf + ".m_genleg c, ";
-                        //    str = str + scmf + ".m_class1 e where a.autono = b.autono and a.slno = b.dslno and a.glcd = c.glcd and b.class1cd = e.class1cd and nvl(c.class1cdmust, 'N')= 'Y' order by glcd,class1cd) ";
-                        //    str = str + " where glcd|| class1cd not in (select glcd || class1cd from " + scmf + ".m_tgrp where mgrpcd = '" + MGRPCD + "' and glcd|| class1cd is not null)";
-                        //    dt = masterHelp.SQLquery(str);
-                        //}
-                        //VE.AvailableGroup = (from i in dt.AsEnumerable()
-                        //                     select new AvailableACGroup()
-                        //                     {
-                        //                         Checked = false,
-                        //                         CLASS1CD = i.Field<string>("class1cd"),
-                        //                         CLASS1NM = i.Field<string>("class1nm"),
-                        //                         GLCD = i.Field<string>("glcd"),
-                        //                         GLNM = i.Field<string>("glnm"),
-                        //                     }).ToList();
-                    }
                     VE.DefaultView = true;
-                    //List<DropDown_list1> drplist = new List<DropDown_list1>();
-                    //DropDown_list1 drop1 = new DropDown_list1();
-                    //drop1.text = "Yes"; drop1.value = "Y"; drplist.Add(drop1);
-                    //DropDown_list1 drop2 = new DropDown_list1();
-                    //drop2.text = "No"; drop2.value = "N"; drplist.Add(drop2);
-                    //DropDown_list1 drop3 = new DropDown_list1();
-                    //drop3.text = "Main"; drop3.value = "M"; drplist.Add(drop3);
-                    //VE.SchedulePart = drplist;
-                    //VE.LEGDTLSKP = false;
-
                     return View(VE);
                 }
             }
@@ -203,34 +60,69 @@ namespace Improvar.Controllers
                 return View(VE);
             }
         }
+        public ActionResult GetBarCodeDetails(string val)
+        {
+            try
+            {
+                string str = masterHelp.ITCD_help(val, "");
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    if (str.IndexOf(Cn.GCS()) == -1)
+                    {
+                        return Content(str = "");
+                    }
+                    else
+                    {
+                        DataTable bardet = Sales_func.GetBarHelp(System.DateTime.Now.Date.retDateStr(), "", "", val.retSqlformat());
+                        if (bardet != null && bardet.Rows.Count > 0)
+                        {
+                            str += masterHelp.ToReturnFieldValues("", bardet);
+
+                            string barno = str.retCompValue("BARNO").retStr();
+                            DataTable pricedet = Sales_func.GetLastPriceFrmMaster(barno);
+                            if (pricedet != null && pricedet.Rows.Count > 0)
+                            {
+                                double rprate = (from DataRow dr in pricedet.Rows where dr["prccd"].retStr() == "RP" select dr["rate"].retDbl()).FirstOrDefault();
+                                double wprate = (from DataRow dr in pricedet.Rows where dr["prccd"].retStr() == "WP" select dr["rate"].retDbl()).FirstOrDefault();
+                                str += "^WPRATE=^" + wprate + Cn.GCS();
+                                str += "^RPRATE=^" + rprate + Cn.GCS();
+                            }
+                        }
+
+                        var BarImages = str.retCompValue("BARIMAGE").retStr().Split((char)179);
+                        string BARIMAGEPATH = "";
+                        foreach (var v in BarImages)
+                        {
+                            if (v.retStr() != "")
+                            {
+                                if (BARIMAGEPATH != "")
+                                {
+                                    BARIMAGEPATH += (char)179;
+                                }
+                                var temp = v.Split('~');
+                                BARIMAGEPATH += CommVar.WebUploadDocURL(temp[0]) + "~" + temp[1];
+                            }
+                        }
+                        str += "^BARIMAGEPATH=^" + BARIMAGEPATH + Cn.GCS();
+                        return Content(str);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
         public ActionResult GetSubLedgerDetails(string val, string Code)
         {
             try
             {
-                var agent = Code.Split(Convert.ToChar(Cn.GCS()));
-                if (agent.Count() > 1)
-                {
-                    if (agent[1] == "")
-                    {
-                        return Content("Please Select Agent !!");
-                    }
-                    else
-                    {
-                        Code = agent[0];
-                    }
-                }
-                else if (Code == "party")
-                {
-                    PartyitemSummReport VE = new PartyitemSummReport();
-                    Cn.getQueryString(VE);
-                    switch (VE.DOC_CODE)
-                    {
-                        case "SORD": Code = "D"; break;
-                        case "PORD": Code = "C"; break;
-                        default: Code = "D"; break;
-                    }
-
-                }
                 Code = "D,C";
                 var str = masterHelp.SLCD_help(val, Code);
                 if (str.IndexOf("='helpmnu'") >= 0)
@@ -248,100 +140,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public string ITCD_help(string val, string ITGTYPE, string ITGRPCD = "", string FABITCD = "", string DOC_EFF_DT = "", string JOB_CD = "")
-        {
-            try
-            {
 
-                string scm1 = CommVar.CurSchema(UNQSNO);
-                string valsrch = val.ToUpper().Trim();
-                string sql = "", prccd = "WP";
-                if (ITGTYPE.retStr() != "")
-                {
-                    if (ITGTYPE.IndexOf(',') == -1 && ITGTYPE.IndexOf("'") == -1) ITGTYPE = "'" + ITGTYPE + "'";
-                }
-                sql += "select a.itcd, a.itnm, a.uomcd, a.itgrpcd, b.itgrpnm,b.bargentype, b.itgrptype,a.styleno, a.PCSPERSET,nvl(a.hsncode,b.hsncode)hsncode, " + Environment.NewLine;
-                sql += "a.fabitcd, c.itnm fabitnm, a.styleno||' '||a.itnm itstyle,a.convqtypunit,a.convuomcd " + Environment.NewLine;
-                sql += " from " + scm1 + ".m_sitem a, " + scm1 + ".m_group b, " + scm1 + ".m_sitem c " + Environment.NewLine;
-
-                //sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate from " + Environment.NewLine;
-                //sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from " + Environment.NewLine;
-                //sql += "(select a.barno, a.prccd, a.effdt, " + Environment.NewLine;
-                //sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn " + Environment.NewLine;
-                //sql += "from " + scm1 + ".t_batchmst_price a where nvl(a.rate,0) <> 0 ) " + Environment.NewLine;
-                //sql += "a, " + scm1 + ".t_batchmst_price b, " + scm1 + ".t_batchmst c " + Environment.NewLine;
-                //sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.rn=1 and a.barno=c.barno(+) " + Environment.NewLine;
-                //sql += ") a where prccd='" + prccd + "') d, " + Environment.NewLine;
-
-                //for (int x = 0; x <= 1; x++)
-                //{
-                //    string sqlals = "";
-                //    switch (x)
-                //    {
-                //        case 0:
-                //            sqlals = "v "; break;
-                //        case 1:
-                //            prccd = "RP"; sqlals = "w "; break;
-
-                //    }
-                //    sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate from " + Environment.NewLine;
-                //    sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from " + Environment.NewLine;
-                //    sql += "(select a.barno, a.prccd, a.effdt, " + Environment.NewLine;
-                //    sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn " + Environment.NewLine;
-                //    sql += "from " + scm1 + ".t_batchmst_price a where nvl(a.rate,0) <> 0 " + Environment.NewLine;
-                //    sql += ") " + Environment.NewLine;
-                //    sql += "a, " + scm1 + ".t_batchmst_price b, " + scm1 + ".t_batchmst c " + Environment.NewLine;
-                //    sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.rn=1 and a.barno=c.barno(+) " + Environment.NewLine;
-                //    sql += ") a where prccd='" + prccd + "' " + Environment.NewLine;
-                //    sql += ") " + sqlals + Environment.NewLine;
-                //    if (x != 1) sql += ", " + Environment.NewLine;
-                //}
-
-                sql += "where a.itgrpcd=b.itgrpcd and a.fabitcd=c.itcd(+) " + Environment.NewLine;
-                if (DOC_EFF_DT.retStr() != "" || JOB_CD.retStr() != "")
-                {
-                    sql += "and a.itcd = (select distinct y.itcd from " + scm1 + ".v_sjobmst_stdrt y where a.itcd=y.itcd " + Environment.NewLine;
-                    if (JOB_CD.retStr() != "") sql += "and y.jobcd='" + JOB_CD.retStr() + "' ";
-                    if (DOC_EFF_DT.retStr() != "") sql += "and y.bomeffdt <= to_date('" + DOC_EFF_DT.retStr() + "','dd/mm/yyyy')  " + Environment.NewLine;
-                    sql += ") " + Environment.NewLine;
-                }
-                if (ITGRPCD.retStr() != "") sql += "and a.ITGRPCD ='" + ITGRPCD + "' " + Environment.NewLine;
-                if (ITGTYPE.retStr() != "") sql += "and b.itgrptype in (" + ITGTYPE + ") " + Environment.NewLine;//else sql += "and b.itgrptype not in ('F','C') ";
-
-                if (valsrch.retStr() != "") sql += "and ( upper(a.itcd) like '%" + valsrch + "%' or upper(a.itnm) like '%" + valsrch + "%' or upper(a.styleno) like '%" + valsrch + "%' or upper(a.uomcd) like '%" + valsrch + "%'or upper(a.styleno||' '||a.itnm) like '%" + valsrch + "%'  )  ";
-
-                DataTable rsTmp = masterHelpFa.SQLquery(sql);
-
-                if (val.retStr() == "" || rsTmp.Rows.Count > 1)
-                {
-                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
-                    for (int i = 0; i <= rsTmp.Rows.Count - 1; i++)
-                    {
-                        SB.Append("<tr><td>" + rsTmp.Rows[i]["itstyle"] + "</td><td>" + rsTmp.Rows[i]["itnm"] + "</td><td>" + rsTmp.Rows[i]["itcd"] + "</td><td>" + rsTmp.Rows[i]["uomcd"] + "</td><td>" + rsTmp.Rows[i]["itgrpnm"] + "</td><td>" + rsTmp.Rows[i]["itgrpcd"] + "</td><td>" + rsTmp.Rows[i]["fabitnm"] + "</td><td>" + rsTmp.Rows[i]["fabitcd"] + "</td></tr>");
-                    }
-                    var hdr = "Design No." + Cn.GCS() + "Item Name" + Cn.GCS() + "Item Code" + Cn.GCS() + "UOM" + Cn.GCS() + "Item Group Name" + Cn.GCS() + "Item Group Code" + Cn.GCS() + "Fabric Item Name" + Cn.GCS() + "Fabric Item Code";
-                    return masterHelpFa.Generate_help(hdr, SB.ToString());
-                }
-                else
-                {
-                    string str = "";
-                    if (rsTmp.Rows.Count > 0)
-                    {
-                        str = masterHelpFa.ToReturnFieldValues("", rsTmp);
-                    }
-                    else
-                    {
-                        str = "Invalid Item Code. Please Enter a Valid Item Code !!";
-                    }
-                    return str;
-                }
-            }
-            catch (Exception ex)
-            {
-                return ex.Message + " " + ex.InnerException;
-            }
-
-        }
 
         public string BtnSubmit(string itcd, string itnm, string fdt, string tdt, string check, string itgrpcd, string location, string salpur)
         {
@@ -374,7 +173,6 @@ namespace Improvar.Controllers
             try
             {
                 PartyitemSummReport VE = new PartyitemSummReport();
-                //string itcd = (from a in VE.billdet where a.Checked == true select a.itcd).ToArray().retSqlfromStrarray();
                 if (itgrpcd.retStr() != "") itgrpcd = itgrpcd.retSqlformat();
                 if (LOCATION.retStr() != "") LOCATION = LOCATION.retSqlformat();
                 if (slcd.retStr() != "") slcd = slcd.retSqlformat();
@@ -414,11 +212,7 @@ namespace Improvar.Controllers
                 VE.T_qnty = VE.ItmDet.Sum(a => a.qnty).retDbl();
                 VE.T_amt = VE.ItmDet.Sum(a => a.amt).retDbl();
 
-                //VE.T_sqntyi = VE.ItmDet.Sum(a => a.sqnty).retDbl();
-                //VE.T_samti = VE.ItmDet.Sum(a => a.samt).retDbl();
-                //VE.T_rqntyi = VE.ItmDet.Sum(a => a.rqnty).retDbl();
-                //VE.T_ramti = VE.ItmDet.Sum(a => a.ramt).retDbl();
-                string jobrt="";
+                string jobrt = "";
                 itnm = "";
                 if (dt != null && dt.Rows.Count > 0)
                 {
@@ -444,10 +238,7 @@ namespace Improvar.Controllers
             string prccd = "WP";
             string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
             string txntag = "'SB','SR','SD','SC'";
-            //if (CHECK == "Y")
-            //{
-            //    txntag = "'SB'";
-            //}
+
             if (SALPUR == "S")
             {
                 if (CHECK == "Y")
@@ -599,7 +390,7 @@ namespace Improvar.Controllers
                 sql += ") " + sqlals;
                 if (x != 1) sql += ", ";
             }
-            
+
             sql += "where a.autono = b.autono(+) and a.slcd = c.slcd and g.conslcd = d.slcd(+) and a.autono = f.autono(+) and h.agslcd = l.slcd(+)  and h.sagslcd = m.slcd(+) " + Environment.NewLine;
             sql += "and f.translcd = e.slcd(+) and a.autono = f.autono(+) and a.autono = g.autono(+) and a.autono = h.autono(+) and  g.autono = i.autono(+) and a.doccd = j.doccd(+) and a.autono = k.autono(+) and b.itcd=n.itcd(+) and n.itgrpcd=o.itgrpcd(+) and i.rtdebcd=p.rtdebcd(+) and b.barno=y.barno(+) and b.barno=v.barno(+) and b.barno=w.barno(+) " + Environment.NewLine;
 
@@ -620,70 +411,11 @@ namespace Improvar.Controllers
 
             DataTable tbl = masterHelp.SQLquery(sql);
 
-         
+
             return tbl;
 
         }
 
-        public ActionResult GetBarCodeDetails(string val)
-        {
-            try
-            {
-                string str = masterHelp.ITCD_help(val, "");
-                if (str.IndexOf("='helpmnu'") >= 0)
-                {
-                    return PartialView("_Help2", str);
-                }
-                else
-                {
-                    if (str.IndexOf(Cn.GCS()) == -1)
-                    {
-                        return Content(str = "");
-                    }
-                    else
-                    {
-                        DataTable bardet = Sales_func.GetBarHelp(System.DateTime.Now.Date.retDateStr(), "", "", val.retSqlformat());
-                        if (bardet != null && bardet.Rows.Count > 0)
-                        {
-                            str += masterHelp.ToReturnFieldValues("", bardet);
-
-                            string barno = str.retCompValue("BARNO").retStr();
-                            DataTable pricedet = Sales_func.GetLastPriceFrmMaster(barno);
-                            if (pricedet != null && pricedet.Rows.Count > 0)
-                            {
-                                double rprate = (from DataRow dr in pricedet.Rows where dr["prccd"].retStr() == "RP" select dr["rate"].retDbl()).FirstOrDefault();
-                                double wprate = (from DataRow dr in pricedet.Rows where dr["prccd"].retStr() == "WP" select dr["rate"].retDbl()).FirstOrDefault();
-                                str += "^WPRATE=^" + wprate + Cn.GCS();
-                                str += "^RPRATE=^" + rprate + Cn.GCS();
-                            }
-                        }
-
-                        var BarImages = str.retCompValue("BARIMAGE").retStr().Split((char)179);
-                        string BARIMAGEPATH = "";
-                        foreach (var v in BarImages)
-                        {
-                            if (v.retStr() != "")
-                            {
-                                if (BARIMAGEPATH != "")
-                                {
-                                    BARIMAGEPATH += (char)179;
-                                }
-                                var temp = v.Split('~');
-                                BARIMAGEPATH += CommVar.WebUploadDocURL(temp[0]) + "~" + temp[1];
-                            }
-                        }
-                        str += "^BARIMAGEPATH=^" + BARIMAGEPATH + Cn.GCS();
-                        return Content(str);
-                    }
-                }
-
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
-            }
-        }
 
     }
 }
