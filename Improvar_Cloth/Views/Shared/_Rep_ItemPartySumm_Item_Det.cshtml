@@ -86,7 +86,7 @@ function sortTable(colIndex) {
 </script>
 
 <div id="ItemHead" style="margin-top: 7px;margin-left:13px;font-size: 14px;font-weight: bold;">
-    <span>Item : @ViewBag.ITNM</span>
+    <span>Design : @ViewBag.ITNM</span>
 </div>
 <div class="sticky-table sticky-ltr-cells" style="margin-left:4px;margin-right:4px;margin-top:7px;border-radius:10px;transform: translate(0%, 0%);z-index:1100;">
     <div style="height:auto;overflow-y:auto;max-height:58vh">
@@ -97,18 +97,18 @@ function sortTable(colIndex) {
                             All
                             <input type="checkbox" name="Test" onclick="SetAllCheckBoxesFilterCUSTOM(this, 'exist_GRP', 'EChecked_', 'searchEX')" />
                         </th>*@
-                    <th class="" onclick="sortTable(0)" style="width:98px;">Refdt</th>
-                    <th class="" onclick="sortTable(1)" style="width:168px;">Refno</th>
-                    <th class="" onclick="sortTable(2)" style="width:98px;">Design</th>
+                    <th class="" onclick="sortTable(0)" style="width:150px;">Doctype</th>
+                    <th class="" onclick="sortTable(1)" style="width:98px;">Refdt</th>
+                    <th class="" onclick="sortTable(2)" style="width:168px;">Refno</th>
+                    <th class="" onclick="sortTable(3)" style="width:98px;">Party Name</th>
                     @*<th class="onclick="sortTable(0)" " style="width:60px;">Party</th>*@
-                    <th class="" onclick="sortTable(3)" style="width:150px;">Doctype</th>
                     <th class="" onclick="sortTable(4)" style="width:80px;">Color</th>
                     <th class="" onclick="sortTable(5)" style="width:150px;">Item Remarks</th>
                     <th class="" onclick="sortTable(6)" style="width:80px;">Disc%</th>
-                    <th class="" onclick="sortTable(7)" style="width:80px;">Sal.Qnty</th>
-                    <th class="" onclick="sortTable(8)" style="width:150px;">Sal.Amt</th>
-                    <th class="" onclick="sortTable(9)" style="width:80px;">Ret.Qnty</th>
-                    <th class="" onclick="sortTable(10)" style="width:150px;">Ret.Amt</th>
+                    <th class="" onclick="sortTable(7)" style="width:80px;">Qnty</th>
+                    <th class="" onclick="sortTable(8)" style="width:150px;">Rate</th>
+                    <th class="" onclick="sortTable(9)" style="width:80px;">Amt</th>
+                    @*<th class="" onclick="sortTable(10)" style="width:150px;">Ret.Amt</th>*@
                 </tr>
             </thead>
             <tbody id="ItemBody">
@@ -118,19 +118,19 @@ function sortTable(colIndex) {
                     {
                         <tr id="exist_GRP@(i+1)">
                             <td>
+                                @Html.EditorFor(model => model.ItmDet[i].docnm, new { htmlAttributes = new { @class = "atextBoxFor", id = "docnm_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
+                            </td>
+                            <td>
                                 @Html.EditorFor(model => model.ItmDet[i].refdt, new { htmlAttributes = new { @class = "atextBoxFor", id = "refdt_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
                             </td>
                             <td>
                                 @Html.EditorFor(model => model.ItmDet[i].refno, new { htmlAttributes = new { @class = "atextBoxFor", id = "refno_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
                             </td>
-                            <td>
-                                @Html.EditorFor(model => model.ItmDet[i].Design, new { htmlAttributes = new { @class = "atextBoxFor", id = "Design_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
-                            </td>
                             @*<td>
-                                    @Html.EditorFor(model => model.ItmDet[i].slnm, new { htmlAttributes = new { @class = "atextBoxFor", id = "slnm_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
-                                </td>*@
+                                @Html.EditorFor(model => model.ItmDet[i].Design, new { htmlAttributes = new { @class = "atextBoxFor", id = "Design_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
+                            </td>*@
                             <td>
-                                @Html.EditorFor(model => model.ItmDet[i].docnm, new { htmlAttributes = new { @class = "atextBoxFor", id = "docnm_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
+                                    @Html.EditorFor(model => model.ItmDet[i].slnm, new { htmlAttributes = new { @class = "atextBoxFor", id = "slnm_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
                             </td>
                             <td>
                                 @Html.EditorFor(model => model.ItmDet[i].colrnm, new { htmlAttributes = new { @class = "atextBoxFor", id = "colrnm_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
@@ -142,17 +142,17 @@ function sortTable(colIndex) {
                                 @Html.EditorFor(model => model.ItmDet[i].disc, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "disc_" + i, maxlength = 4, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
                             </td>
                             <td>
-                                @Html.EditorFor(model => model.ItmDet[i].sqnty, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "sqnty_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
+                                @Html.EditorFor(model => model.ItmDet[i].qnty, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "qnty_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
                             </td>
                             <td>
-                                @Html.EditorFor(model => model.ItmDet[i].samt, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "samt_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
+                                @Html.EditorFor(model => model.ItmDet[i].rate, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "rate_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
                             </td>
                             <td>
-                                @Html.EditorFor(model => model.ItmDet[i].rqnty, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "rqnty_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
+                                @Html.EditorFor(model => model.ItmDet[i].amt, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "amt_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
                             </td>
-                            <td>
-                                @Html.EditorFor(model => model.ItmDet[i].ramt, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "ramt_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
-                            </td>
+                            @*<td>
+                                    @Html.EditorFor(model => model.ItmDet[i].ramt, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "ramt_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
+                                </td>*@
                         </tr>
                     }
                 }
@@ -175,16 +175,11 @@ function sortTable(colIndex) {
                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                     <td style="text-align:right;border:groove;">
-                        @Html.EditorFor(model => Model.T_sqntyi, new { htmlattributes = new { id = "T_sqntyi", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
+                        @Html.EditorFor(model => Model.T_qnty, new { htmlattributes = new { id = "T_qnty", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
                     </td>
+                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                     <td style="text-align:right;border:groove;">
-                        @Html.EditorFor(model => Model.T_samti, new { htmlattributes = new { id = "T_samti", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
-                    </td>
-                    <td style="text-align:right;border:groove;">
-                        @Html.EditorFor(model => Model.T_rqntyi, new { htmlattributes = new { id = "T_rqntyi", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
-                    </td>
-                    <td style="text-align:right;border:groove;">
-                        @Html.EditorFor(model => Model.T_ramti, new { htmlattributes = new { id = "T_ramti", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
+                        @Html.EditorFor(model => Model.T_amt, new { htmlattributes = new { id = "T_amt", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
                     </td>
                 </tr>
             </tfoot>

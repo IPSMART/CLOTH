@@ -1564,9 +1564,7 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-3">
-                                    <div class="editor-field">
-                                        @*@Html.EditorFor(model => model.T_SORD.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeyup = "GetHelp_WithId('" + @Url.Action("GetPartyDetails", PageControllerName) + "','SLCD/PartyName','1/0','Party Details','SLCD','BRANDCD')", onblur = "SelectSubLedgerCode(this.value,SLCD,PartyName,'urlnamePARTY');", @placeholder = "Code", maxlength = 8 } })
-                                            <img src="~/Image/search.png" id="PARTY_HELP" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp_WithId('@Url.Action("GetPartyDetails", PageControllerName )','SLCD/PartyName','1/0','Party Details','SLCD','BRANDCD')" />*@
+                                    <div class="editor-field">                                       
                                         @Html.EditorFor(model => model.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", @autocomplete = "off", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=SLAREA','partylinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=SLAREA','partylinkcd');", @placeholder = "Code", maxlength = 8 } })
                                         <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=SLAREA','partylinkcd')" />
                                     </div>
@@ -1574,14 +1572,7 @@
                                 <div class="col-lg-7">
                                     <div class="editor-field">
                                         @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", maxlength = 45, @title = "Only for View", @placeholder = "Party Name", @readonly = "readonly", tabindex = "-1" } })
-                                        @*@Html.HiddenFor(model => model.PARTYCD, new { @class = "form-control", id = "PARTYCD_H" })
-                                            @Html.HiddenFor(model => model.PARTYNM, new { @class = "form-control", id = "PARTYNM_H" })
-                                            @Html.HiddenFor(model => model.AREACD, new { @class = "form-control", id = "AREACD_H" })
-                                            @Html.HiddenFor(model => model.AREANM, new { @class = "form-control", id = "AREANM_H" })
-                                            @Html.HiddenFor(model => model.AGTCD, new { @class = "form-control", id = "AGTCD_H" })
-                                            @Html.HiddenFor(model => model.AGTNM, new { @class = "form-control", id = "AGTNM_H" })
-                                            @Html.HiddenFor(model => model.TRNSCD, new { @class = "form-control", id = "TRNSCD_H" })
-                                            @Html.HiddenFor(model => model.TRNSNM, new { @class = "form-control", id = "TRNSNM_H" })*@
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -1788,14 +1779,6 @@
                             @Html.HiddenFor(model => model.ONLYSALES2, new { id = "ONLYSALES2" })
                             @Html.HiddenFor(model => model.LOCATION2, new { id = "LOCATION2" })
                             @Html.HiddenFor(model => model.SALPUR2, new { id = "SALPUR2" })
-
-
-
-
-
-
-
-
                         </div>
                     </div>
                 </div>
