@@ -18,9 +18,10 @@ namespace Improvar.Controllers
         // GET: M_Grpmas
         Connection Cn = new Connection(); string CS = null;
         MasterHelp masterHelp = new MasterHelp();
+        MasterHelpFa masterHelpFa = new MasterHelpFa();
         DropDownHelp dropDownHelp = new DropDownHelp();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
-        public ActionResult Rep_ItemPartySumm(string SLCD = "", string SLNM = "", string FDT = "", string TDT = "", string CHECK = "", string ITGRPCD = "")
+        public ActionResult Rep_ItemPartySumm(string ITCD = "", string ITNM = "", string FDT = "", string TDT = "", string CHECK = "", string ITGRPCD = "", string LOCCD = "", string SALPUR = "")
         {
 
             try
@@ -31,22 +32,29 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    ViewBag.formname = "Party & Design Summary";
+                    string com = CommVar.Compcd(UNQSNO);
+                    ViewBag.formname = "Design & Party Summary";
                     PartyitemSummReport VE = new PartyitemSummReport();
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
                     string scmf = CommVar.FinSchema(UNQSNO);
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+                    ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
 
-                    if (SLCD.retStr() == "")
+                    if (ITCD.retStr() == "")
                     {
                         VE.DropDown_list_ITGRP = dropDownHelp.GetItgrpcdforSelection();
                         VE.ITGRPCD = masterHelp.ComboFill("ITGRPCD", VE.DropDown_list_ITGRP, 0, 1);
+
+                        VE.DropDown_list = (from i in DBF.M_LOCA
+                                            where i.COMPCD == com
+                                            select new DropDown_list() { value = i.LOCCD, text = i.LOCNM }).Distinct().OrderBy(s => s.text).ToList();// location
+                        VE.LOCATION = masterHelp.ComboFill("loccd", VE.DropDown_list, 0, 1);
                     }
                     else
                     {
-                        VE.SLCD = SLCD; VE.FDT2 = FDT; VE.TDT2 = TDT; VE.ITGRPCD = ITGRPCD;
+                        VE.ITCD = ITCD; VE.FDT2 = FDT; VE.TDT2 = TDT; VE.ITGRPCD = ITGRPCD;
 
-                        VE.SLCD2 = SLCD; VE.ITGRPCD2 = ITGRPCD; VE.ONLYSALES2 = CHECK;
+                        VE.ITCD2 = ITCD; VE.ITGRPCD2 = ITGRPCD; VE.ONLYSALES2 = CHECK; VE.LOCATION2 = LOCCD; VE.SALPUR2 = SALPUR;
 
                         if (CHECK == "Y")
                         {
@@ -56,38 +64,32 @@ namespace Improvar.Controllers
                         {
                             VE.CHECK = false;
                         }
-                        ViewBag.SLNM = SLNM + " [" + SLCD + "]";
-
-                        DataTable dt = GetData(SLCD, FDT, TDT, ITGRPCD, CHECK);
+                        ViewBag.ITNM = ITNM + " [" + ITCD + "]";
+                        if (ITCD.retStr() != "") ITCD = ITCD.retSqlformat();
+                        if (ITGRPCD.retStr() != "") ITGRPCD = ITGRPCD.retSqlformat();
+                        if (LOCCD.retStr() != "") LOCCD = LOCCD.retSqlformat();
+                        DataTable dt = GetData(ITCD, FDT, TDT, ITGRPCD, CHECK, "", LOCCD, SALPUR);
 
                         VE.billdet = (from DataRow DR in dt.Rows
-                                      group DR by new
-                                      {
-                                          styleno = DR["itstyle"].retStr(),
-                                          itgrpnm = DR["itgrpnm"].retStr(),
-                                          itnm = DR["itnm"].retStr(),
-                                          itcd = DR["itcd"].retStr(),
-                                          BarImages = DR["barimage"].retStr(),
-                                      } into X
                                       select new billdet()
                                       {
-                                          itcd = X.Key.itcd.retStr(),
-                                          styleno = X.Key.styleno.retStr(),
-                                          itgrpnm = X.Key.itgrpnm.retStr(),
-                                          itnm = X.Key.itnm.retStr(),
-                                          BarImages = X.Key.BarImages.retStr(),
-                                          sqnty = X.Sum(Z => Z.Field<decimal>("sqnty").retDbl()),
-                                          samt = X.Sum(Z => Z.Field<decimal>("samt").retDbl()),
-                                          srate = X.Sum(Z => Z.Field<decimal>("sqnty").retDbl()) == 0 ? 0 : (X.Sum(Z => Z.Field<decimal>("samt").retDbl()) / X.Sum(Z => Z.Field<decimal>("sqnty").retDbl())).toRound(2),
+                                          WPrate = DR["wprate"].ToString().retStr(),
+                                          RPrate = DR["rprate"].ToString().retStr(),
+                                          BarImages = DR["barimage"].ToString().retStr(),
+                                          DesignNo = DR["itstyle"].ToString().retStr(),
+                                      }).Distinct().OrderBy(A => A.styleno).ToList();
+                        //sqnty = X.Sum(Z => Z.Field<decimal>("sqnty").retDbl()),
+                        //samt = X.Sum(Z => Z.Field<decimal>("samt").retDbl()),
+                        //srate = X.Sum(Z => Z.Field<decimal>("sqnty").retDbl()) == 0 ? 0 : (X.Sum(Z => Z.Field<decimal>("samt").retDbl()) / X.Sum(Z => Z.Field<decimal>("sqnty").retDbl())).toRound(2),
 
-                                          rqnty = X.Sum(Z => Z.Field<decimal>("srqnty").retDbl()),
-                                          ramt = X.Sum(Z => Z.Field<decimal>("sramt").retDbl()),
-                                          rrate = X.Sum(Z => Z.Field<decimal>("srqnty").retDbl()) == 0 ? 0 : (X.Sum(Z => Z.Field<decimal>("sramt").retDbl()) / X.Sum(Z => Z.Field<decimal>("srqnty").retDbl())).toRound(2),
+                        //rqnty = X.Sum(Z => Z.Field<decimal>("srqnty").retDbl()),
+                        //ramt = X.Sum(Z => Z.Field<decimal>("sramt").retDbl()),
+                        //rrate = X.Sum(Z => Z.Field<decimal>("srqnty").retDbl()) == 0 ? 0 : (X.Sum(Z => Z.Field<decimal>("sramt").retDbl()) / X.Sum(Z => Z.Field<decimal>("srqnty").retDbl())).toRound(2),
 
-                                          netqnty = (X.Sum(Z => Z.Field<decimal>("sqnty").retDbl()) - X.Sum(Z => Z.Field<decimal>("srqnty").retDbl())).toRound(2),
-                                          netamt = (X.Sum(Z => Z.Field<decimal>("samt").retDbl()) - X.Sum(Z => Z.Field<decimal>("sramt").retDbl())).toRound(2),
-                                          netrate = ((X.Sum(Z => Z.Field<decimal>("sqnty").retDbl()) - X.Sum(Z => Z.Field<decimal>("srqnty").retDbl())).toRound(2)) == 0 ? 0 : (((X.Sum(Z => Z.Field<decimal>("samt").retDbl()) - X.Sum(Z => Z.Field<decimal>("sramt").retDbl())).toRound(2)) / ((X.Sum(Z => Z.Field<decimal>("sqnty").retDbl()) - X.Sum(Z => Z.Field<decimal>("srqnty").retDbl())).toRound(2))).toRound(2),
-                                      }).OrderBy(A => A.styleno).ToList();
+                        //netqnty = (X.Sum(Z => Z.Field<decimal>("sqnty").retDbl()) - X.Sum(Z => Z.Field<decimal>("srqnty").retDbl())).toRound(2),
+                        //netamt = (X.Sum(Z => Z.Field<decimal>("samt").retDbl()) - X.Sum(Z => Z.Field<decimal>("sramt").retDbl())).toRound(2),
+                        //netrate = ((X.Sum(Z => Z.Field<decimal>("sqnty").retDbl()) - X.Sum(Z => Z.Field<decimal>("srqnty").retDbl())).toRound(2)) == 0 ? 0 : (((X.Sum(Z => Z.Field<decimal>("samt").retDbl()) - X.Sum(Z => Z.Field<decimal>("sramt").retDbl())).toRound(2)) / ((X.Sum(Z => Z.Field<decimal>("sqnty").retDbl()) - X.Sum(Z => Z.Field<decimal>("srqnty").retDbl())).toRound(2))).toRound(2),
+
 
                         foreach (var v in VE.billdet)
                         {
@@ -111,12 +113,12 @@ namespace Improvar.Controllers
                         }
 
 
-                        VE.T_sqnty = VE.billdet.Sum(a => a.sqnty).retDbl();
-                        VE.T_samt = VE.billdet.Sum(a => a.samt).retDbl();
-                        VE.T_rqnty = VE.billdet.Sum(a => a.rqnty).retDbl();
-                        VE.T_ramt = VE.billdet.Sum(a => a.ramt).retDbl();
-                        VE.T_netqnty = VE.billdet.Sum(a => a.netqnty).retDbl();
-                        VE.T_netamt = VE.billdet.Sum(a => a.netamt).retDbl();
+                        //VE.T_sqnty = VE.billdet.Sum(a => a.sqnty).retDbl();
+                        //VE.T_samt = VE.billdet.Sum(a => a.samt).retDbl();
+                        //VE.T_rqnty = VE.billdet.Sum(a => a.rqnty).retDbl();
+                        //VE.T_ramt = VE.billdet.Sum(a => a.ramt).retDbl();
+                        //VE.T_netqnty = VE.billdet.Sum(a => a.netqnty).retDbl();
+                        //VE.T_netamt = VE.billdet.Sum(a => a.netamt).retDbl();
 
                         //VE.MGRPNM = DB.M_TMGRP.Where(a => a.MGRPCD == MGRPCD).Select(a => a.MGRPNM).SingleOrDefault();
                         //var base64 = DB.M_TGRP.Where(a => a.MGRPCD == MGRPCD).ToList();
@@ -228,6 +230,7 @@ namespace Improvar.Controllers
                     }
 
                 }
+                Code = "D,C";
                 var str = masterHelp.SLCD_help(val, Code);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
@@ -244,8 +247,120 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        public ActionResult GetItem(string val, string Code)
+        {
+            //var str = ITCD_help(val, Code);
+            var data = Code.Split(Convert.ToChar(Cn.GCS()));
+            string PRCCD = data[5].retStr() == "" ? "WP" : data[5].retStr();
+            string ITCD = data[7].retSqlformat();
+            string DOCDT = System.DateTime.Today.ToString().retDateStr();
+            string barnoOrStyle = val.retStr();
+            string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, "ALL", DOCDT, "", "", PRCCD, "", ITCD, "", "", bar_no);
+            if (str.IndexOf("='helpmnu'") >= 0)
+            {
+                return PartialView("_Help2", str);
+            }
+            else
+            {
+                return Content(str);
+            }
+        }
+        public string ITCD_help(string val, string ITGTYPE, string ITGRPCD = "", string FABITCD = "", string DOC_EFF_DT = "", string JOB_CD = "")
+        {
+            try
+            {
+                
+                string scm1 = CommVar.CurSchema(UNQSNO);
+                string valsrch = val.ToUpper().Trim();
+                string sql = "", prccd = "WP"; 
+                if (ITGTYPE.retStr() != "")
+                {
+                    if (ITGTYPE.IndexOf(',') == -1 && ITGTYPE.IndexOf("'") == -1) ITGTYPE = "'" + ITGTYPE + "'";
+                }
+                sql += "select a.itcd, a.itnm, a.uomcd, a.itgrpcd, b.itgrpnm,b.bargentype, b.itgrptype,a.styleno, a.PCSPERSET,nvl(a.hsncode,b.hsncode)hsncode, " + Environment.NewLine;
+                sql += "a.fabitcd, c.itnm fabitnm, a.styleno||' '||a.itnm itstyle,a.convqtypunit,a.convuomcd " + Environment.NewLine;
+                sql += " from " + scm1 + ".m_sitem a, " + scm1 + ".m_group b, " + scm1 + ".m_sitem c " + Environment.NewLine;
 
-        public string BtnSubmit(string slcd, string slnm)
+                //sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate from " + Environment.NewLine;
+                //sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from " + Environment.NewLine;
+                //sql += "(select a.barno, a.prccd, a.effdt, " + Environment.NewLine;
+                //sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn " + Environment.NewLine;
+                //sql += "from " + scm1 + ".t_batchmst_price a where nvl(a.rate,0) <> 0 ) " + Environment.NewLine;
+                //sql += "a, " + scm1 + ".t_batchmst_price b, " + scm1 + ".t_batchmst c " + Environment.NewLine;
+                //sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.rn=1 and a.barno=c.barno(+) " + Environment.NewLine;
+                //sql += ") a where prccd='" + prccd + "') d, " + Environment.NewLine;
+
+                //for (int x = 0; x <= 1; x++)
+                //{
+                //    string sqlals = "";
+                //    switch (x)
+                //    {
+                //        case 0:
+                //            sqlals = "v "; break;
+                //        case 1:
+                //            prccd = "RP"; sqlals = "w "; break;
+
+                //    }
+                //    sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate from " + Environment.NewLine;
+                //    sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from " + Environment.NewLine;
+                //    sql += "(select a.barno, a.prccd, a.effdt, " + Environment.NewLine;
+                //    sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn " + Environment.NewLine;
+                //    sql += "from " + scm1 + ".t_batchmst_price a where nvl(a.rate,0) <> 0 " + Environment.NewLine;
+                //    sql += ") " + Environment.NewLine;
+                //    sql += "a, " + scm1 + ".t_batchmst_price b, " + scm1 + ".t_batchmst c " + Environment.NewLine;
+                //    sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.rn=1 and a.barno=c.barno(+) " + Environment.NewLine;
+                //    sql += ") a where prccd='" + prccd + "' " + Environment.NewLine;
+                //    sql += ") " + sqlals + Environment.NewLine;
+                //    if (x != 1) sql += ", " + Environment.NewLine;
+                //}
+
+                sql += "where a.itgrpcd=b.itgrpcd and a.fabitcd=c.itcd(+) " + Environment.NewLine;
+                if (DOC_EFF_DT.retStr() != "" || JOB_CD.retStr() != "")
+                {
+                    sql += "and a.itcd = (select distinct y.itcd from " + scm1 + ".v_sjobmst_stdrt y where a.itcd=y.itcd " + Environment.NewLine;
+                    if (JOB_CD.retStr() != "") sql += "and y.jobcd='" + JOB_CD.retStr() + "' ";
+                    if (DOC_EFF_DT.retStr() != "") sql += "and y.bomeffdt <= to_date('" + DOC_EFF_DT.retStr() + "','dd/mm/yyyy')  " + Environment.NewLine;
+                    sql += ") " + Environment.NewLine;
+                }
+                if (ITGRPCD.retStr() != "") sql += "and a.ITGRPCD ='" + ITGRPCD + "' " + Environment.NewLine;
+                if (ITGTYPE.retStr() != "") sql += "and b.itgrptype in (" + ITGTYPE + ") " + Environment.NewLine;//else sql += "and b.itgrptype not in ('F','C') ";
+
+                if (valsrch.retStr() != "") sql += "and ( upper(a.itcd) like '%" + valsrch + "%' or upper(a.itnm) like '%" + valsrch + "%' or upper(a.styleno) like '%" + valsrch + "%' or upper(a.uomcd) like '%" + valsrch + "%'or upper(a.styleno||' '||a.itnm) like '%" + valsrch + "%'  )  ";
+
+                DataTable rsTmp = masterHelpFa.SQLquery(sql);
+
+                if (val.retStr() == "" || rsTmp.Rows.Count > 1)
+                {
+                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                    for (int i = 0; i <= rsTmp.Rows.Count - 1; i++)
+                    {
+                        SB.Append("<tr><td>" + rsTmp.Rows[i]["itstyle"] + "</td><td>" + rsTmp.Rows[i]["itnm"] + "</td><td>" + rsTmp.Rows[i]["itcd"] + "</td><td>" + rsTmp.Rows[i]["uomcd"] + "</td><td>" + rsTmp.Rows[i]["itgrpnm"] + "</td><td>" + rsTmp.Rows[i]["itgrpcd"] + "</td><td>" + rsTmp.Rows[i]["fabitnm"] + "</td><td>" + rsTmp.Rows[i]["fabitcd"] + "</td></tr>");
+                    }
+                    var hdr = "Design No." + Cn.GCS() + "Item Name" + Cn.GCS() + "Item Code" + Cn.GCS() + "UOM" + Cn.GCS() + "Item Group Name" + Cn.GCS() + "Item Group Code" + Cn.GCS() + "Fabric Item Name" + Cn.GCS() + "Fabric Item Code";
+                    return masterHelpFa.Generate_help(hdr, SB.ToString());
+                }
+                else
+                {
+                    string str = "";
+                    if (rsTmp.Rows.Count > 0)
+                    {
+                        str = masterHelpFa.ToReturnFieldValues("", rsTmp);
+                    }
+                    else
+                    {
+                        str = "Invalid Item Code. Please Enter a Valid Item Code !!";
+                    }
+                    return str;
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message + " " + ex.InnerException;
+            }
+
+        }
+
+        public string BtnSubmit(string itcd, string itnm, string fdt, string tdt, string check, string itgrpcd, string location, string salpur)
         {
             try
             {
@@ -253,16 +368,16 @@ namespace Improvar.Controllers
                 var PreviousUrl = System.Web.HttpContext.Current.Request.UrlReferrer.AbsoluteUri;
                 var uri = new Uri(PreviousUrl);//Create Virtually Query String
                 var queryString = System.Web.HttpUtility.ParseQueryString(uri.Query);
-                if (queryString.Get("SLCD") == null)
+                if (queryString.Get("ITCD") == null)
                 {
-                    url = Request.UrlReferrer.ToString() + "&SLCD=" + slcd + "&SLNM=" + slnm ;
+                    url = Request.UrlReferrer.ToString() + "&ITCD=" + itcd + "&ITNM=" + itnm + "&FDT=" + fdt + "&TDT=" + tdt + "&CHECK=" + check + "&ITGRPCD=" + itgrpcd + "&LOCCD=" + location + "&SALPUR=" + salpur;
                 }
                 else
                 {
                     string dd = Request.UrlReferrer.ToString();
-                    int pos = Request.UrlReferrer.ToString().IndexOf("&SLCD=");
+                    int pos = Request.UrlReferrer.ToString().IndexOf("&ITCD=");
                     url = dd.Substring(0, pos);
-                    url = url + "&SLCD=" + slcd + "&SLNM=" + slnm ;
+                    url = url + "&ITCD=" + itcd + "&ITNM=" + itnm + "&FDT=" + fdt + "&TDT=" + tdt + "&CHECK=" + check + "&ITGRPCD=" + itgrpcd + "&LOCCD=" + location + "&SALPUR=" + salpur;
                 }
                 return url;
             }
@@ -271,18 +386,19 @@ namespace Improvar.Controllers
                 return null;
             }
         }
-        public ActionResult GetItemData(string slcd = "", string fdt = "", string tdt = "", string check = "", string itgrpcd = "", string itcd = "", string itnm = "")
+        public ActionResult GetItemData(string slcd = "", string fdt = "", string tdt = "", string check = "", string itgrpcd = "", string itcd = "", string itnm = "", string LOCATION = "", string SALPUR = "")
         {
             try
             {
                 PartyitemSummReport VE = new PartyitemSummReport();
                 //string itcd = (from a in VE.billdet where a.Checked == true select a.itcd).ToArray().retSqlfromStrarray();
+                if (itgrpcd.retStr() != "") itgrpcd = itgrpcd.retSqlformat();
+                if (LOCATION.retStr() != "") LOCATION = LOCATION.retSqlformat();
+                if (slcd.retStr() != "") slcd = slcd.retSqlformat();
+                if (itcd.retStr() != "") itcd = itcd.retSqlformat();
 
-                //string sort = "itstyle, docdt, docno ";
-                DataTable dt = GetData(slcd, fdt, tdt, itgrpcd, check, itcd);
-                //dt.DefaultView.Sort = sort;
-                //dt.DefaultView.ToTable();
-
+                DataTable dt = GetData(slcd, fdt, tdt, itgrpcd, check, itcd, LOCATION, SALPUR);
+                string doctag = SALPUR == "S" ? "SB" : "PB";
                 VE.ItmDet = (from DataRow DR in dt.Rows
                              group DR by new
                              {
@@ -294,6 +410,8 @@ namespace Improvar.Controllers
                                  colrnm = DR["colrnm"].retStr(),
                                  itrem = DR["itrem"].retStr(),
                                  disc = DR["scmdiscrate"].retDbl(),
+                                 rate = DR["rate"].retDbl(),
+                                 doctag = DR["doctag"].retStr(),
                              } into X
                              select new ItmDet()
                              {
@@ -305,12 +423,13 @@ namespace Improvar.Controllers
                                  colrnm = X.Key.colrnm.retStr(),
                                  itrem = X.Key.itrem.retStr(),
                                  disc = X.Key.disc.retDbl(),
-                                 //sqnty = X.Sum(Z => Z.Field<decimal>("sqnty").retDbl()),
-                                 //samt = X.Sum(Z => Z.Field<decimal>("samt").retDbl()),
-
-                                 //rqnty = X.Sum(Z => Z.Field<decimal>("srqnty").retDbl()),
-                                 //ramt = X.Sum(Z => Z.Field<decimal>("sramt").retDbl()),
+                                 rate = X.Key.rate.retDbl(),
+                                 qnty = X.Key.doctag.retStr() == doctag ? X.Sum(Z => Z.Field<decimal>("qnty").retDbl()) : (X.Sum(Z => Z.Field<decimal>("qnty").retDbl()) * -1),
+                                 amt = X.Key.doctag.retStr() == doctag ? X.Sum(Z => Z.Field<decimal>("amt").retDbl()) : (X.Sum(Z => Z.Field<decimal>("amt").retDbl()) * -1),
                              }).OrderBy(A => A.Design).OrderBy(A => A.refdt).OrderBy(A => A.refno).ToList();
+
+                VE.T_qnty = VE.ItmDet.Sum(a => a.qnty).retDbl();
+                VE.T_amt = VE.ItmDet.Sum(a => a.amt).retDbl();
 
                 //VE.T_sqntyi = VE.ItmDet.Sum(a => a.sqnty).retDbl();
                 //VE.T_samti = VE.ItmDet.Sum(a => a.samt).retDbl();
@@ -321,7 +440,7 @@ namespace Improvar.Controllers
 
                 VE.DefaultView = true;
                 ModelState.Clear();
-                return PartialView("_Rep_PartyItemSumm_Item_Det", VE);
+                return PartialView("_Rep_ItemPartySumm_Item_Det", VE);
             }
             catch (Exception ex)
             {
@@ -330,28 +449,44 @@ namespace Improvar.Controllers
             }
         }
 
-        public DataTable GetData(string SLCD = "", string FDT = "", string TDT = "", string ITGRPCD = "", string CHECK = "", string ITCD = "")
+        public DataTable GetData(string SLCD = "", string FDT = "", string TDT = "", string ITGRPCD = "", string CHECK = "", string ITCD = "", string LOCATION = "", string SALPUR = "")
         {
+            string prccd = "WP";
             string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
             string txntag = "'SB','SR','SD','SC'";
-            if (CHECK == "Y")
+            //if (CHECK == "Y")
+            //{
+            //    txntag = "'SB'";
+            //}
+            if (SALPUR == "S")
             {
-                txntag = "'SB'";
+                if (CHECK == "Y")
+                {
+                    txntag = "'SB'";
+                }
+                else
+                {
+                    txntag = "'SB','SR','SD','SC'";
+                }
+            }
+            else
+            {
+                if (CHECK == "Y")
+                {
+                    txntag = "'PB'";
+                }
+                else
+                {
+                    txntag = "'PB','PR','PD','PC'";
+                }
             }
             string sql = "";
             sql += " select a.autono, a.doccd, a.docno,a.doctag, a.cancel,a.docdt,a.agslcd, " + Environment.NewLine;
             sql += "a.prefno, a.prefdt, a.slcd, a.slnm,a.slarea,a.agslnm,a.sagslnm,a.nm,a.mobile,a.gstno, a.district, " + Environment.NewLine;
-            //if (dtlsumm == "E")
-            //{
-            //    sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then (case when a.rn = 1 then nvl(a.roamt, 0) else 0 end)*-1 else (case when a.rn = 1 then nvl(a.roamt, 0) else 0 end)end) roamt, " + Environment.NewLine;
-            //    sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then (case when a.rn = 1 then nvl(a.tcsamt, 0) else 0 end)*-1 else (case when a.rn = 1 then nvl(a.tcsamt, 0) else 0 end)end) tcsamt, " + Environment.NewLine;
-            //    sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then (case when a.rn = 1 then nvl(a.blamt, 0) else 0 end)*-1 else (case when a.rn = 1 then nvl(a.blamt, 0) else 0 end)end) blamt, " + Environment.NewLine;
-            //}
-            //else
-            //{
+
             sql += "a.roamt,a.blamt,a.tcsamt, " + Environment.NewLine;
-            //}
-            sql += "a.slno,a.stkdrcr,a.itgrpnm, a.itcd, " + Environment.NewLine;
+
+            sql += "a.slno,a.stkdrcr,a.itgrpnm, a.itcd,a.qnty,a.rate,a.amt, " + Environment.NewLine;
             sql += "a.itnm,a.itstyle, a.itrem,a.barno, a.barimagecount, a.barimage, a.hsncode,a.uomcd,a.uomnm, a.decimals,a.colrcd,a.colrnm, " + Environment.NewLine;
 
             sql += "(case when a.doctag = 'SB' then nvl(a.nos, 0) else 0 end)snos," + Environment.NewLine;
@@ -366,38 +501,18 @@ namespace Improvar.Controllers
             sql += "(case when a.doctag = 'SB' then nvl(a.amt, 0) else 0 end)samt," + Environment.NewLine;
             sql += "(case when a.doctag = 'SR' then nvl(a.amt, 0) else 0 end)sramt," + Environment.NewLine;
 
-            //if (dtlsumm == "E")
-            //{
-            //    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.amt, 0) * -1 else nvl(a.amt, 0) end)amt," + Environment.NewLine;
-            //    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.scmdiscamt, 0) * -1 else nvl(a.scmdiscamt, 0) end)scmdiscamt," + Environment.NewLine;
-            //    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.tddiscamt, 0) * -1 else nvl(a.tddiscamt, 0) end)tddiscamt," + Environment.NewLine;
-            //    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.discamt, 0) * -1 else nvl(a.discamt, 0) end)discamt," + Environment.NewLine;
-            //    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.TXBLVAL, 0) * -1 else nvl(a.TXBLVAL, 0) end)TXBLVAL," + Environment.NewLine;
-            //}
-            //else
-            //{
+
             sql += " a.amt,a.scmdiscrate,a.scmdiscamt, a.tddiscamt, a.discamt,a.TXBLVAL, " + Environment.NewLine;
 
-            //}
+
             sql += " a.conslcd, a.cslnm,a.cgstno, a.cdistrict, " + Environment.NewLine;
             sql += "a.trslnm,a.lrno,a.lrdt,a.GRWT,a.TRWT,a.NTWT,a.ordrefno,a.ordrefdt," + Environment.NewLine;
-            //if (dtlsumm == "E")
-            //{
-            //    sql += "  a.igstper,(case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.igstamt, 0) * -1 else nvl(a.igstamt, 0) end)igstamt,a.cgstper," + Environment.NewLine;
-            //    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.cgstamt, 0) * -1 else nvl(a.cgstamt, 0) end)cgstamt,a.sgstper," + Environment.NewLine;
-            //    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.sgstamt, 0) * -1 else nvl(a.sgstamt, 0) end)sgstamt,a.cessper," + Environment.NewLine;
-            //    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.cessamt, 0) * -1 else nvl(a.sgstamt, 0) end)cessamt," + Environment.NewLine;
-            //    sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.blqnty, 0)*-1 else nvl(a.blqnty, 0) end)blqnty," + Environment.NewLine;
-            //    sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.NETAMT, 0)*-1 else nvl(a.NETAMT, 0) end)NETAMT,a.gstper," + Environment.NewLine;
-            //    sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.gstamt, 0)*-1 else nvl(a.gstamt, 0) end)gstamt," + Environment.NewLine;
-            //}
-            //else
-            //{
+
             sql += "a.igstper,a.igstamt,a.cgstper,a.cgstamt,a.sgstper,a.sgstamt,a.cessper,a.cessamt,a.blqnty,a.NETAMT,a.gstper,a.gstamt," + Environment.NewLine;
             //}
 
 
-            sql += "a.ackno,a.ackdt,a.pageno,a.PAGESLNO,a.baleno,a.docrem,a.bltype,a.docnm  " + Environment.NewLine;
+            sql += "a.ackno,a.ackdt,a.pageno,a.PAGESLNO,a.baleno,a.docrem,a.bltype,a.docnm,a.wprate,a.rprate  " + Environment.NewLine;
             sql += "from ( " + Environment.NewLine;
 
 
@@ -409,7 +524,7 @@ namespace Improvar.Controllers
             sql += " nvl(nullif(b.blqnty,0),b.qnty)qnty, b.rate, b.amt,b.scmdiscrate,b.scmdiscamt, b.tddiscamt, b.discamt,b.TXBLVAL, g.conslcd, d.slnm cslnm, d.gstno cgstno, d.district cdistrict, " + Environment.NewLine;
             sql += " e.slnm trslnm, f.lrno,nvl(to_char(f.lrdt,'dd/mm/yyyy'),'')lrdt,f.GRWT,f.TRWT,f.NTWT, '' ordrefno, to_char(nvl('', ''), 'dd/mm/yyyy') ordrefdt, b.igstper, b.igstamt, b.cgstper, " + Environment.NewLine;
             sql += " b.cgstamt,b.sgstamt, b.cessper, b.cessamt,b.blqnty,b.NETAMT,b.sgstper,b.igstper+b.cgstper+b.sgstper gstper,b.igstamt + b.cgstamt + b.sgstamt gstamt,k.ackno,nvl(to_char(k.ackdt,'dd/mm/yyyy'),'')ackdt,b.pageno,b.PAGESLNO,b.baleno,h.docrem,h.bltype,  " + Environment.NewLine;
-            sql += "row_number() over(partition by a.autono order by b.slno)rn,j.docnm, y.barimagecount, y.barimage " + Environment.NewLine;
+            sql += "row_number() over(partition by a.autono order by b.slno)rn,j.docnm, y.barimagecount, y.barimage,v.rate wprate,w.rate rprate " + Environment.NewLine;
             sql += " from ( " + Environment.NewLine;
             sql += " select a.autono,a.doctag, b.doccd, b.docno, b.cancel, " + Environment.NewLine;
             sql += "b.docdt, " + Environment.NewLine;
@@ -419,7 +534,14 @@ namespace Improvar.Controllers
             sql += " " + scmf + ".m_subleg c " + Environment.NewLine;
             sql += "  where a.autono = b.autono and a.slcd = c.slcd(+) " + Environment.NewLine;
             sql += "  and  b.compcd = '" + COM + "' " + Environment.NewLine;
-            sql += " and b.loccd = '" + LOC + "'  " + Environment.NewLine;
+            if (LOCATION.retStr() != "")
+            {
+                sql += " and b.loccd in (" + LOCATION + ") " + Environment.NewLine;
+            }
+            else
+            {
+                sql += " and b.loccd = '" + LOC + "'  " + Environment.NewLine;
+            }
 
             if (FDT != "") sql += "and b.docdt >= to_date('" + FDT + "','dd/mm/yyyy')   " + Environment.NewLine;
             if (TDT != "") sql += "and b.docdt <= to_date('" + TDT + "','dd/mm/yyyy')   " + Environment.NewLine;
@@ -461,28 +583,57 @@ namespace Improvar.Controllers
             sql += "where a.mainbarno=b.barno(+) ) a, " + Environment.NewLine;
             sql += "" + scm1 + ".t_batch_img_hdr b " + Environment.NewLine;
             sql += "where a.imgbarno=b.barno(+) and a.imgslno=b.slno(+) ) a " + Environment.NewLine;
-            sql += "group by a.barno ) y " + Environment.NewLine;
+            sql += "group by a.barno ) y, " + Environment.NewLine;
 
+            for (int x = 0; x <= 1; x++)
+            {
+                string sqlals = "";
+                switch (x)
+                {
+                    case 0:
+                        sqlals = "v "; break;
+                    case 1:
+                        prccd = "RP"; sqlals = "w "; break;
+
+                }
+                sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate from " + Environment.NewLine;
+                sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from " + Environment.NewLine;
+                sql += "(select a.barno, a.prccd, a.effdt, " + Environment.NewLine;
+                sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn " + Environment.NewLine;
+                sql += "from " + scm1 + ".t_batchmst_price a where nvl(a.rate,0) <> 0 " + Environment.NewLine;
+                if (TDT.retStr() != "") sql += "and a.effdt <= to_date('" + TDT + "','dd/mm/yyyy') " + Environment.NewLine;
+                sql += ") " + Environment.NewLine;
+                sql += "a, " + scm1 + ".t_batchmst_price b, " + scm1 + ".t_batchmst c " + Environment.NewLine;
+                sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.rn=1 and a.barno=c.barno(+) " + Environment.NewLine;
+                sql += ") a where prccd='" + prccd + "' " + Environment.NewLine;
+                sql += ") " + sqlals;
+                if (x != 1) sql += ", ";
+            }
+            
             sql += "where a.autono = b.autono(+) and a.slcd = c.slcd and g.conslcd = d.slcd(+) and a.autono = f.autono(+) and h.agslcd = l.slcd(+)  and h.sagslcd = m.slcd(+) " + Environment.NewLine;
-            sql += "and f.translcd = e.slcd(+) and a.autono = f.autono(+) and a.autono = g.autono(+) and a.autono = h.autono(+) and  g.autono = i.autono(+) and a.doccd = j.doccd(+) and a.autono = k.autono(+) and b.itcd=n.itcd(+) and n.itgrpcd=o.itgrpcd(+) and i.rtdebcd=p.rtdebcd(+) and b.barno=y.barno(+) " + Environment.NewLine;
+            sql += "and f.translcd = e.slcd(+) and a.autono = f.autono(+) and a.autono = g.autono(+) and a.autono = h.autono(+) and  g.autono = i.autono(+) and a.doccd = j.doccd(+) and a.autono = k.autono(+) and b.itcd=n.itcd(+) and n.itgrpcd=o.itgrpcd(+) and i.rtdebcd=p.rtdebcd(+) and b.barno=y.barno(+) and b.barno=v.barno(+) and b.barno=w.barno(+) " + Environment.NewLine;
 
-            if (SLCD.retStr() != "") sql += " and a.slcd in ('" + SLCD + "') " + Environment.NewLine;
+            if (SLCD.retStr() != "") sql += " and a.slcd in (" + SLCD + ") " + Environment.NewLine;
             if (ITGRPCD.retStr() != "") sql += " and n.itgrpcd in (" + ITGRPCD + ") " + Environment.NewLine;
             if (ITCD.retStr() != "") sql += " and b.itcd in (" + ITCD + ") " + Environment.NewLine;
 
-
-            //if (doctype != "") sql += " and j.doctype in(" + doctype + ") " + Environment.NewLine;
             sql += " and b.stkdrcr in ('D','C') " + Environment.NewLine;
             sql += ") a " + Environment.NewLine;
-            //if (dtlsumm == "E")
-            //{
-            //    sql += "where nvl(a.cancel,'N')='N' " + Environment.NewLine;
-            //}
             sql += "order by itstyle,itnm,itcd ";
 
-
             DataTable tbl = masterHelp.SQLquery(sql);
+
+            string sql1 = "";
+            sql1 += "select a.slcd, b.slnm, nvl(b.slarea,b.district) slarea, a.pdesign, max(a.jobrt) jobrt ";
+            sql1 += "from " + scm1 + ".m_sitem_slcd a, "+scmf+".m_subleg b ";
+            sql1 += "where a.slcd = b.slcd(+) and ";
+            sql1 += "a.itcd = (" + ITCD + ")";
+            sql1 += "group by a.slcd, b.slnm, a.pdesign, b.slarea, b.district";
+
+            DataTable tbl1 = masterHelp.SQLquery(sql1);
+
             return tbl;
+            
         }
 
         //public ActionResult BSGroupCode(string val)

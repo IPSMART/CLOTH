@@ -13,6 +13,8 @@ namespace Improvar.ViewModels
         public string MSG { get; set; }
         [StringLength(5)]
         public string MGRPCD { get; set; }
+        public string ITCD { get; set; }
+        public string ITNM { get; set; }
         public string MGRPNM { get; set; }
         public bool FOUNDMGRP { get; set; }
         public string Tree { get; set; }
@@ -34,6 +36,8 @@ namespace Improvar.ViewModels
         public string FDT2 { get; set; }
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public string TDT2 { get; set; }
+        public string ITCD2 { get; set; }
+        public string ITNM2 { get; set; }       
         public bool CHECK2 { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double T_sqnty { get; set; }
@@ -59,6 +63,11 @@ namespace Improvar.ViewModels
         public double T_amt { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double T_ramti { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double T_sqntyi { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double T_rqntyi { get; set; }
+        
         public string SLCD2 { get; set; }
         public string ITGRPCD2 { get; set; }
         public string ONLYSALES2 { get; set; }
@@ -66,13 +75,18 @@ namespace Improvar.ViewModels
         public string LOCATION2 { get; set; }
         public string SALPUR { get; set; }
         public string SALPUR2 { get; set; }
-
+        public string BarImages { get; set; }
+        public string WPrate { get; set; }
+        public string RPrate { get; set; }
     }
 }
 public class billdet
 {
     public bool Checked { get; set; }
     public string itcd { get; set; }
+    public string WPrate { get; set; }
+    public string RPrate { get; set; }
+    public string DesignNo { get; set; }    
 
     public string styleno { get; set; }
     public string itgrpnm { get; set; }
