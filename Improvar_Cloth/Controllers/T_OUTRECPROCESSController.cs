@@ -1931,6 +1931,7 @@ namespace Improvar.Controllers
                 JOBCD = JOBCD.retStr() == "" ? "" : JOBCD.retStr().retSqlformat();
                 SLCD = SLCD.retStr() == "" ? "" : SLCD.retStr().retSqlformat();
                 var tempdata = salesfunc.getPendProg(DOCDT.retStr(), "", SLCD.retStr(), "", JOBCD.retStr(), AUTONO.retStr(), "");
+                var tempTBATCHDTL = VE.TBATCHDTL;
 
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 VE.TBATCHDTL = (from a in VE.TPROGDTL
@@ -2018,6 +2019,14 @@ namespace Improvar.Controllers
 
                 for (int p = 0; p <= VE.TBATCHDTL.Count - 1; p++)
                 {
+                    if (tempTBATCHDTL != null)
+                    {
+                        string RECPROGAUTONO = VE.TBATCHDTL[p].RECPROGAUTONO;
+                        short? RECPROGSLNO = VE.TBATCHDTL[p].RECPROGSLNO;
+                        string ITCD = VE.TBATCHDTL[p].ITCD;
+                        VE.TBATCHDTL[p].ITREM = (from a in tempTBATCHDTL where a.RECPROGAUTONO == RECPROGAUTONO && a.RECPROGSLNO == RECPROGSLNO select a.ITREM).FirstOrDefault();
+
+                    }
                     if (VE.TBATCHDTL[p].SAMPLE.retStr() != "Y" && VE.TBATCHDTL[p].RATE.retDbl() == 0 && VE.MENU_PARA != "DY")
                     {
                         VE.TBATCHDTL[p].RATE = (from DataRow a in barimgdata.Rows where a["barno"].retStr() == VE.TBATCHDTL[p].BARNO select a["rate"].retDbl()).FirstOrDefault();
@@ -3005,7 +3014,7 @@ namespace Improvar.Controllers
                                 }
                                 foreach (var v in issBATCHDTL)
                                 {
-                                    double temptxnslno = (from a in tempTTXNDTL where a.AUTONO == v.AUTONO && a.SLNO == v.TXNSLNO  select a.tempslno).FirstOrDefault();
+                                    double temptxnslno = (from a in tempTTXNDTL where a.AUTONO == v.AUTONO && a.SLNO == v.TXNSLNO select a.tempslno).FirstOrDefault();
                                     v.QNTY = ((v.QNTY / issprogqnty) * VE.TPROGDTL[i].QNTY).retDbl().toRound(3);
                                     v.AUTONO = TTXN.AUTONO;
                                     v.STKDRCR = "D";
@@ -4896,7 +4905,7 @@ namespace Improvar.Controllers
                 jobcd = jobcd.retStr() == "" ? "" : jobcd.retStr().retSqlformat();
                 slcd = slcd.retStr() == "" ? "" : slcd.retStr().retSqlformat();
                 DataTable tbl = salesfunc.getPendProg(DOCDT.retStr(), "", slcd.retStr(), "", jobcd.retStr(), autono.retStr());
-               
+
                 if (VE.TPROGDTL != null)
                 {
                     for (int i = 0; i <= tbl.Rows.Count - 1; i++)
@@ -4945,9 +4954,9 @@ namespace Improvar.Controllers
                                         ORDSLNO = dr["ORDSLNO"].retDbl() == 0 ? (double?)null : dr["ORDSLNO"].retDbl(),
                                         MAKESTYLENO = dr["Makestyleno"].retStr()
                                     }).ToList();
-            //}).Distinct().OrderBy(a => a.DOCDT).ThenBy(a => a.DOCNO).ToList();
+                //}).Distinct().OrderBy(a => a.DOCDT).ThenBy(a => a.DOCNO).ToList();
 
-            if (VE.PENDING_POPUP.Count != 0)
+                if (VE.PENDING_POPUP.Count != 0)
                 {
                     VE.DefaultView = true;
                     return PartialView("_T_OUTRECPROCESS_Pending_Prog", VE);
