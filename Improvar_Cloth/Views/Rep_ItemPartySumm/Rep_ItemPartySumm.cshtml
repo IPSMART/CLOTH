@@ -631,22 +631,22 @@
         //    $("#ItemHead").html('Item :');
         //}
         //else {
-            $.ajax({
-                type: 'get',
-                url: "@Url.Action("GetItemData", PageControllerName)",
-                beforesend: $("#WaitingMode").show(),
-                data: {
-                    slcd: party, fdt: frmdt, tdt: todt, itgrpcd: group, check: CHECK, itcd: item, itnm: itemnm, LOCATION: loc, SALPUR: salpur
-                },
-                success: function (result) {
-                    $("#WaitingMode").hide();
-                    $("#partial_existing").html(result);
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    $("#WaitingMode").hide();
-                    msgError("Error: " + textStatus + "," + errorThrown);
-                }
-            });
+        $.ajax({
+            type: 'get',
+            url: "@Url.Action("GetItemData", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: {
+                slcd: party, fdt: frmdt, tdt: todt, itgrpcd: group, check: CHECK, itcd: item, itnm: itemnm, LOCATION: loc, SALPUR: salpur
+            },
+            success: function (result) {
+                $("#WaitingMode").hide();
+                $("#partial_existing").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
         //}
 
     }
@@ -1544,151 +1544,7 @@
     }
 
 </script>
-<script>
-    function SelectBARCODEDetail(id, BARNO, MTRLJOBCD, PARTCD, DOCDT, TAXGRPCD, GOCD, PRCCD, ALLMTRLJOBCD, HelpFrom) {
-        debugger;
-        var MTRLJOBCD = document.getElementById(MTRLJOBCD.id).value;
-        var PARTCD = document.getElementById(PARTCD.id).value;
-        var DOCDT = document.getElementById(DOCDT.id).value;
-        var TAXGRPCD = document.getElementById(TAXGRPCD.id).value;
-        var GOCD = document.getElementById(GOCD.id).value;
-        var PRCCD = document.getElementById(PRCCD.id).value;
-        var ALLMTRLJOBCD = document.getElementById(ALLMTRLJOBCD.id).value;
-        var BAR_NO = document.getElementById(BARNO.id).value;
-        var MergeLoc = "";
-        if (document.getElementById("MergeLoc").checked == true)
-        {
-            MergeLoc = "Y";
-        }
-        else
-        {
-            MergeLoc = "N";
-        }
-        //sequence MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD
-        var Code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + DOCDT + String.fromCharCode(181) + TAXGRPCD + String.fromCharCode(181) + GOCD + String.fromCharCode(181) + PRCCD + String.fromCharCode(181) + ALLMTRLJOBCD + String.fromCharCode(181) + HelpFrom + String.fromCharCode(181) + BAR_NO + String.fromCharCode(181) + MergeLoc;
-        if (id == "") {
-            $("#" + BARNO.id).val("");
-            $("#STYLENO").val("");
-            //$("#" + CLASS1NM.id).val("");
-        }
-        else {
-            $.ajax({
-                type: 'POST',
-                beforesend: $("#WaitingMode").show(),
-                url: "@Url.Action("GetBarCodeDetails", "Rep_Bar_History")",
-                data: $('form').serialize() + "&val=" + id + "&Code=" + Code,
-                success: function (result) {
-                    //var MSG = result.indexOf('#helpDIV');
-                    var MSG = result.indexOf('#helpDIV');
-                    if (MSG >= 0) {
-                        ClearAllTextBoxes("STYLENO,BARCODE");
-                        if (HelpFrom == "Bar")
-                        {
-                            $('#SearchFldValue').val("BARCODE");
-                        }
-                        else {
-                            $('#SearchFldValue').val("STYLENO");
-                        }
-                        $('#helpDIV').html(result);
-                        $('#ReferanceFieldID').val("BARCODE/MTRLJOBCD/PARTCD/GOCD/STYLENO");
-                        $('#ReferanceColumn').val("0/2/5/8/3");
-                        $('#helpDIV_Header').html("Bar Code Details");
 
-                    }
-                    else {
-                        var MSG = result.indexOf("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
-                        if (MSG >= 0) {
-                            $("#WaitingMode").hide();
-                            var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
-                            document.getElementById("BARCODE").value = returncolvalue(res[0], "BARNO");
-                            document.getElementById("BAR_CODE").value = returncolvalue(res[0], "BARNO");
-                            document.getElementById("ITGRPCD").value = returncolvalue(res[0], "ITGRPCD");
-                            document.getElementById("ITGRPNM").value = returncolvalue(res[0], "ITGRPNM");
-                            document.getElementById("FABITCD").value = returncolvalue(res[0], "FABITCD");
-                            document.getElementById("FABITNM").value = returncolvalue(res[0], "FABITNM");
-                            document.getElementById("ITCD").value = returncolvalue(res[0], "ITCD");
-                            document.getElementById("ITNM").value = returncolvalue(res[0], "ITNM");
-                            document.getElementById("DESIGN").value = returncolvalue(res[0], "STYLENO");
-                            document.getElementById("UOMCD").value = returncolvalue(res[0], "UOMCD");
-                            document.getElementById("SLCD").value = returncolvalue(res[0], "SLCD");
-                            document.getElementById("SLNM").value = returncolvalue(res[0], "SLNM");
-                            document.getElementById("DISTRICT").value = returncolvalue(res[0], "DISTRICT");
-                            document.getElementById("GSTNO").value = returncolvalue(res[0], "GSTNO");
-                            document.getElementById("PDESIGN").value = returncolvalue(res[0], "PDESIGN");
-                            document.getElementById("COLRCD").value = returncolvalue(res[0], "COLRCD");
-                            document.getElementById("COLRNM").value = returncolvalue(res[0], "COLRNM");
-                            document.getElementById("SIZECD").value = returncolvalue(res[0], "SIZECD");
-                            document.getElementById("SIZENM").value = returncolvalue(res[0], "SIZENM");
-                            document.getElementById("MTRLJOBCD").value = returncolvalue(res[0], "MTRLJOBCD");
-                            document.getElementById("COMMONUNIQBAR").value = returncolvalue(res[0], "COMMONUNIQBAR");
-                            document.getElementById("STYLENO").value = returncolvalue(res[0], "STYLENO");
-                            //document.getElementById("mtrljobcd").value = returncolvalue(res[0], "mtrljobcd");
-                            document.getElementById("mtrljobnm").value = returncolvalue(res[0], "mtrljobnm");
-
-                            if (returncolvalue(res[0], "COMMONUNIQBAR") == "E") {
-                                $("#PDESIGN").prop('readonly', false);
-                                $("#divPDESIGN").show();
-                            }
-                            else {
-                                $("#PDESIGN").attr('readonly', 'readonly');
-                                $("#divPDESIGN").hide();
-                            }
-                            var TINQTY = returncolvalue(res[0], "TOTALIN");
-                            var TOUTQTY = returncolvalue(res[0], "TOTALOUT");
-                            if (TINQTY == "") { TINQTY = parseFloat(0); } else { TINQTY = parseFloat(TINQTY) }
-                            if (TOUTQTY == "") { TOUTQTY = parseFloat(0); } else { TOUTQTY = parseFloat(TOUTQTY) }
-                            document.getElementById("TOTALIN").value = parseFloat(TINQTY).toFixed(2);
-                            document.getElementById("TOTALOUT").value = parseFloat(TOUTQTY).toFixed(2);
-                            document.getElementById("TOTINOUT").value = (parseFloat(TINQTY) - parseFloat(TOUTQTY)).toFixed(2)
-                            $("#partialdivHISTORY").show();
-                            $("#partialdivHISTORY").animate({ marginTop: '0px' }, 50);
-                            $("#partialdivHISTORY").html(res[1]);
-                            $("#partialdivPRICE").show();
-                            $("#partialdivPRICE").animate({ marginTop: '0px' }, 50);
-                            $("#partialdivPRICE").html(res[2]);
-                            $("#MTRLJOBCD").val("");
-                            hlpblurval = id;
-                            document.getElementById("BarImages").value = returncolvalue(res[0], "BARIMAGE");
-                            FillImageModal(returncolvalue(res[0], "BARIMAGEPATH"));
-
-                            $("#" + BARNO.id).val("");
-                            $("#STYLENO").val("");
-                            if (HelpFrom == "Bar") {
-                                $("#BARCODE").focus();
-                            }
-                            else {
-                                $("#STYLENO").focus();
-                            }
-                        }
-                        else {
-                            if (HelpFrom == "Bar") {
-                                $('#helpDIV').html("");
-                                msgInfo("Invalid Bar Code ! Please Enter a Valid Bar Code !!");
-                                $("#" + BARNO.id).val("");
-                                $("#STYLENO").val("");
-                                message_value = BARNO.id;
-                            }
-                            else {
-                                $('#helpDIV').html("");
-                                msgInfo("Invalid Design No./Item ! Please Enter a Valid Design No./Item !!");
-                                $("#STYLENO").val("");
-                                $("#" + BARNO.id).val("");
-                                message_value = "STYLENO";
-                            }
-
-                        }
-                    }
-                    $("#WaitingMode").hide();
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    $("#WaitingMode").hide();
-                    msgError(XMLHttpRequest.responseText);
-                    $("body span h1").remove(); $("#msgbody_error style").remove();
-                }
-            });
-        }
-    }
-</script>
 <script>
     let sortDirection = {};
 
@@ -1718,6 +1574,97 @@
         table.querySelectorAll("th")[colIndex].classList.add(asc ? "sort-asc" : "sort-desc");
     }
 </script>
+<script>
+    function SelectBARCODEDetail(id) {
+        debugger;
+        if (id == "") {
+            ClearAllTextBoxes("ITCD,ITNM,WPrate,RPrate");
+
+        }
+        else {
+            $.ajax({
+                type: 'POST',
+                beforesend: $("#WaitingMode").show(),
+                url: "@Url.Action("GetBarCodeDetails", "Rep_ItemPartySumm")",
+                data: $('form').serialize() + "&val=" + id,
+                success: function (result) {
+                    var MSG = result.indexOf('#helpDIV');
+                    if (MSG >= 0) {
+                        ClearAllTextBoxes("ITCD,ITNM,WPrate,RPrate");
+                        $('#SearchFldValue').val("ITCD");
+                        $('#helpDIV').html(result);
+                        $('#ReferanceFieldID').val("ITCD/ITNM");//ITCD=ITCD=2/ITNM=STYLENO=3/WPrate=WPRATE/RPrate=RPRATE
+                        $('#ReferanceColumn').val("2/0");
+                        $('#helpDIV_Header').html("Item Details");
+
+                    }
+                    else {
+                        var MSG = result.indexOf(String.fromCharCode(181));
+                        if (MSG >= 0) {
+                            $("#WaitingMode").hide();
+                            document.getElementById("ITCD").value = returncolvalue(result, "ITCD");
+                            document.getElementById("ITNM").value = returncolvalue(result, "ITSTYLE");
+                            document.getElementById("WPrate").value = returncolvalue(result, "WPRATE");
+                            document.getElementById("RPrate").value = returncolvalue(result, "RPRATE");
+                            document.getElementById("BarImages").value = returncolvalue(result, "BARIMAGE");
+                            FillImageModal(returncolvalue(result, "BARIMAGEPATH"));
+                        }
+                        else {
+                            $('#helpDIV').html("");
+                            msgInfo("Invalid Design No./Item ! Please Enter a Valid Design No./Item !!");
+                            ClearAllTextBoxes("ITCD,ITNM,WPrate,RPrate");
+                            message_value = "ITCD";
+                        }
+                    }
+                    $("#WaitingMode").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    $(document).on('click', '.arrow-left, .arrow-right', function () {
+        var next;
+        var circler;
+        if ($(this).is('.arrow-left')) {
+            next = 'prev';
+            circler = ':last';
+        } else {     // or if there would be more arrows, use : else if ($(this).is('.arrow-right'))
+            next = 'next';
+            circler = ':first';
+        }
+        var nextTarget = $('#div_carousel_inner div.active')[next]('div');
+        if (nextTarget.length == 0) {
+            nextTarget = $('#div_carousel_inner div' + circler);
+        }
+        $('#div_carousel_inner div').removeClass('active');
+        nextTarget.addClass('active');
+    });
+    function FillImageModal(BARIMAGEPATH) {
+        debugger;
+        var actt = ""; $("#div_carousel_inner").html('');
+        var arr = BARIMAGEPATH;//$("#BarImages").val();
+        arr = arr.split(String.fromCharCode(179));
+        $.each(arr, function (index, value) {
+            var imgname = (value.split('~')[0]);
+            var id = (imgname).split('.')[0];
+            var ImageDesc = (value.split('~')[1]);
+            var htm = ''; if (index == 0) { actt = "active"; } else { actt = ""; }
+            htm += '<div id="' + id + '" class="item ' + actt + '">';
+            htm += '    <img src="' + imgname + '"  alt="Img Not Found" style="width:100%;height:300px;">';
+            htm += '    <span class="carousel-caption">';
+            htm += '    <p> ' + ImageDesc + ' </p>';
+            htm += '    </span>';
+            htm += '</div>';
+            $("#div_carousel_inner").append(htm);
+        });
+    }
+</script>
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -1736,734 +1683,468 @@
         <input type="hidden" id="partylinkcd" value="party" />
         <input type="hidden" id="itgrptype" value="F" />
 
-        @*if (Model.ITCD.retStr() == "")
-        {
-            <div id="outer">
-                <div id="inner" style="height:330px;width:602px;">                   
-                    <input type="hidden" id="urlbtnsubmit" name="urlbtnsubmit" value="@Url.Action("BtnSubmit", PageControllerName)" />
-                    <div class="row">
-                        <div style="padding:14px 0px;background-color:#ffffff;margin-top:25px;height:230px;overflow-y:auto">
-
-
-
-
-                            <div class="row">
-                                <div class="col-lg-2">
-                                    <div class="editor-label" style="margin-top: 6px;">
-                                        @Html.Label("", "Design")
-                                        <b style="color:Red;">*</b>
-                                    </div>
-                                </div>
-                                <div class="col-lg-4">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItem", PageControllerName) + "','DesignWise Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1','itgrptype')", onblur = "GetHelpBlur('" + @Url.Action("GetItem", PageControllerName) + "','DesignWise Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1','itgrptype');", @placeholder = "Code", maxlength = 10 } })
-                                        <img src="~/Image/search.png" id="ITCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItem", PageControllerName)','DesignWise Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1','itgrptype')" />
-
-                                    </div>
-                                </div>
-                                <div class="col-md-11">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.ITNM, new { htmlAttributes = new { @class = "form-control", id = "ITNM", maxlength = 60, @TabIndex = -1, @title = "Only for View", @placeholder = "Item Name", @readonly = "readonly" } })
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-lg-2">
-                                    <div class="editor-label" style="margin-top: 6px;">
-                                        @Html.Label("", "From Date")
-                                    </div>
-                                </div>
-                                <div class="col-md-9">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.FDT, new { htmlAttributes = new { @class = "form-control", id = "FDT", maxlength = 10, onblur = "DocumentDateCHK(this,true);", @placeholder = "dd/mm/yyyy", @autocomplete = "off", required = "required" } })
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-2">
-                                    <div class="editor-label" style="margin-top: 6px;">
-                                        @Html.Label("", "To Date")
-                                    </div>
-                                </div>
-                                <div class="col-md-9">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.TDT, new { htmlAttributes = new { @class = "form-control", id = "TDT", maxlength = 10, onblur = "DocumentDateCHK(this,true);", @placeholder = "dd/mm/yyyy", autocomplete = "off", required = "required" } })
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <div class="editor-label" style="margin-top: 6px;">
-                                        @Html.Label("", "Debtors/Creditors")
-                                    </div>
-                                </div>
-                                <div class="col-lg-9" style="margin-top:6px;width:auto;border: groove;">
-                                    <label class="radio-inline">
-                                        @Html.RadioButtonFor(model => model.SALPUR, "S", new { @checked = "checked", id = "SALPUR" })  @Html.Label("Debtors")
-                                    </label>
-                                    <label class="radio-inline">
-                                        @Html.RadioButtonFor(model => model.SALPUR, "P", new { id = "SALPUR" })  @Html.Label("Creditors")
-                                    </label>
-                                </div>
-                                <div class="col-lg-2" style="width:auto;">
-                                    <div class="editor-label" style="margin-top:6px">
-                                        @Html.Label("", "Is Only Sales/Purchase")
-                                    </div>
-                                </div>
-                                <div class="col-md-6" style="margin-top:6px;width:auto;">
-                                    @Html.CheckBoxFor(model => model.CHECK, new { id = "CHECK" })
-                                </div>
-                            </div>
-
-                            <div class="row" style="margin-top:6px">
-                                <div class="col-lg-2">
-                                    <div class="editor-label" style="margin-top:5px">
-                                        @Html.Label("", "Group")
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    @(new HtmlString(Model.ITGRPCD))
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-2">
-                                    <div class="editor-label" style="margin-top:6px">
-                                        @Html.Label("", "Location")
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    @(new HtmlString(Model.LOCATION))
-                                </div>
-                            </div>
-                          
-                        </div>
-                    </div>
-                    <div style="background:linear-gradient(#eeeeee,#dbd7d7);height:42px;width:100%; position:absolute;bottom:0;left:0; border-bottom-left-radius:10px;border-bottom-right-radius:10px;text-align:center">
-                        <button type="button" class="btn btn-danger" style="margin-top:4px" onclick="btn_submit();">Submit</button>
+        <div style="width:38%;display:inline-block;float:left">
+            <div class="row">
+                <div class="col-lg-2">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Design")
+                        <b style="color:Red;">*</b>
                     </div>
                 </div>
-            </div>
-        }*@
-       
-
-           
-            @*<div class="row">
-                <div style="width:15%;display:inline-block;float:left;margin-top:5px">
-                    <div class="col-lg-4">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "From Date")
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.FDT2, new { htmlAttributes = new { @class = "form-control", id = "FDT2", maxlength = 10, @placeholder = "dd/mm/yyyy", @autocomplete = "off", @readonly = "readonly" } })
-                        </div>
-                    </div>
-                </div>
-
-                <div style="width:15%;display:inline-block;float:left;margin-top:5px">
-                    <div class="col-lg-4">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "To Date")
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.TDT2, new { htmlAttributes = new { @class = "form-control", id = "TDT2", maxlength = 10, @placeholder = "dd/mm/yyyy", @autocomplete = "off", @readonly = "readonly" } })
-                            @Html.HiddenFor(model => model.ITCD2, new { id = "ITCD2" })
-                            @Html.HiddenFor(model => model.ITGRPCD2, new { id = "ITGRPCD2" })
-                            @Html.HiddenFor(model => model.ONLYSALES2, new { id = "ONLYSALES2" })
-                            @Html.HiddenFor(model => model.LOCATION2, new { id = "LOCATION2" })
-                            @Html.HiddenFor(model => model.SALPUR2, new { id = "SALPUR2" })
-                        </div>
-                    </div>
-                </div>
-                <div style="width:20%;display:inline-block;float:left;margin-top:5px">
-                    <div class="col-lg-1" style="margin-top:6px">
-                        @Html.CheckBoxFor(model => model.CHECK2)
-                    </div>
-                    <div class="col-lg-5">
-                        <div class="editor-label" style="margin-top:6px">
-                            @Html.Label("", "Show All Dates")
-                        </div>
-                    </div>
-                </div>
-            </div>*@
-
-        //---left grid
-
-            @*<div style="width:38%;display:inline-block;float:left">
-                <input type="text" value="" class="form-control" autocomplete="off" id="searchAV" placeholder="Search From Available Item Details" style="width:260px; margin-left:10px" onkeyup="filterTable(event, 'available_GRP');" />
-                <span class="fa fa-search" style="margin-top:-18px;margin-left:251px;float:left"></span>
-
-                <div style="height:66vh;margin-top:10px;border-top-right-radius:15px;border-top-left-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;border-top:2px solid #86abd8;border-bottom:2px solid #86abd8;border-right:2px solid #86abd8;border-left:2px solid #86abd8;background-color:#d9ebf1">
-                    <div class="tabtitle">
-                        Item Details
-                    </div>
-                    <div style="margin-top: 7px;margin-left: 20px;font-size: 14px;font-weight: bold;">
-                       
-                        <span>Design : @ViewBag.ITNM</span>
-                    </div>
-                    
-                    <div class="sticky-table sticky-ltr-cells" style="margin-left:4px;margin-right:4px;margin-top:7px;border-radius:10px;transform: translate(0%, 0%);z-index:1100">
-                        <div style="height:58vh;overflow-y:auto;">
-                            <table id="available_GRP" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:1143px;" onkeydown="checkKey(event,'available_GRP','Checked_');">
-                                <thead>
-                                    <tr class="sticky-header" style="height:30px;">
-                                        <th class="sticky-cell" style="text-align:center;width: 27px;">
-                                            All
-                                            <input type="checkbox" name="Test" onclick="SetAllCheckBoxesFilterParty(this, 'available_GRP', 'Checked_')" />
-                                        </th>
-                                        <th class="" onclick="sortable(1)" style="width:60px; text-align:left;">Design No</th>
-                                        <th class="" onclick="sortable(2)" style="width:80px;">Sale Rate</th>
-                                        <th class="" onclick="sortable(3)" style="width:30px;">Making Rate</th>
-                                        <th class="" onclick="sortable(4)" style="width:40px;">Design Image</th>
-                                        
-                                       
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if (Model.billdet != null)
-                                    {
-                                        for (int i = 0; i <= Model.billdet.Count - 1; i++)
-                                        {
-                                            <tr id="available_GRP@(i + 1)">
-                                                <td class="sticky-cell" style="background-color:#808080;padding-left:7px;padding-right:7px;">
-                                                    @Html.CheckBoxFor(model => model.billdet[i].Checked, new { id = "Checked_" + i, @style = "text-align:center;", onclick = "IndivedulaCheckBoxCheck(this," + i + ",'available_GRP');" })
-                                                </td>
-                                                <td>
-                                                    @Html.EditorFor(model => model.billdet[i].DesignNo, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "DesignNo_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
-                                                </td>
-                                                <td>
-                                                    @Html.EditorFor(model => model.billdet[i].WPrate, new { htmlAttributes = new { @class = "atextBoxFor", id = "WPrate_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
-                                                    @Html.HiddenFor(model => model.billdet[i].itcd, new { id = "itcd_" + i })
-                                                </td>
-                                                <td>
-                                                    @Html.EditorFor(model => model.billdet[i].RPrate, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "RPrate_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
-                                                </td>
-                                                <td class="">
-                                                    <input type="button" onclick="FillImageModal('BarImages_@i')" data-toggle="modal" data-target="#ViewImageModal" id="BarImagesCount_@i" name="billdet[@i].BarImagesCount" class="btn atextBoxFor text-info" style="padding:0px" value="@Model.billdet[i].BarImagesCount" />
-                                                    @Html.HiddenFor(model => model.billdet[i].BarImages, new { id = "BarImages_" + i })
-                                                </td> 
-                                            </tr>
-                                        }
-                                    }
-                                </tbody>
-                                <tfoot>
-                                    <tr class="sticky-footer">
-                                        <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                        <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                        <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                        <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                        <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>                                       
-
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>*@
-
-            <div style="width:38%;display:inline-block;float:left">
-                <div class="row">
-                    <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Design")
-                            <b style="color:Red;">*</b>
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        @*<div class="editor-field">
+                <div class="col-lg-4">
+                    @*<div class="editor-field">
                             @Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItem", PageControllerName) + "','DesignWise Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1','itgrptype')", onblur = "GetHelpBlur('" + @Url.Action("GetItem", PageControllerName) + "','DesignWise Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1','itgrptype');", @placeholder = "Code", maxlength = 10 } })
                             <img src="~/Image/search.png" id="ITCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItem", PageControllerName)','DesignWise Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1','itgrptype')" />
                         </div>*@
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENO", onkeydown = "GetHelpBlur('" + @Url.Action("GetItem", "Rep_Bar_History") + "','DesignWise Item Details','ITCD','ITCD=ITCD=0/ITNM=ITNM=1/WPrate=WPrate=2/GOCD=GOCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/stylehelpcap')", onblur = "SelectBARCODEDetail(this.value,BARCODE,MTRLJOBCD,PARTCD,DOCDT,TAXGRPCD,GOCD,PRCCD,ALLMTRLJOBCD,'styleno');", @placeholder = "Design No./Item", maxlength = 25 } })
-                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItem", "Rep_Bar_History")','Bar Code Details','STYLENO','STYLENO=STYLENO=3/BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5/GOCD=GOCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/stylehelpcap')" />
-                            <input type="hidden" id="stylehelpcap" value="styleno" />
-                        </div>
-
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", "Rep_ItemPartySumm") + "','Bar Code Details','ITCD','ITCD=ITCD=2/ITNM=STYLENO=0/WPrate=WPRATE/RPrate=RPRATE')", onblur = "SelectBARCODEDetail(this.value);", @placeholder = "Design No./Item", maxlength = 25 } })
+                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", "Rep_ItemPartySumm")','Bar Code Details','ITCD','ITCD=ITCD=2/ITNM=STYLENO=0/WPrate=WPRATE/RPrate=RPRATE')" />
                     </div>
-                    <div class="col-md-11">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.ITNM, new { htmlAttributes = new { @class = "form-control", id = "ITNM", maxlength = 60, @TabIndex = -1, @title = "Only for View", @placeholder = "Item Name", @readonly = "readonly" } })
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "WP Rate")
-                          
-                        </div>
-                    </div>                    
-                    <div class="col-md-11">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.WPrate, new { htmlAttributes = new { @class = "form-control", id = "WPrate", maxlength = 60, @TabIndex = -1, @title = "Only for View", @placeholder = "Item Name", @readonly = "readonly" } })
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "RP Rate")
-                          
-                        </div>
-                    </div>
-                    <div class="col-md-11">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.RPrate, new { htmlAttributes = new { @class = "form-control", id = "RPrate", maxlength = 60, @TabIndex = -1, @title = "Only for View", @placeholder = "Item Name", @readonly = "readonly" } })
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-1" style="width:auto;">
-                        <div class="row">
-                            <div class="editor-label" style="margin-top: 10px;text-align:center;color:#428bca;transform: translate(0%, 0%);z-index: 1100;">
-                                @Html.Label("", "BarCode Image")
-                            </div>
-                        </div>
-                        @Html.HiddenFor(model => model.BarImages, new { id = "BarImages" })
-                        <div class="row" style="text-align:-webkit-center;width: 240px;height:240px">
-                            <div id="myCarousel" class="carousel" data-ride="carousel">     
-                                <div class="carousel-inner" id="div_carousel_inner">
-                                    <div class="item active">
-                                        <img src="" alt="Los Angeles" style="width:100%;">
-                                    </div>
-                                    <div class="item">
-                                        <img src="" alt="Chicago" style="width:100%;">
-                                    </div>
-                                </div>                       
-                                <!-- Left and right controls -->
-                                <a class="left  carousel-control arrow-left" id="prev">
-                                    <span class="glyphicon glyphicon-chevron-left"></span>
-                                </a>
-                                <a class="right  carousel-control arrow-right" id="next">
-                                    <span class="glyphicon glyphicon-chevron-right"></span>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Party Code")
-                            <b style="color:Red;">*</b>
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", @autocomplete = "off", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=SLAREA','partylinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=SLAREA','partylinkcd');", @placeholder = "Code", maxlength = 8 } })
-                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=SLAREA','partylinkcd')" />
-                        </div>
-                    </div>
-                    <div class="col-lg-7">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", maxlength = 45, @title = "Only for View", @placeholder = "Party Name", @readonly = "readonly", tabindex = "-1" } })
-
-                        </div>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:6px">
-                    <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top:5px">
-                            @Html.Label("", "Group")
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        @(new HtmlString(Model.ITGRPCD))
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top:6px">
-                            @Html.Label("", "Location")
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        @(new HtmlString(Model.LOCATION))
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "From Date")
-                        </div>
-                    </div>
-                    <div class="col-md-9">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.FDT, new { htmlAttributes = new { @class = "form-control", id = "FDT", maxlength = 10, onblur = "DocumentDateCHK(this,true);", @placeholder = "dd/mm/yyyy", @autocomplete = "off", required = "required" } })
-                        </div>
-                    </div>
-                    <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "To Date")
-                        </div>
-                    </div>
-                    <div class="col-md-9">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.TDT, new { htmlAttributes = new { @class = "form-control", id = "TDT", maxlength = 10, onblur = "DocumentDateCHK(this,true);", @placeholder = "dd/mm/yyyy", autocomplete = "off", required = "required" } })
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Debtors/Creditors")
-                        </div>
-                    </div>
-                    <div class="col-lg-9" style="margin-top:6px;width:auto;border: groove;">
-                        <label class="radio-inline">
-                            @Html.RadioButtonFor(model => model.SALPUR, "S", new { @checked = "checked", id = "SALPUR" })  @Html.Label("Debtors")
-                        </label>
-                        <label class="radio-inline">
-                            @Html.RadioButtonFor(model => model.SALPUR, "P", new { id = "SALPUR" })  @Html.Label("Creditors")
-                        </label>
-                    </div>
-                    <div class="col-lg-2" style="width:auto;">
-                        <div class="editor-label" style="margin-top:6px">
-                            @Html.Label("", "Is Only Sales/Purchase")
-                        </div>
-                    </div>
-                    <div class="col-md-6" style="margin-top:6px;width:auto;">
-                        @Html.CheckBoxFor(model => model.CHECK, new { id = "CHECK" })
-                    </div>
-                </div>
-
-               
-                <div class="row">
-                    <button type="button" class="btn btn-danger" style="margin-top:4px" onclick="GetItemDetails();">Show</button>                   
-                </div>
 
                 </div>
-
-
-
-                <div style="width:62%;display:inline-block;float:left">
-                    <input type="text" value="" class="form-control" autocomplete="off" id="searchAV" placeholder="Search From Available Bill Details" style="width:260px; margin-left:10px" onkeyup="filterTable(event, 'exist_GRP');" />
-                    <span class="fa fa-search" style="margin-top:-18px;margin-left:251px;float:left"></span>
-                    <div style="height:66vh;margin-top:10px;border-top-right-radius:15px;border-top-left-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;border-top:2px solid #86abd8;border-bottom:2px solid #86abd8;border-right:2px solid #86abd8;border-left:2px solid #86abd8;background-color:#d9ebf1">
-                        <div class="tabtitle">
-                            Bill Details
-                        </div>
-                        <div id="partial_existing">
-                            @Html.Partial("_Rep_ItemPartySumm_Item_Det")
-                        </div>
+                <div class="col-md-11">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.ITNM, new { htmlAttributes = new { @class = "form-control", id = "ITNM", maxlength = 60, @TabIndex = -1, @title = "Only for View", @placeholder = "Item Name", @readonly = "readonly" } })
                     </div>
                 </div>
-
-
-
-                <div class="container">
-                    <!-- Modal -->
-                    <div class="modal fade" id="ViewImageModal" role="dialog">
-                        <div class="modal-dialog modal-md">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title">Image Preview</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <div id="myCarousel" class="carousel" data-ride="carousel">
-                                        <div class="carousel-inner" id="div_carousel_inner">
-                                            <div class="item active">
-                                                <img src="" alt="Los Angeles" style="width:100%;">
-                                            </div>
-                                            <div class="item">
-                                                <img src="" alt="Chicago" style="width:100%;">
-                                            </div>
-                                        </div>
-                                        <!-- Left and right controls -->
-                                        <a class="left  carousel-control arrow-left" id="prev">
-                                            <span class="glyphicon glyphicon-chevron-left"></span>
-                                        </a>
-                                        <a class="right  carousel-control arrow-right" id="next">
-                                            <span class="glyphicon glyphicon-chevron-right"></span>
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            <div class="pull-left">
-                                                <input type="hidden" id="ActiveBarRowIndex" />
-                                                <input type="hidden" id="BarImages" />
-                                                <button type="button" class="btn btn-danger" onclick="deleteBarImages()"><span class="glyphicon glyphicon-trash"></span></button>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal fade" id="RateHistoryModal" role="dialog">
-                    </div>
-                    <div class="modal fade" id="PaymentDetailsModal" role="dialog">
-                    </div>
-                </div>
-
-
-
-                }
-                else
-                {
-                @ViewBag.ErrorMessage
-                }
-                }
-
-                <div id="outerP">
-                    <div id="innerP" style="height:295px;width:621px;padding-left:5px;">
-                        <div class="row">
-                            <div class="tabtitle">
-                                Create Main Group<span class="fa fa-times-circle" title="Close" style="float:right;font-weight:bold;color:black;font-size:20px;margin-top:2px;margin-right:5px" onclick="MGClose();"></span>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Main Group Name")
-                                    <b style="color:Red;">*</b>
-                                </div>
-                            </div>
-                            <div class="col-md-11">
-                                <input type="text" id="MGNM" value="" placeholder="Main Group Name" class="form-control" />
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Group Details")
-                                </div>
-                            </div>
-                            <div class="col-md-11">
-                                <textarea id="MGNMDTL" placeholder="Group Details" class="form-control" style="height:80px"></textarea>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Leg Dtls Skip")
-                                </div>
-                            </div>
-                            <div class="col-md-11">
-                                @Html.CheckBoxFor(model => Model.LEGDTLSKP, new { id = "innerP_LEGDTLSKP" })
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Schedule")
-                                </div>
-                            </div>
-                            <div class="col-md-11">
-                                @*@Html.DropDownListFor(model => Model.SCHDL, new SelectList(Model.SchedulePart, "Value", "Text", Model.SCHDL), new { id = "innerP_SCHDL", @class = " form-control" })*@
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Budget Amount")
-                                </div>
-                            </div>
-                            <div class="col-md-11">
-                                <input type="text" id="MGBA" value="" placeholder="Budget Amount" class="form-control" onkeypress="return numericOnly(this,2);" />
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Select Head")
-                                    <b style="color:Red;">*</b>
-                                </div>
-                            </div>
-                            <div class="col-md-7">
-                                <input type="text" id="GLHDGRPCD" value="" placeholder="Code" class="form-control" maxlength="3" onblur="SelectGLHDGRPCD(this.value,GLHDGRPCD,GLHDGRPNM)" />
-                                <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:-23px;float:right;margin-right:2px" title="Help" onclick="GetHelp('@Url.Action("GetBSGroupCode", PageControllerName)','GLHDGRPCD/GLHDGRPNM','1/0','Select B / S Group','GLHDGRPCD')" />
-                            </div>
-                            <div class="col-md-10">
-                                <input type="text" id="GLHDGRPNM" value="" placeholder="Head Name" readonly="readonly" tabindex=-1 class="form-control" style="width:205px" />
-                            </div>
-                        </div>
-                        <br />
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", " ")
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-                                <button type="button" class="btn btn-danger" style="width:104px" onclick="MGCreate();" title="Save">Save</button>
-                            </div>
-                            <div class="col-md-2">
-                                <button type="button" class="btn btn-danger" style="width:104px" onclick="MGClear();" title="Clear">Clear</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="outerS">
-                    <div id="innerS" style="height:295px;width:621px;padding-left:5px;">
-                        <div class="row">
-                            <div class="tabtitle">
-                                Create Sub Group<span class="fa fa-times-circle" title="Close" style="float:right;font-weight:bold;color:black;font-size:20px;margin-top:2px;margin-right:5px" onclick="MGClose1();"></span>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Sub Group Name")
-                                    <b style="color:Red;">*</b>
-                                </div>
-                            </div>
-                            <div class="col-md-11">
-                                <input type="text" id="SGNM" value="" placeholder="Sub Group Name" class="form-control" />
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Group Details")
-                                </div>
-                            </div>
-                            <div class="col-md-11">
-                                <textarea id="SGNMDTL" placeholder="Group Details" class="form-control" style="height:80px"></textarea>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Leg Dtls Skip")
-                                </div>
-                            </div>
-                            <div class="col-md-11">
-                                @Html.CheckBoxFor(model => Model.LEGDTLSKP, new { id = "innerS_LEGDTLSKP" })
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Schedule")
-                                </div>
-                            </div>
-                            <div class="col-md-11">
-                                @*@Html.DropDownListFor(model => Model.SCHDL, new SelectList(Model.SchedulePart, "Value", "Text", Model.SCHDL), new { id = "innerS_SCHDL", @class = " form-control" })*@
-
-
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Budget Amount")
-                                </div>
-                            </div>
-                            <div class="col-md-11">
-                                <input type="text" id="SGBA" value="" placeholder="Budget Amount" class="form-control" onkeypress="return numericOnly(this,2);" />
-                            </div>
-                        </div>
-
-                        <br />
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", " ")
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-                                <button type="button" class="btn btn-danger" style="width:104px" onclick="SGCreate();" title="Save">Save</button>
-                            </div>
-                            <div class="col-md-2">
-                                <button type="button" class="btn btn-danger" style="width:104px" onclick="MGClear1();" title="Clear">Clear</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="outerR">
-                    <div id="innerR" style="height:295px;width:500px;padding-left:5px;">
-                        <div class="row">
-                            <div class="tabtitle">
-                                Re-name<span class="fa fa-times-circle" title="Close" style="float:right;font-weight:bold;color:black;font-size:20px;margin-top:2px;margin-right:5px" onclick="MGClose2();"></span>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Enter Name")
-                                    <b style="color:Red;">*</b>
-                                </div>
-                            </div>
-                            <div class="col-md-11">
-                                <input type="text" id="RENM" value="" placeholder="ReName" class="form-control" />
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Group Details")
-                                </div>
-                            </div>
-                            <div class="col-md-11">
-                                <textarea id="SEGNMDTL" placeholder="Group Details" class="form-control" style="height:80px"></textarea>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Leg Dtls Skip")
-                                </div>
-                            </div>
-                            <div class="col-md-11">
-                                @Html.CheckBoxFor(model => Model.LEGDTLSKP, new { id = "innerR_LEGDTLSKP" })
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Schedule")
-                                </div>
-                            </div>
-                            <div class="col-md-11">
-                                @*@Html.DropDownListFor(model => Model.SCHDL, new SelectList(Model.SchedulePart, "Value", "Text", Model.SCHDL), new { id = "innerR_SCHDL", @class = " form-control" })*@
-
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Budget Amount")
-                                </div>
-                            </div>
-                            <div class="col-md-11">
-                                <input type="text" id="SEGBA" value="" placeholder="Budget Amount" class="form-control" onkeypress="return numericOnly(this,2);" />
-                            </div>
-                        </div>
-                        <br />
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", " ")
-                                </div>
-                            </div>
-                            <div class="col-md-9">
-                                <button type="button" class="btn btn-danger" style="width:104px" onclick="GRename();" title="Save">Save</button>
-                            </div>
-                            <div class="col-md-2">
-                                <button type="button" class="btn btn-danger" style="width:104px" onclick="MGClear2();" title="Clear">Clear</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
-                <div class="container">
-                    <div id="helpDIV">
+            </div>
+            @*<div class="row">
+                <div class="col-lg-2">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Job Rate")
 
                     </div>
                 </div>
+                <div class="col-md-11">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.Jobrate, new { htmlAttributes = new { @class = "form-control", id = "Jobrate", maxlength = 60, @TabIndex = -1, @title = "Only for View", @placeholder = "Item Name", @readonly = "readonly" } })
+                    </div>
+                </div>
+            </div>*@
+            <div class="row">
+                <div class="col-lg-2">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Sales Rate")
+
+                    </div>
+                </div>
+                <div class="col-md-11">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.WPrate, new { htmlAttributes = new { @class = "form-control", id = "WPrate", maxlength = 60, @TabIndex = -1, @title = "Only for View", @placeholder = "Sales Rate", @readonly = "readonly" } })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-2">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Making Rate")
+
+                    </div>
+                </div>
+                <div class="col-md-11">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.RPrate, new { htmlAttributes = new { @class = "form-control", id = "RPrate", maxlength = 60, @TabIndex = -1, @title = "Only for View", @placeholder = "Making Rate", @readonly = "readonly" } })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-3" style="width:auto;">
+                    <div class="row">
+                        <div class="editor-label" style="margin-top: 10px;text-align:center;color:#428bca;transform: translate(0%, 0%);z-index: 1100;">
+                            @Html.Label("", "BarCode Image")
+                        </div>
+                    </div>
+                    @Html.HiddenFor(model => model.BarImages, new { id = "BarImages" })
+                    <div class="row" style="text-align:-webkit-center;width: 260px;height:300px">
+                        <div id="myCarousel" class="carousel" data-ride="carousel">
+                            <div class="carousel-inner" id="div_carousel_inner">
+                                <div class="item active">
+                                    <img src="" alt="Los Angeles" style="width:100%;">
+                                </div>
+                                <div class="item">
+                                    <img src="" alt="Chicago" style="width:100%;">
+                                </div>
+                            </div>
+                            <!-- Left and right controls -->
+                            <a class="left  carousel-control arrow-left" id="prev">
+                                <span class="glyphicon glyphicon-chevron-left"></span>
+                            </a>
+                            <a class="right  carousel-control arrow-right" id="next">
+                                <span class="glyphicon glyphicon-chevron-right"></span>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-2">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Party Code")
+                        <b style="color:Red;">*</b>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", @autocomplete = "off", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=SLAREA','partylinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=SLAREA','partylinkcd');", @placeholder = "Code", maxlength = 8 } })
+                        <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=SLAREA','partylinkcd')" />
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", maxlength = 45, @title = "Only for View", @placeholder = "Party Name", @readonly = "readonly", tabindex = "-1" } })
+
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top:6px">
+                <div class="col-lg-2">
+                    <div class="editor-label" style="margin-top:5px">
+                        @Html.Label("", "Group")
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    @(new HtmlString(Model.ITGRPCD))
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-2">
+                    <div class="editor-label" style="margin-top:6px">
+                        @Html.Label("", "Location")
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    @(new HtmlString(Model.LOCATION))
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-2">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "From Date")
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.FDT, new { htmlAttributes = new { @class = "form-control", id = "FDT", maxlength = 10, onblur = "DocumentDateCHK(this,true);", @placeholder = "dd/mm/yyyy", @autocomplete = "off", required = "required" } })
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "To Date")
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.TDT, new { htmlAttributes = new { @class = "form-control", id = "TDT", maxlength = 10, onblur = "DocumentDateCHK(this,true);", @placeholder = "dd/mm/yyyy", autocomplete = "off", required = "required" } })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Debtors/Creditors")
+                    </div>
+                </div>
+                <div class="col-lg-9" style="margin-top:6px;width:auto;border: groove;">
+                    <label class="radio-inline">
+                        @Html.RadioButtonFor(model => model.SALPUR, "S", new { @checked = "checked", id = "SALPUR" })  @Html.Label("Debtors")
+                    </label>
+                    <label class="radio-inline">
+                        @Html.RadioButtonFor(model => model.SALPUR, "P", new { id = "SALPUR" })  @Html.Label("Creditors")
+                    </label>
+                </div>
+                <div class="col-lg-2" style="width:auto;">
+                    <div class="editor-label" style="margin-top:6px">
+                        @Html.Label("", "Is Only Sales/Purchase")
+                    </div>
+                </div>
+                <div class="col-md-6" style="margin-top:6px;width:auto;">
+                    @Html.CheckBoxFor(model => model.CHECK, new { id = "CHECK" })
+                </div>
+            </div>
+
+
+            <div class="row">
+                <button type="button" class="btn btn-danger" style="margin-top:4px" onclick="GetItemDetails();">Show</button>
+            </div>
+
+        </div>
+
+
+
+        <div style="width:62%;display:inline-block;float:left">
+            <input type="text" value="" class="form-control" autocomplete="off" id="searchAV" placeholder="Search From Available Bill Details" style="width:260px; margin-left:10px" onkeyup="filterTable(event, 'exist_GRP');" />
+            <span class="fa fa-search" style="margin-top:-18px;margin-left:251px;float:left"></span>
+            <div style="height:66vh;margin-top:10px;border-top-right-radius:15px;border-top-left-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;border-top:2px solid #86abd8;border-bottom:2px solid #86abd8;border-right:2px solid #86abd8;border-left:2px solid #86abd8;background-color:#d9ebf1">
+                <div class="tabtitle">
+                    Bill Details
+                </div>
+                <div id="partial_existing">
+                    @Html.Partial("_Rep_ItemPartySumm_Item_Det")
+                </div>
+            </div>
+        </div>
+
+
+
+        
+
+
+
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+}
+
+<div id="outerP">
+    <div id="innerP" style="height:295px;width:621px;padding-left:5px;">
+        <div class="row">
+            <div class="tabtitle">
+                Create Main Group<span class="fa fa-times-circle" title="Close" style="float:right;font-weight:bold;color:black;font-size:20px;margin-top:2px;margin-right:5px" onclick="MGClose();"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", "Main Group Name")
+                    <b style="color:Red;">*</b>
+                </div>
+            </div>
+            <div class="col-md-11">
+                <input type="text" id="MGNM" value="" placeholder="Main Group Name" class="form-control" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", "Group Details")
+                </div>
+            </div>
+            <div class="col-md-11">
+                <textarea id="MGNMDTL" placeholder="Group Details" class="form-control" style="height:80px"></textarea>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", "Leg Dtls Skip")
+                </div>
+            </div>
+            <div class="col-md-11">
+                @Html.CheckBoxFor(model => Model.LEGDTLSKP, new { id = "innerP_LEGDTLSKP" })
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", "Schedule")
+                </div>
+            </div>
+            <div class="col-md-11">
+                @*@Html.DropDownListFor(model => Model.SCHDL, new SelectList(Model.SchedulePart, "Value", "Text", Model.SCHDL), new { id = "innerP_SCHDL", @class = " form-control" })*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", "Budget Amount")
+                </div>
+            </div>
+            <div class="col-md-11">
+                <input type="text" id="MGBA" value="" placeholder="Budget Amount" class="form-control" onkeypress="return numericOnly(this,2);" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", "Select Head")
+                    <b style="color:Red;">*</b>
+                </div>
+            </div>
+            <div class="col-md-7">
+                <input type="text" id="GLHDGRPCD" value="" placeholder="Code" class="form-control" maxlength="3" onblur="SelectGLHDGRPCD(this.value,GLHDGRPCD,GLHDGRPNM)" />
+                <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:-23px;float:right;margin-right:2px" title="Help" onclick="GetHelp('@Url.Action("GetBSGroupCode", PageControllerName)','GLHDGRPCD/GLHDGRPNM','1/0','Select B / S Group','GLHDGRPCD')" />
+            </div>
+            <div class="col-md-10">
+                <input type="text" id="GLHDGRPNM" value="" placeholder="Head Name" readonly="readonly" tabindex=-1 class="form-control" style="width:205px" />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-8">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", " ")
+                </div>
+            </div>
+            <div class="col-md-8">
+                <button type="button" class="btn btn-danger" style="width:104px" onclick="MGCreate();" title="Save">Save</button>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-danger" style="width:104px" onclick="MGClear();" title="Clear">Clear</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="outerS">
+    <div id="innerS" style="height:295px;width:621px;padding-left:5px;">
+        <div class="row">
+            <div class="tabtitle">
+                Create Sub Group<span class="fa fa-times-circle" title="Close" style="float:right;font-weight:bold;color:black;font-size:20px;margin-top:2px;margin-right:5px" onclick="MGClose1();"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", "Sub Group Name")
+                    <b style="color:Red;">*</b>
+                </div>
+            </div>
+            <div class="col-md-11">
+                <input type="text" id="SGNM" value="" placeholder="Sub Group Name" class="form-control" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", "Group Details")
+                </div>
+            </div>
+            <div class="col-md-11">
+                <textarea id="SGNMDTL" placeholder="Group Details" class="form-control" style="height:80px"></textarea>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", "Leg Dtls Skip")
+                </div>
+            </div>
+            <div class="col-md-11">
+                @Html.CheckBoxFor(model => Model.LEGDTLSKP, new { id = "innerS_LEGDTLSKP" })
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", "Schedule")
+                </div>
+            </div>
+            <div class="col-md-11">
+                @*@Html.DropDownListFor(model => Model.SCHDL, new SelectList(Model.SchedulePart, "Value", "Text", Model.SCHDL), new { id = "innerS_SCHDL", @class = " form-control" })*@
+
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", "Budget Amount")
+                </div>
+            </div>
+            <div class="col-md-11">
+                <input type="text" id="SGBA" value="" placeholder="Budget Amount" class="form-control" onkeypress="return numericOnly(this,2);" />
+            </div>
+        </div>
+
+        <br />
+        <div class="row">
+            <div class="col-md-8">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", " ")
+                </div>
+            </div>
+            <div class="col-md-8">
+                <button type="button" class="btn btn-danger" style="width:104px" onclick="SGCreate();" title="Save">Save</button>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-danger" style="width:104px" onclick="MGClear1();" title="Clear">Clear</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="outerR">
+    <div id="innerR" style="height:295px;width:500px;padding-left:5px;">
+        <div class="row">
+            <div class="tabtitle">
+                Re-name<span class="fa fa-times-circle" title="Close" style="float:right;font-weight:bold;color:black;font-size:20px;margin-top:2px;margin-right:5px" onclick="MGClose2();"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", "Enter Name")
+                    <b style="color:Red;">*</b>
+                </div>
+            </div>
+            <div class="col-md-11">
+                <input type="text" id="RENM" value="" placeholder="ReName" class="form-control" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", "Group Details")
+                </div>
+            </div>
+            <div class="col-md-11">
+                <textarea id="SEGNMDTL" placeholder="Group Details" class="form-control" style="height:80px"></textarea>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", "Leg Dtls Skip")
+                </div>
+            </div>
+            <div class="col-md-11">
+                @Html.CheckBoxFor(model => Model.LEGDTLSKP, new { id = "innerR_LEGDTLSKP" })
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", "Schedule")
+                </div>
+            </div>
+            <div class="col-md-11">
+                @*@Html.DropDownListFor(model => Model.SCHDL, new SelectList(Model.SchedulePart, "Value", "Text", Model.SCHDL), new { id = "innerR_SCHDL", @class = " form-control" })*@
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", "Budget Amount")
+                </div>
+            </div>
+            <div class="col-md-11">
+                <input type="text" id="SEGBA" value="" placeholder="Budget Amount" class="form-control" onkeypress="return numericOnly(this,2);" />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-8">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", " ")
+                </div>
+            </div>
+            <div class="col-md-9">
+                <button type="button" class="btn btn-danger" style="width:104px" onclick="GRename();" title="Save">Save</button>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-danger" style="width:104px" onclick="MGClear2();" title="Clear">Clear</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container">
+    <div id="helpDIV">
+
+    </div>
+</div>
