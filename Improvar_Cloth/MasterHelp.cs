@@ -2661,9 +2661,9 @@ namespace Improvar
                 for (int i = 0; i <= tbl.Rows.Count - 1; i++)
                 {
                     var colorcd = tbl.Rows[i]["colrcd"].retStr() != "" ? tbl.Rows[i]["colrnm"] + "[" + tbl.Rows[i]["colrcd"] + "]" : "";
-                    SB.Append("<tr><td>" + tbl.Rows[i]["docno"].retStr() + "</td><td>" + tbl.Rows[i]["slno"].retStr() + " </td><td>" + tbl.Rows[i]["docdt"].retDateStr() + " </td><td>" + tbl.Rows[i]["itnm"].retStr() + " " + tbl.Rows[i]["styleno"].retStr() + " </td><td>" + colorcd + " </td><td>" + tbl.Rows[i]["sizecd"].retStr() + " </td><td>" + tbl.Rows[i]["balqnty"].retDbl() + " </td><td>" + tbl.Rows[i]["autono"].retStr() + " </td><td>" + tbl.Rows[i]["PREFNO"].retStr() + " </td><td>" + tbl.Rows[i]["PREFDT"].retDateStr() + " </td></tr>");
+                    SB.Append("<tr><td>" + tbl.Rows[i]["docno"].retStr() + "</td><td>" + tbl.Rows[i]["slno"].retStr() + " </td><td>" + tbl.Rows[i]["docdt"].retDateStr() + " </td><td>" + tbl.Rows[i]["itnm"].retStr() + " " + tbl.Rows[i]["styleno"].retStr() + " </td><td>" + colorcd + " </td><td>" + tbl.Rows[i]["sizecd"].retStr() + " </td><td>" + tbl.Rows[i]["balqnty"].retDbl() + " </td><td>" + tbl.Rows[i]["autono"].retStr() + " </td><td>" + tbl.Rows[i]["PREFNO"].retStr() + " </td><td>" + tbl.Rows[i]["PREFDT"].retDateStr() + " </td><td>" + tbl.Rows[i]["slnm"].retStr() + " </td></tr>");
                 }
-                var hdr = "Order No." + Cn.GCS() + "Order Slno." + Cn.GCS() + "Order Date." + Cn.GCS() + "Item Name" + Cn.GCS() + "Color Name" + Cn.GCS() + "Size Name" + Cn.GCS() + "Balance Quantity" + Cn.GCS() + "Order Autono" + Cn.GCS() + "Party Order No" + Cn.GCS() + "Party Order Dates";
+                var hdr = "Order No." + Cn.GCS() + "Order Slno." + Cn.GCS() + "Order Date." + Cn.GCS() + "Item Name" + Cn.GCS() + "Color Name" + Cn.GCS() + "Size Name" + Cn.GCS() + "Balance Quantity" + Cn.GCS() + "Order Autono" + Cn.GCS() + "Party Order No" + Cn.GCS() + "Party Order Dates" + Cn.GCS() + "Party Name";
                 return Generate_help(hdr, SB.ToString(), "7");
             }
             else

@@ -143,10 +143,11 @@ namespace Improvar.Controllers
                 {
                     sort += ",dlvdocdt,docno,STYLENO,itnm,itcd,rate";
                 }
-                else
+                if (ShowReport == "Prefdt")
                 {
-                    sort += ",D_docdt,docno,STYLENO,itnm,itcd,rate";
-                }                
+                    sort += ",prefdocdt,docno,STYLENO,itnm,itcd,rate";
+                }
+                sort += ",D_docdt,docno,STYLENO,itnm,itcd,rate";                              
                 if (showcolor == true) sort += ",colrcd";
                 if (ReportType == "Supper Summary") sort = "agslnm, agslcd,slnm,slcd";               
 
