@@ -565,3 +565,16 @@ textarea.form-control2 {
     transform: translate(-50%,-50%);
     -ms-transform: translate(-50%,-50%);
 }
+   th .arrow {
+  margin-left: 5px;
+  font-size: 12px;
+  color: #999;
+}
+th.sort-asc .arrow {
+  color: #000;
+  content: "▲";
+}
+th.sort-desc .arrow {
+  color: #000;
+  content: "▼";
+}
