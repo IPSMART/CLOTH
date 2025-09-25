@@ -237,6 +237,7 @@ namespace Improvar.Controllers
                         {
                             HC.GetPrintHeader(IR, "stktype", "string", "c,12", "Stock Type");
                             HC.GetPrintHeader(IR, "itrem", "string", "c,15", "Item Remarks");
+                            HC.GetPrintHeader(IR, "trem", "string", "c,25", "Remarks");
                         }
                         if (ReportType == "Date Wise Summary")
                         {
@@ -312,6 +313,7 @@ namespace Improvar.Controllers
                                     }
                                     IR.Rows[rNo]["stktype"] = tbl.Rows[i]["stktype"].retStr();
                                     IR.Rows[rNo]["itrem"] = tbl.Rows[i]["itrem"].retStr();
+                                    IR.Rows[rNo]["trem"] = tbl.Rows[i]["trem"].retStr();
                                 }
                                 else
                                 {
