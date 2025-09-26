@@ -4034,6 +4034,10 @@ namespace Improvar.Controllers
                         sql = "update " + schnm + ". T_BALE_HDR set MUTSLCD='" + VE.T_TXNTRANS.TRANSLCD + "' ";
                         sql += " where AUTONO='" + VE.T_TXN.AUTONO + "'  ";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+
+                        sql = "update " + schnm + ". T_BALE set LRNO ='" + VE.T_TXNTRANS.LRNO + "', LRDT =to_date('" + VE.T_TXNTRANS.LRDT.retDateStr() + "', 'dd/mm/yyyy') "
+                             + " where AUTONO='" + VE.T_TXN.AUTONO + "'  ";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
                     }
 
                     //update to T_VCH_BL//
