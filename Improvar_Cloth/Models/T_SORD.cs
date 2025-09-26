@@ -54,7 +54,7 @@ namespace Improvar.Models
         [StringLength(8)]
         public string SLMSLCD { get; set; }
 
-        [StringLength(30)]
+        [StringLength(40)]
         public string PREFNO { get; set; }
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? PREFDT { get; set; }

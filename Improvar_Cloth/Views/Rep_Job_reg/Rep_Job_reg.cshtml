@@ -181,6 +181,19 @@
                     </div>
                   
                 </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Show Metirial Issue Item")
+                        </div>
+                    </div>
+                    <div class="col-lg-2" style="border: 2px groove;">
+                        <label class="checkbox-inline">
+                            @Html.CheckBoxFor(model => model.Checkbox2)  @Html.Label("Show Metirial Issue Item")
+                        </label>
+                    </div>
+
+                </div>
                 @*<div class="row">
                     <div class="col-lg-2">
                         <div class="editor-label" style="margin-top: 6px;">

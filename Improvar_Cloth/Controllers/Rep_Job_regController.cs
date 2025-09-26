@@ -91,10 +91,11 @@ namespace Improvar.Controllers
                     loccd = FC["loccdvalue"].ToString().retSqlformat();
                     pghdr2 += (pghdr2.retStr() == "" ? "" : "<br/>") + "Location :" + FC["loccdtext"].ToString();
                 }
-                string sql = "";
+                string sql = "",sql2 = "";
                 DataTable IR = new DataTable("mstrep");
                 Models.PrintViewer PV = new Models.PrintViewer();
                 HtmlConverter HC = new HtmlConverter();
+
 
                 if (ReportType != "REGISTER")
                 {
@@ -147,6 +148,18 @@ namespace Improvar.Controllers
                     sql += "c.slcd = g.slcd(+) and c.barno = h.barno(+) and h.itcd = i.itcd(+) and i.itgrpcd = j.itgrpcd(+) and i.uomcd = k.uomcd(+) " + Environment.NewLine;
                     sql += "order by slnm, slcd, docdt, docno, autono, slno, recdocdt, recdocno " + Environment.NewLine;
                     DataTable tbl = MasterHelp.SQLquery(sql);
+
+                    string str1 = "";
+                    str1 += "select i.AUTONO,i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM,p.PRTBARCODE,i.STKTYPE,q.STKNAME,i.BARNO, ";
+                    str1 += "j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE,i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
+                    str1 += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,i.itrem,i.RECPROGSLNO,k.NEGSTOCK,i.cutlength ";
+                    str1 += "from " + scm + ".T_BATCHDTL i, " + scm + ".T_BATCHMST j, " + scm + ".M_SITEM k, " + scm + ".M_SIZE l, " + scm + ".M_COLOR m, ";
+                    str1 += scm + ".M_GROUP n," + scm + ".M_MTRLJOBMST o," + scm + ".M_PARTS p," + scm + ".M_STKTYPE q ";
+                    str1 += "where i.BARNO = j.BARNO(+) and j.ITCD = k.ITCD(+) and j.SIZECD = l.SIZECD(+) and j.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) ";
+                    str1 += "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and i.STKTYPE=q.STKTYPE(+) ";
+                    str1 += "order by i.SLNO ";
+                    DataTable Mtrl = MasterHelp.SQLquery(str1);
+
                     if (tbl.Rows.Count == 0)
                     {
                         return RedirectToAction("NoRecords", "RPTViewer", new { errmsg = "Records not found !!" });
@@ -188,6 +201,7 @@ namespace Improvar.Controllers
                         while (i <= maxR)
                         {
                             string slcd = tbl.Rows[i]["slcd"].retStr();
+                            int cnt = 0;
                             if (RepFormat == "JOBBERWISE")
                             {
                                 IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
@@ -248,7 +262,38 @@ namespace Improvar.Controllers
                                         frstslnoreco = false;
                                         frstreco = false;
                                         i++;
+                                        cnt++;
                                         if (i > maxR) break;
+                                    }
+                                    IR.Rows[rNo]["balqnty"] = tbl.Rows[i - 1]["balqnty"].retDbl();
+                                    double avrate = (tbl.Rows[i - 1]["qnty"].retDbl() == 0 ? 0 : (tbl.Rows[i - 1]["issamt"].retDbl() / tbl.Rows[i - 1]["qnty"].retDbl()).toRound(2));
+                                    double balamt = (avrate * tbl.Rows[i - 1]["balqnty"].retDbl()).toRound(0);
+                                    if (showValue == true) IR.Rows[rNo]["balamt"] = balamt;
+
+                                    if (cnt > 0 && VE.Checkbox2 == true)
+                                    {
+                                        var ITCD_material_DATA = (from DataRow x in Mtrl.Rows
+                                                                  where x["autono"].retStr() == autono && x["RECPROGSLNO"].retDbl() == progslno
+                                                                  group x by new { ITCD = x["itcd"].retStr(), ITNM = x["itnm"].retStr(), STYLENO = x["styleno"].retStr() } into x
+                                                                  select new
+                                                                  {
+                                                                      itcd = x.Key.ITCD,
+                                                                      itnm = x.Key.STYLENO + x.Key.ITNM,
+                                                                      qnty = x.Sum(s => s["qnty"].retDbl())
+                                                                      //TWASTGQNTY = x.Sum(s => s["qnty"].retDbl())
+                                                                  }).ToList();
+
+                                        if (ITCD_material_DATA != null)
+                                        {
+                                            foreach (var k in ITCD_material_DATA)
+                                            {
+                                                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                                IR.Rows[rNo]["flag"] = "font-style:italic;";
+                                                IR.Rows[rNo]["itnm"] = k.itcd.retStr();
+                                                IR.Rows[rNo]["Styleno"] = k.itnm.retStr();
+                                                IR.Rows[rNo]["qnty"] = k.qnty.retStr();
+                                            }
+                                        }
                                     }
                                     if (ReportType == "SUMMARY")
                                     {
@@ -259,15 +304,13 @@ namespace Improvar.Controllers
                                             IR.Rows[rNo]["recnos"] = trecnos;
                                             IR.Rows[rNo]["recqnty"] = trecqnty;
                                         }
-                                    }
-                                    IR.Rows[rNo]["balqnty"] = tbl.Rows[i - 1]["balqnty"].retDbl();
-                                    double avrate = (tbl.Rows[i - 1]["qnty"].retDbl() == 0 ? 0 : (tbl.Rows[i - 1]["issamt"].retDbl() / tbl.Rows[i - 1]["qnty"].retDbl()).toRound(2));
-                                    double balamt = (avrate * tbl.Rows[i - 1]["balqnty"].retDbl()).toRound(0);
-                                    if (showValue == true) IR.Rows[rNo]["balamt"] = balamt;
+                                    } 
                                     if (i > maxR) break;
                                 }
+                                
+                               
                                 if (i > maxR) break;
-                            }
+                            }                           
                             if (RepFormat == "JOBBERWISE")
                             {
                                 IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
@@ -289,7 +332,6 @@ namespace Improvar.Controllers
                             }
                             if (i > maxR) break;
                         }
-
                         IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                         IR.Rows[rNo]["itnm"] = "Grand Total";
                         for (int a = 9; a < IR.Columns.Count - 1; a++)
