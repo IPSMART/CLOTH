@@ -1261,7 +1261,7 @@
     }
     function deleteaccount() {
         var flag = 0;
-        var GridRowMain = $("#exist_GRP > tbody > tr").length;
+        var GridRowMain = $("#tblItmParty_Billdtl > tbody > tr").length;
         for (i = 0; i <= GridRowMain - 1; i++) {
             var chaked = document.getElementById("EChecked_" + i).checked;
             if (chaked == true) {
@@ -1271,7 +1271,7 @@
         }
         if (flag == 0) {
             msgInfo("Select accounts to remove!");
-            message_value = "exist_GRP";
+            message_value = "tblItmParty_Billdtl";
             return false;
         }
         var mpgrpcd = $("#MGRPCD").val();
@@ -1326,16 +1326,16 @@
         else {
             var index = Index + 1;
             var CHK_STATE = document.getElementById("EChecked_" + Index).checked;
-            totalRow = $("#exist_GRP tbody tr").length;
+            totalRow = $("#tblItmParty_Billdtl tbody tr").length;
             if (CHK_STATE == false) {
-                start = document.getElementById('exist_GRP' + index);
+                start = document.getElementById('tblItmParty_Billdtl' + index);
                 start.focus();
                 start.style.backgroundColor = '#86d2f7';
                 start.style.color = 'white';
                 document.getElementById("EChecked_" + Index).checked = true;
             }
             else {
-                start = document.getElementById('exist_GRP' + index);
+                start = document.getElementById('tblItmParty_Billdtl' + index);
                 start.focus();
                 start.style.backgroundColor = '';
                 start.style.color = '';
@@ -1498,35 +1498,7 @@
     }
 
 </script>
-<script>
-    let sortDirection = {};
 
-    function sortable(colIndex) {
-        const table = document.getElementById("available_GRP");
-        const tbody = table.tBodies[0];
-        const rows = Array.from(tbody.querySelectorAll("tr"));
-
-        sortDirection[colIndex] = !sortDirection[colIndex];
-        const asc = sortDirection[colIndex];
-
-        rows.sort((a, b) => {
-            let aInput = a.cells[colIndex].querySelector("input");
-            let bInput = b.cells[colIndex].querySelector("input");
-            let aVal = aInput ? aInput.value.trim() : a.cells[colIndex].innerText.trim();
-            let bVal = bInput ? bInput.value.trim() : b.cells[colIndex].innerText.trim();
-
-            if (!isNaN(aVal) && !isNaN(bVal)) {
-                return asc ? aVal - bVal : bVal - aVal;
-            }
-            return asc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-        });
-
-        rows.forEach(row => tbody.appendChild(row));
-
-        table.querySelectorAll("th").forEach(th => th.classList.remove("sort-asc", "sort-desc"));
-        table.querySelectorAll("th")[colIndex].classList.add(asc ? "sort-asc" : "sort-desc");
-    }
-</script>
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -1826,12 +1798,12 @@
                                             All
                                             <input type="checkbox" name="Test" onclick="SetAllCheckBoxesFilterParty(this, 'available_GRP', 'Checked_')" />
                                         </th>
-                                        <th class="" onclick="sortable(1)">Design</th>
-                                        <th class="" onclick="sortable(2)" style="width:30px;">Img</th>
-                                        <th class="" onclick="sortable(3)" style="width:40px;">UOM</th>
-                                        <th class="" onclick="sortable(4)" style="width:80px;">Sal.Qnty</th>
-                                        <th class="" onclick="sortable(5)" style="width:80px;">Net.Qnty</th>
-                                        <th class="" onclick="sortable(6)" style="width:100px;">Net.Amt</th>
+                                        <th class="" onclick="sortTable(1,'available_GRP')">Design<span class="arrow">▲</span></th>
+                                        <th class="" onclick="sortTable(2,'available_GRP')" style="width:30px;">Img<span class="arrow">▲</span></th>
+                                        <th class="" onclick="sortTable(3,'available_GRP')" style="width:40px;">UOM<span class="arrow">▲</span></th>
+                                        <th class="" onclick="sortTable(4,'available_GRP')" style="width:80px;text-align:right;">Sal.Qnty<span class="arrow">▲</span></th>
+                                        <th class="" onclick="sortTable(5,'available_GRP')" style="width:80px;text-align:right;">Net.Qnty<span class="arrow">▲</span></th>
+                                        <th class="" onclick="sortTable(6,'available_GRP')" style="width:100px;text-align:right;">Net.Amt<span class="arrow">▲</span></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1895,10 +1867,10 @@
                 </div>
             </div>
             <div style="width:62%;display:inline-block;float:left">
-                <input type="text" value="" class="form-control" autocomplete="off" id="searchAV" placeholder="Search From Available Bill Details" style="width:260px; margin-left:10px" onkeyup="filterTable(event, 'exist_GRP');" />
+                <input type="text" value="" class="form-control" autocomplete="off" id="searchAV" placeholder="Search From Available Bill Details" style="width:260px; margin-left:10px" onkeyup="filterTable(event, 'tblItmParty_Billdtl');" />
                 <span class="fa fa-search" style="margin-top:-18px;margin-left:251px;float:left"></span>
 
-                @*<input type="text" value="" class="form-control" autocomplete="off" id="searchEX" placeholder="Search From Tag Accounts" style="width:260px; margin-left:10px" onkeyup="filterTable(event, 'exist_GRP');" />*@
+                @*<input type="text" value="" class="form-control" autocomplete="off" id="searchEX" placeholder="Search From Tag Accounts" style="width:260px; margin-left:10px" onkeyup="filterTable(event, 'tblItmParty_Billdtl');" />*@
                 @*<span class="fa fa-search" style="margin-top:-18px;margin-left:251px;float:left"></span>*@
                 @*<div style="height:66vh;margin-top:28px;border-top:2px solid #86abd8;border-bottom:2px solid #86abd8;border-right:1px solid #86abd8;background-color:#d9ebf1">*@
                 <div style="height:66vh;margin-top:10px;border-top-right-radius:15px;border-top-left-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;border-top:2px solid #86abd8;border-bottom:2px solid #86abd8;border-right:2px solid #86abd8;border-left:2px solid #86abd8;background-color:#d9ebf1">

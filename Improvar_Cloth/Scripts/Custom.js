@@ -1850,3 +1850,37 @@ function ChangeRemarks(id, rsnid) {
     }
     $("#Audit_Remarks").val("");
 }
+let sortDirection = {};
+function sortTable(colIndex,tblnm) {
+    const table = document.getElementById(tblnm);
+    const tbody = table.tBodies[0];
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+
+    sortDirection[colIndex] = !sortDirection[colIndex];
+    const asc = sortDirection[colIndex];
+
+    rows.sort((a, b) => {
+        let aInput = a.cells[colIndex].querySelector("input");
+        let bInput = b.cells[colIndex].querySelector("input");
+        let aVal = aInput ? aInput.value.trim() : a.cells[colIndex].innerText.trim();
+        let bVal = bInput ? bInput.value.trim() : b.cells[colIndex].innerText.trim();
+
+        if (!isNaN(aVal) && !isNaN(bVal)) {
+            return asc ? aVal - bVal : bVal - aVal;
+        }
+        return asc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+    });
+
+    rows.forEach(row => tbody.appendChild(row));
+
+    // reset all arrows
+    table.querySelectorAll("th .arrow").forEach(arrow => {
+        arrow.textContent = "▲";
+        arrow.style.color = "#999";
+    });
+
+    // set active arrow
+    const activeArrow = table.querySelectorAll("th")[colIndex].querySelector(".arrow");
+    activeArrow.textContent = asc ? "▲" : "▼";
+    activeArrow.style.color = "#000";
+}

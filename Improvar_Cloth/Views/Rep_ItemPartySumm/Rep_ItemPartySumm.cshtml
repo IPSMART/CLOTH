@@ -752,8 +752,8 @@
 <script>
     function GetItemDetails() {
         debugger;
-        if (!emptyFieldCheck("Please Select / Enter Party Code", "ITCD")) { return false; }
-        if (!emptyFieldCheck("Please Select / Enter Party Code", "SLCD")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter Design", "ITCD")) { return false; }
+        //if (!emptyFieldCheck("Please Select / Enter Party Code", "SLCD")) { return false; }
         var party = $("#SLCD").val(), frmdt = $("#FDT").val(), todt = $("#TDT").val(), group = $("#ITGRPCDvalue").val(), loc = $("#loccdvalue").val(), sp = $('[id="SALPUR"]:checked').val();
         var CHECK = $("#ONLYSALES").val(), item = $("#ITCD").val(), itemnm = $("#ITNM").val();
 
@@ -874,7 +874,7 @@
                 <div class="col-lg-2">
                     <div class="editor-label" style="margin-top: 6px;">
                         @Html.Label("", "Party Code")
-                        <b style="color:Red;">*</b>
+                        @*<b style="color:Red;">*</b>*@
                     </div>
                 </div>
                 <div class="col-lg-3">
@@ -961,7 +961,7 @@
 
         </div>
         <div style="width:62%;display:inline-block;float:left">
-            <input type="text" value="" class="form-control" autocomplete="off" id="searchAV" placeholder="Search From Available Bill Details" style="width:260px; margin-left:10px" onkeyup="filterTable(event, 'exist_GRP');" />
+            <input type="text" value="" class="form-control" autocomplete="off" id="searchAV" placeholder="Search From Available Bill Details" style="width:260px; margin-left:10px" onkeyup="filterTable(event, 'tblItm_Billdtl');" />
             <span class="fa fa-search" style="margin-top:-18px;margin-left:251px;float:left"></span>
             <div style="height:66vh;margin-top:10px;border-top-right-radius:15px;border-top-left-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;border-top:2px solid #86abd8;border-bottom:2px solid #86abd8;border-right:2px solid #86abd8;border-left:2px solid #86abd8;background-color:#d9ebf1">
                 <div class="tabtitle">
