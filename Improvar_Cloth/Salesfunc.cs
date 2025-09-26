@@ -31,7 +31,8 @@ namespace Improvar
             sql += "y.docdt lastbldt, y.scmdiscrate, y.scmdisctype,y.listdiscper, ";
             //sql += "nvl(a.crdays,0) crdays, nvl(a.crlimit,0) crlimit,g.pslcd,g.tcsappl,g.panno,g.partycd ";
             sql += "nvl(a.crdays,0) crdays, nvl(a.crlimit,0) crlimit,g.pslcd,g.panno,g.partycd,a.CASHDISCPR, ";
-            sql += "(case when to_date('" + docdt + "', 'dd/mm/yyyy') < to_date('01/07/2021', 'dd/mm/yyyy') then nvl(g.tcsappl, 'Y') else  decode(nvl(g.tot194q, 'N'), 'Y', 'N', 'Y') end ) tcsappl ";
+            //sql += "(case when to_date('" + docdt + "', 'dd/mm/yyyy') < to_date('01/07/2021', 'dd/mm/yyyy') then nvl(g.tcsappl, 'Y') else  decode(nvl(g.tot194q, 'N'), 'Y', 'N', 'Y') end ) tcsappl ";
+            sql += "decode(nvl(k.tcsappl,'Y'),'N','N',nvl(g.tcsappl, 'N')) tcsappl,decode(nvl(k.TDSGOODSAPPL,'Y'),'N','N',nvl(g.tot194Q,'N')) tdsappl ";
             sql += "from ";
 
             sql += "(select a.slcd from " + scmf + ".m_subleg a where a.slcd='" + slcd + "' ) z, ";
@@ -99,10 +100,10 @@ namespace Improvar
             //if (docdt != "") sql += "and a.effdt <= to_date('" + docdt.Substring(0, 10) + "','dd/mm/yyyy') ";
             //sql += ") a where a.rn=1) d, ";
 
-            sql += "" + scmf + ".m_taxgrp e, " + scmf + ".m_prclst f, " + scmf + ".m_subleg g, " + scmf + ".m_subleg h, " + scmf + ".m_subleg i, " + scmf + ".m_subleg j ";
+            sql += "" + scmf + ".m_taxgrp e, " + scmf + ".m_prclst f, " + scmf + ".m_subleg g, " + scmf + ".m_subleg h, " + scmf + ".m_subleg i, " + scmf + ".m_subleg j, " + scmf + ".m_comp k ";
             sql += "where z.slcd=a.slcd(+) and z.slcd=b.slcd(+) and z.slcd=c.slcd(+) and ";
             sql += "b.taxgrpcd=e.taxgrpcd(+) and a.prccd=f.prccd(+) and a.slcd=y.slcd(+) and ";
-            sql += "z.slcd=g.slcd(+) and a.agslcd=h.slcd(+) and b.trslcd=i.slcd(+) and b.courcd=j.slcd(+) ";
+            sql += "z.slcd=g.slcd(+) and a.agslcd=h.slcd(+) and b.trslcd=i.slcd(+) and b.courcd=j.slcd(+)  and k.compcd='" + COM + "' ";
 
             tbl = SQLquery(sql);
 

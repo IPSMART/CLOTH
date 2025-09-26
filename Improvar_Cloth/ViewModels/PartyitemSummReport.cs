@@ -79,6 +79,9 @@ namespace Improvar.ViewModels
         public string WPrate { get; set; }
         public string RPrate { get; set; }
         public string Jobrate { get; set; }
+        public string ISSREC { get; set; }
+        public string ISSREC2 { get; set; }
+
     }
 }
 public class billdet

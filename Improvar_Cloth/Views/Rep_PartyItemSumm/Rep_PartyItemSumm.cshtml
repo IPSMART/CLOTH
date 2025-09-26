@@ -575,7 +575,7 @@
     function btn_submit() {
         debugger;
         if (!emptyFieldCheck("Please Select / Enter Party Code", "SLCD")) { return false; }
-        var party = $("#SLCD").val(), frmdt = $("#FDT").val(), todt = $("#TDT").val(), group = $("#ITGRPCDvalue").val(), loc = $("#loccdvalue").val(), sp = $('[id="SALPUR"]:checked').val();
+        var party = $("#SLCD").val(), frmdt = $("#FDT").val(), todt = $("#TDT").val(), group = $("#ITGRPCDvalue").val(), loc = $("#loccdvalue").val(), sp = $('[id="SALPUR"]:checked').val(), ir = $('[id="ISSREC"]:checked').val();
         var partynm = $("#SLNM").val();
         var chkbx = "";
         var CHECK = document.getElementById("CHECK").checked;
@@ -587,7 +587,7 @@
             url: $("#urlbtnsubmit").val(),
             beforesend: $("#WaitingMode").show(),
             data: {
-                slcd: party, fdt: frmdt, tdt: todt, check: chkbx, itgrpcd: group, slnm: partynm, location: loc, salpur: sp
+                slcd: party, fdt: frmdt, tdt: todt, check: chkbx, itgrpcd: group, slnm: partynm, location: loc, salpur: sp, issuerec: ir
             },
             success: function (result) {
                 result = result;
@@ -605,7 +605,7 @@
 
     function GetItemDetails() {
         debugger;
-        var party = $("#SLCD2").val(), frmdt = $("#FDT2").val(), todt = $("#TDT2").val(), group = $("#ITGRPCD2").val(), loc = $("#LOCATION2").val(), salpur = $("#SALPUR2").val();
+        var party = $("#SLCD2").val(), frmdt = $("#FDT2").val(), todt = $("#TDT2").val(), group = $("#ITGRPCD2").val(), loc = $("#LOCATION2").val(), salpur = $("#SALPUR2").val(), ir = $("#ISSREC2").val();
         var CHECK = $("#ONLYSALES2").val();
         var item = "", itemnm = "";
         var GridRow = $("#available_GRP > tbody > tr").length;
@@ -633,7 +633,7 @@
                 url: "@Url.Action("GetItemData", PageControllerName)",
                 beforesend: $("#WaitingMode").show(),
                 data: {
-                    slcd: party, fdt: frmdt, tdt: todt, check: CHECK, itgrpcd: group, itcd: item, itnm: itemnm, LOCATION: loc, SALPUR: salpur
+                    slcd: party, fdt: frmdt, tdt: todt, check: CHECK, itgrpcd: group, itcd: item, itnm: itemnm, LOCATION: loc, SALPUR: salpur, ISSREC: ir
                 },
                 success: function (result) {
                     $("#WaitingMode").hide();
@@ -1498,7 +1498,20 @@
     }
 
 </script>
-
+<script>
+    function ChangedivSALPUR() {
+        var reptype = $('[id="SALPUR"]:checked').val();
+        if (reptype == "J") {
+            $(".divSALPUR").hide();
+            $(".divISSREC").show();
+        }
+        else {
+            $(".divSALPUR").show();
+            $(".divISSREC").hide();
+        }
+        document.getElementById("CHECK").checked = false;
+    }
+</script>
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -1581,19 +1594,34 @@
                                 </div>
                                 <div class="col-lg-9" style="margin-top:6px;width:auto;border: groove;">
                                     <label class="radio-inline">
-                                        @Html.RadioButtonFor(model => model.SALPUR, "S", new { @checked = "checked", id = "SALPUR" })  @Html.Label("Debtors")
+                                        @Html.RadioButtonFor(model => model.SALPUR, "S", new { @checked = "checked", id = "SALPUR", onclick = "ChangedivSALPUR();" })  @Html.Label("Debtors")
                                     </label>
                                     <label class="radio-inline">
-                                        @Html.RadioButtonFor(model => model.SALPUR, "P", new { id = "SALPUR" })  @Html.Label("Creditors")
+                                        @Html.RadioButtonFor(model => model.SALPUR, "P", new { id = "SALPUR", onclick = "ChangedivSALPUR();" })  @Html.Label("Creditors")
+                                    </label>
+                                    <label class="radio-inline">
+                                        @Html.RadioButtonFor(model => model.SALPUR, "J", new { id = "SALPUR", onclick = "ChangedivSALPUR();" })  @Html.Label("Jobber")
                                     </label>
                                 </div>
-                                <div class="col-lg-2" style="width:auto;">
+                                <div class="divSALPUR col-lg-2" style="width:auto;">
                                     <div class="editor-label" style="margin-top:6px">
                                         @Html.Label("", "Is Only Sales/Purchase")
                                     </div>
                                 </div>
-                                <div class="col-md-6" style="margin-top:6px;width:auto;">
+                                <div class="divSALPUR col-md-6" style="margin-top:6px;width:auto;">
                                     @Html.CheckBoxFor(model => model.CHECK, new { id = "CHECK" })
+                                </div>
+
+                                <div class="divISSREC col-lg-9" style="margin-top:6px;width:auto;border: groove;display:none;">
+                                    <label class="radio-inline">
+                                        @Html.RadioButtonFor(model => model.ISSREC, "I", new { id = "ISSREC" })  @Html.Label("Issue")
+                                    </label>
+                                    <label class="radio-inline">
+                                        @Html.RadioButtonFor(model => model.ISSREC, "R", new { @checked = "checked", id = "ISSREC" })  @Html.Label("Receive")
+                                    </label>
+                                    <label class="radio-inline">
+                                        @Html.RadioButtonFor(model => model.ISSREC, "B", new { id = "ISSREC" })  @Html.Label("Both")
+                                    </label>
                                 </div>
                             </div>
 
@@ -1751,7 +1779,8 @@
                             @Html.HiddenFor(model => model.ONLYSALES2, new { id = "ONLYSALES2" })
                             @Html.HiddenFor(model => model.LOCATION2, new { id = "LOCATION2" })
                             @Html.HiddenFor(model => model.SALPUR2, new { id = "SALPUR2" })
-                        </div>
+                            @Html.HiddenFor(model => model.ISSREC2, new { id = "ISSREC2" })
+ </div>
                     </div>
                 </div>
                 <div style="width:20%;display:inline-block;float:left;margin-top:5px">

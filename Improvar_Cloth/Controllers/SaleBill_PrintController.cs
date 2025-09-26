@@ -2442,6 +2442,7 @@ namespace Improvar.Controllers
 
                             var HSN_DATA = (from a in DBF.T_VCH_GST
                                             where a.AUTONO == auto1
+                                            orderby a.SLNO
                                             group a by new { HSNCODE = a.HSNCODE, IGSTPER = a.IGSTPER, CGSTPER = a.CGSTPER, SGSTPER = a.SGSTPER } into x
                                             select new
                                             {
@@ -2480,7 +2481,14 @@ namespace Improvar.Controllers
                                     gstamt1 = Convert.ToDouble(k.TCGSTAMT) + Convert.ToDouble(k.TIGSTAMT);
 
                                     if (k.HSNCODE != "") { hsncode += k.HSNCODE + "~"; }
-                                    if (k.TQNTY != 0) { hsnqnty += Convert.ToDouble(k.TQNTY).ToString("n" + DECIMAL.ToString()) + " " + umnm + "~"; }
+                                    if (k.TQNTY != 0)
+                                    {
+                                        hsnqnty += Convert.ToDouble(k.TQNTY).ToString("n" + DECIMAL.ToString()) + " " + umnm + "~";
+                                    }
+                                    else
+                                    {
+                                        hsnqnty += "~";
+                                    }
                                     if (k.TCGSTAMT + k.TIGSTAMT != 0)
                                     {
                                         if (k.IGSTPER != 0) hsngstper1 += Cn.Indian_Number_format(k.IGSTPER.ToString(), "0.00") + " %~";

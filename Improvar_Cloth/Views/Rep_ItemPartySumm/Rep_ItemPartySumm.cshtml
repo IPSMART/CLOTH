@@ -754,7 +754,7 @@
         debugger;
         if (!emptyFieldCheck("Please Select / Enter Design", "ITCD")) { return false; }
         //if (!emptyFieldCheck("Please Select / Enter Party Code", "SLCD")) { return false; }
-        var party = $("#SLCD").val(), frmdt = $("#FDT").val(), todt = $("#TDT").val(), group = $("#ITGRPCDvalue").val(), loc = $("#loccdvalue").val(), sp = $('[id="SALPUR"]:checked').val();
+        var party = $("#SLCD").val(), frmdt = $("#FDT").val(), todt = $("#TDT").val(), group = $("#ITGRPCDvalue").val(), loc = $("#loccdvalue").val(), sp = $('[id="SALPUR"]:checked').val(), ir = $('[id="ISSREC"]:checked').val();
         var CHECK = $("#ONLYSALES").val(), item = $("#ITCD").val(), itemnm = $("#ITNM").val();
 
         $.ajax({
@@ -762,7 +762,7 @@
             url: "@Url.Action("GetItemData", PageControllerName)",
             beforesend: $("#WaitingMode").show(),
             data: {
-                slcd: party, fdt: frmdt, tdt: todt, itgrpcd: group, check: CHECK, itcd: item, itnm: itemnm, LOCATION: loc, SALPUR: sp
+                slcd: party, fdt: frmdt, tdt: todt, itgrpcd: group, check: CHECK, itcd: item, itnm: itemnm, LOCATION: loc, SALPUR: sp, ISSREC: ir
             },
             success: function (result) {
                 $("#WaitingMode").hide();
@@ -776,7 +776,20 @@
 
     }
 </script>
-
+<script>
+    function ChangedivSALPUR() {
+        var reptype = $('[id="SALPUR"]:checked').val();
+        if (reptype == "J") {
+            $(".divSALPUR").hide();
+            $(".divISSREC").show();
+        }
+        else {
+            $(".divSALPUR").show();
+            $(".divISSREC").hide();
+        }
+        document.getElementById("CHECK").checked = false;
+    }
+</script>
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -940,19 +953,34 @@
                 </div>
                 <div class="col-lg-9" style="margin-top:6px;width:auto;border: groove;">
                     <label class="radio-inline">
-                        @Html.RadioButtonFor(model => model.SALPUR, "S", new { @checked = "checked", id = "SALPUR" })  @Html.Label("Debtors")
+                        @Html.RadioButtonFor(model => model.SALPUR, "S", new { @checked = "checked", id = "SALPUR", onclick = "ChangedivSALPUR();" })  @Html.Label("Debtors")
                     </label>
                     <label class="radio-inline">
-                        @Html.RadioButtonFor(model => model.SALPUR, "P", new { id = "SALPUR" })  @Html.Label("Creditors")
+                        @Html.RadioButtonFor(model => model.SALPUR, "P", new { id = "SALPUR", onclick = "ChangedivSALPUR();" })  @Html.Label("Creditors")
+                    </label>
+                    <label class="radio-inline">
+                        @Html.RadioButtonFor(model => model.SALPUR, "J", new { id = "SALPUR", onclick = "ChangedivSALPUR();" })  @Html.Label("Jobber")
                     </label>
                 </div>
-                <div class="col-lg-2" style="width:auto;">
+                <div class="divSALPUR col-lg-2" style="width:auto;">
                     <div class="editor-label" style="margin-top:6px">
                         @Html.Label("", "Is Only Sales/Purchase")
                     </div>
                 </div>
-                <div class="col-md-6" style="margin-top:6px;width:auto;">
+                <div class="divSALPUR col-md-6" style="margin-top:6px;width:auto;">
                     @Html.CheckBoxFor(model => model.CHECK, new { id = "CHECK" })
+                </div>
+
+                <div class="divISSREC col-lg-9" style="margin-top:6px;width:auto;border: groove;display:none;">
+                    <label class="radio-inline">
+                        @Html.RadioButtonFor(model => model.ISSREC, "I", new { id = "ISSREC" })  @Html.Label("Issue")
+                    </label>
+                    <label class="radio-inline">
+                        @Html.RadioButtonFor(model => model.ISSREC, "R", new { @checked = "checked", id = "ISSREC" })  @Html.Label("Receive")
+                    </label>
+                    <label class="radio-inline">
+                        @Html.RadioButtonFor(model => model.ISSREC, "B", new { id = "ISSREC" })  @Html.Label("Both")
+                    </label>
                 </div>
             </div>
             <div class="row">

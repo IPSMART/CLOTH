@@ -123,7 +123,7 @@ namespace Improvar.Controllers
         {
             try
             {
-                Code = "D,C";
+                Code = "D,C,J";
                 var str = masterHelp.SLCD_help(val, Code);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
@@ -168,7 +168,7 @@ namespace Improvar.Controllers
                 return null;
             }
         }
-        public ActionResult GetItemData(string slcd = "", string fdt = "", string tdt = "", string check = "", string itgrpcd = "", string itcd = "", string itnm = "", string LOCATION = "", string SALPUR = "")
+        public ActionResult GetItemData(string slcd = "", string fdt = "", string tdt = "", string check = "", string itgrpcd = "", string itcd = "", string itnm = "", string LOCATION = "", string SALPUR = "", string ISSREC = "")
         {
             try
             {
@@ -178,8 +178,8 @@ namespace Improvar.Controllers
                 if (slcd.retStr() != "") slcd = slcd.retSqlformat();
                 if (itcd.retStr() != "") itcd = itcd.retSqlformat();
 
-                DataTable dt = GetData(slcd, fdt, tdt, itgrpcd, check, itcd, LOCATION, SALPUR);
-                string doctag = SALPUR == "S" ? "SB" : "PB";
+                DataTable dt = GetData(slcd, fdt, tdt, itgrpcd, check, itcd, LOCATION, SALPUR, ISSREC);
+                string doctag = SALPUR == "S" ? "SB" : SALPUR == "P" ? "PB" : (ISSREC == "I" ? "JC" : "JR");
                 VE.ItmDet = (from DataRow DR in dt.Rows
                              group DR by new
                              {
@@ -233,7 +233,7 @@ namespace Improvar.Controllers
             }
         }
 
-        public DataTable GetData(string SLCD = "", string FDT = "", string TDT = "", string ITGRPCD = "", string CHECK = "", string ITCD = "", string LOCATION = "", string SALPUR = "")
+        public DataTable GetData(string SLCD = "", string FDT = "", string TDT = "", string ITGRPCD = "", string CHECK = "", string ITCD = "", string LOCATION = "", string SALPUR = "", string ISSREC = "")
         {
             string prccd = "WP";
             string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
@@ -250,7 +250,7 @@ namespace Improvar.Controllers
                     txntag = "'SB','SR','SD','SC'";
                 }
             }
-            else
+            else if (SALPUR == "P")
             {
                 if (CHECK == "Y")
                 {
@@ -259,6 +259,21 @@ namespace Improvar.Controllers
                 else
                 {
                     txntag = "'PB','PR','PD','PC'";
+                }
+            }
+            else
+            {
+                if (ISSREC == "I")
+                {
+                    txntag = "'JC'";
+                }
+                else if (ISSREC == "R")
+                {
+                    txntag = "'JR'";
+                }
+                else
+                {
+                    txntag = "'JC','JR'";
                 }
             }
             string sql = "";

@@ -466,7 +466,7 @@ namespace Improvar.Controllers
 
                                     if (slcd != "")
                                     {
-                                        var subleg = (from a in DBF.M_SUBLEG where a.SLCD == slcd select new { a.SLNM, a.SLAREA, a.DISTRICT, a.GSTNO, a.PSLCD, a.TCSAPPL, a.PANNO, a.PARTYCD, a.REGMOBILE, a.ADD1, a.ADD2, a.ADD3, a.ADD4, a.ADD5, a.ADD6, a.ADD7 }).FirstOrDefault();
+                                        var subleg = (from a in DBF.M_SUBLEG where a.SLCD == slcd select new { a.SLNM, a.SLAREA, a.DISTRICT, a.GSTNO, a.PSLCD,  a.PANNO, a.PARTYCD, a.REGMOBILE, a.ADD1, a.ADD2, a.ADD3, a.ADD4, a.ADD5, a.ADD6, a.ADD7 }).FirstOrDefault();
                                         VE.SLNM = subleg.SLNM;
                                         VE.SLAREA = subleg.SLAREA == "" ? subleg.DISTRICT : subleg.SLAREA;
                                         VE.GSTNO = subleg.GSTNO;
@@ -752,7 +752,7 @@ namespace Improvar.Controllers
                 {
                     string slcd = TXN.SLCD;
                     VE.Last_SLCD = slcd;
-                    var subleg = (from a in DBF.M_SUBLEG where a.SLCD == slcd select new { a.SLNM, a.SLAREA, a.DISTRICT, a.GSTNO, a.PSLCD, a.TCSAPPL, a.PANNO, a.PARTYCD }).FirstOrDefault();
+                    var subleg = (from a in DBF.M_SUBLEG where a.SLCD == slcd select new { a.SLNM, a.SLAREA, a.DISTRICT, a.GSTNO, a.PSLCD,  a.PANNO, a.PARTYCD }).FirstOrDefault();
                     VE.SLNM = subleg.SLNM;
                     VE.SLAREA = subleg.SLAREA == "" ? subleg.DISTRICT : subleg.SLAREA;
                     VE.GSTNO = subleg.GSTNO;
@@ -4995,7 +4995,7 @@ namespace Improvar.Controllers
                         ContentFlg = "Entry Can't Save ! Previous Tax Group/Price and Current Tax Group/Price not match ";
                         goto dbnotsave;
                     }
-                    var subleg = (from a in DBF1.M_SUBLEG where a.SLCD == VE.T_TXN.SLCD select new { a.SLNM, a.SLAREA, a.DISTRICT, a.GSTNO, a.PSLCD, a.TCSAPPL, a.PANNO, a.PARTYCD, a.REGMOBILE, a.ADD1, a.ADD2, a.ADD3, a.ADD4, a.ADD5, a.ADD6, a.ADD7 }).FirstOrDefault();
+                    var subleg = (from a in DBF1.M_SUBLEG where a.SLCD == VE.T_TXN.SLCD select new { a.SLNM, a.SLAREA, a.DISTRICT, a.GSTNO, a.PSLCD,  a.PANNO, a.PARTYCD, a.REGMOBILE, a.ADD1, a.ADD2, a.ADD3, a.ADD4, a.ADD5, a.ADD6, a.ADD7 }).FirstOrDefault();
 
                     if (VE.MENU_PARA == "SBPOS")
                     {

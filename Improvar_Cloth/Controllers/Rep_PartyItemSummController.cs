@@ -20,7 +20,7 @@ namespace Improvar.Controllers
         MasterHelp masterHelp = new MasterHelp();
         DropDownHelp dropDownHelp = new DropDownHelp();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
-        public ActionResult Rep_PartyItemSumm(string SLCD = "", string SLNM = "", string FDT = "", string TDT = "", string CHECK = "", string ITGRPCD = "", string LOCCD = "", string SALPUR = "")
+        public ActionResult Rep_PartyItemSumm(string SLCD = "", string SLNM = "", string FDT = "", string TDT = "", string CHECK = "", string ITGRPCD = "", string LOCCD = "", string SALPUR = "", string ISSREC = "")
         {
 
             try
@@ -53,7 +53,7 @@ namespace Improvar.Controllers
                     {
                         VE.SLCD = SLCD; VE.FDT2 = FDT; VE.TDT2 = TDT; VE.ITGRPCD = ITGRPCD;
 
-                        VE.SLCD2 = SLCD; VE.ITGRPCD2 = ITGRPCD; VE.ONLYSALES2 = CHECK; VE.LOCATION2 = LOCCD; VE.SALPUR2 = SALPUR;
+                        VE.SLCD2 = SLCD; VE.ITGRPCD2 = ITGRPCD; VE.ONLYSALES2 = CHECK; VE.LOCATION2 = LOCCD; VE.SALPUR2 = SALPUR; VE.ISSREC2 = ISSREC;
 
                         if (CHECK == "Y")
                         {
@@ -66,7 +66,7 @@ namespace Improvar.Controllers
                         ViewBag.SLNM = SLNM + " [" + SLCD + "]";
                         if (ITGRPCD.retStr() != "") ITGRPCD = ITGRPCD.retSqlformat();
                         if (LOCCD.retStr() != "") LOCCD = LOCCD.retSqlformat();
-                        DataTable dt = GetData(SLCD, FDT, TDT, ITGRPCD, CHECK, "", LOCCD, SALPUR);
+                        DataTable dt = GetData(SLCD, FDT, TDT, ITGRPCD, CHECK, "", LOCCD, SALPUR, ISSREC);
 
                         VE.billdet = (from DataRow DR in dt.Rows
                                       group DR by new
@@ -238,7 +238,7 @@ namespace Improvar.Controllers
                     }
 
                 }
-                Code = "D,C";
+                Code = "D,C,J";
                 var str = masterHelp.SLCD_help(val, Code);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
@@ -256,7 +256,7 @@ namespace Improvar.Controllers
             }
         }
 
-        public string BtnSubmit(string slcd, string slnm, string fdt, string tdt, string check, string itgrpcd, string location, string salpur)
+        public string BtnSubmit(string slcd, string slnm, string fdt, string tdt, string check, string itgrpcd, string location, string salpur, string issuerec)
         {
             try
             {
@@ -266,14 +266,14 @@ namespace Improvar.Controllers
                 var queryString = System.Web.HttpUtility.ParseQueryString(uri.Query);
                 if (queryString.Get("SLCD") == null)
                 {
-                    url = Request.UrlReferrer.ToString() + "&SLCD=" + slcd + "&SLNM=" + slnm + "&FDT=" + fdt + "&TDT=" + tdt + "&CHECK=" + check + "&ITGRPCD=" + itgrpcd + "&LOCCD=" + location + "&SALPUR=" + salpur;
+                    url = Request.UrlReferrer.ToString() + "&SLCD=" + slcd + "&SLNM=" + slnm + "&FDT=" + fdt + "&TDT=" + tdt + "&CHECK=" + check + "&ITGRPCD=" + itgrpcd + "&LOCCD=" + location + "&SALPUR=" + salpur + "&ISSREC=" + issuerec;
                 }
                 else
                 {
                     string dd = Request.UrlReferrer.ToString();
                     int pos = Request.UrlReferrer.ToString().IndexOf("&SLCD=");
                     url = dd.Substring(0, pos);
-                    url = url + "&SLCD=" + slcd + "&SLNM=" + slnm + "&FDT=" + fdt + "&TDT=" + tdt + "&CHECK=" + check + "&ITGRPCD=" + itgrpcd + "&LOCCD=" + location + "&SALPUR=" + salpur;
+                    url = url + "&SLCD=" + slcd + "&SLNM=" + slnm + "&FDT=" + fdt + "&TDT=" + tdt + "&CHECK=" + check + "&ITGRPCD=" + itgrpcd + "&LOCCD=" + location + "&SALPUR=" + salpur + "&ISSREC=" + issuerec;
                 }
                 return url;
             }
@@ -282,7 +282,7 @@ namespace Improvar.Controllers
                 return null;
             }
         }
-        public ActionResult GetItemData(string slcd = "", string fdt = "", string tdt = "", string check = "", string itgrpcd = "", string itcd = "", string itnm = "", string LOCATION = "",string SALPUR="")
+        public ActionResult GetItemData(string slcd = "", string fdt = "", string tdt = "", string check = "", string itgrpcd = "", string itcd = "", string itnm = "", string LOCATION = "", string SALPUR = "", string ISSREC = "")
         {
             try
             {
@@ -290,8 +290,8 @@ namespace Improvar.Controllers
                 //string itcd = (from a in VE.billdet where a.Checked == true select a.itcd).ToArray().retSqlfromStrarray();
                 if (itgrpcd.retStr() != "") itgrpcd = itgrpcd.retSqlformat();
                 if (LOCATION.retStr() != "") LOCATION = LOCATION.retSqlformat();
-                DataTable dt = GetData(slcd, fdt, tdt, itgrpcd, check, itcd, LOCATION, SALPUR);
-                string doctag = SALPUR == "S" ? "SB" : "PB";
+                DataTable dt = GetData(slcd, fdt, tdt, itgrpcd, check, itcd, LOCATION, SALPUR, ISSREC);
+                string doctag = SALPUR == "S" ? "SB" : SALPUR == "P" ? "PB" : (ISSREC == "I" ? "JC" : "JR");
                 VE.ItmDet = (from DataRow DR in dt.Rows
                              group DR by new
                              {
@@ -342,7 +342,7 @@ namespace Improvar.Controllers
             }
         }
 
-        public DataTable GetData(string SLCD = "", string FDT = "", string TDT = "", string ITGRPCD = "", string CHECK = "", string ITCD = "", string LOCATION = "", string SALPUR = "")
+        public DataTable GetData(string SLCD = "", string FDT = "", string TDT = "", string ITGRPCD = "", string CHECK = "", string ITCD = "", string LOCATION = "", string SALPUR = "", string ISSREC = "")
         {
             string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
             string txntag = "'SB','SR','SD','SC'";
@@ -361,7 +361,7 @@ namespace Improvar.Controllers
                     txntag = "'SB','SR','SD','SC'";
                 }
             }
-            else
+            else if (SALPUR == "P")
             {
                 if (CHECK == "Y")
                 {
@@ -370,6 +370,21 @@ namespace Improvar.Controllers
                 else
                 {
                     txntag = "'PB','PR','PD','PC'";
+                }
+            }
+            else
+            {
+                if (ISSREC == "I")
+                {
+                    txntag = "'JC'";
+                }
+                else if (ISSREC == "R")
+                {
+                    txntag = "'JR'";
+                }
+                else
+                {
+                    txntag = "'JC','JR'";
                 }
             }
             string sql = "";
