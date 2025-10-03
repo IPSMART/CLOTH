@@ -466,7 +466,7 @@ namespace Improvar.Controllers
 
                                     if (slcd != "")
                                     {
-                                        var subleg = (from a in DBF.M_SUBLEG where a.SLCD == slcd select new { a.SLNM, a.SLAREA, a.DISTRICT, a.GSTNO, a.PSLCD,  a.PANNO, a.PARTYCD, a.REGMOBILE, a.ADD1, a.ADD2, a.ADD3, a.ADD4, a.ADD5, a.ADD6, a.ADD7 }).FirstOrDefault();
+                                        var subleg = (from a in DBF.M_SUBLEG where a.SLCD == slcd select new { a.SLNM, a.SLAREA, a.DISTRICT, a.GSTNO, a.PSLCD, a.PANNO, a.PARTYCD, a.REGMOBILE, a.ADD1, a.ADD2, a.ADD3, a.ADD4, a.ADD5, a.ADD6, a.ADD7 }).FirstOrDefault();
                                         VE.SLNM = subleg.SLNM;
                                         VE.SLAREA = subleg.SLAREA == "" ? subleg.DISTRICT : subleg.SLAREA;
                                         VE.GSTNO = subleg.GSTNO;
@@ -752,7 +752,7 @@ namespace Improvar.Controllers
                 {
                     string slcd = TXN.SLCD;
                     VE.Last_SLCD = slcd;
-                    var subleg = (from a in DBF.M_SUBLEG where a.SLCD == slcd select new { a.SLNM, a.SLAREA, a.DISTRICT, a.GSTNO, a.PSLCD,  a.PANNO, a.PARTYCD }).FirstOrDefault();
+                    var subleg = (from a in DBF.M_SUBLEG where a.SLCD == slcd select new { a.SLNM, a.SLAREA, a.DISTRICT, a.GSTNO, a.PSLCD, a.PANNO, a.PARTYCD }).FirstOrDefault();
                     VE.SLNM = subleg.SLNM;
                     VE.SLAREA = subleg.SLAREA == "" ? subleg.DISTRICT : subleg.SLAREA;
                     VE.GSTNO = subleg.GSTNO;
@@ -1127,6 +1127,10 @@ namespace Improvar.Controllers
                             {
                                 v.BALSTOCK = tax_data.Rows[0]["BALQNTY"].retDbl();
                                 PRODGRPGSTPER = tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
+                                if (VE.MENU_PARA == "PR")
+                                {
+                                    PRODGRPGSTPER = Getprodgrpgstper(v.AGDOCDT.retDateStr(), TXNOTH.TAXGRPCD.retStr(), v.ITCD);
+                                }
                                 if (PRODGRPGSTPER != "")
                                 {
                                     ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, v.RATE.retDbl(), v.SCMDISCTYPE, v.SCMDISCRATE.retDbl());
@@ -3882,7 +3886,10 @@ namespace Improvar.Controllers
                     for (int i = 0; i < VE.TBATCHDTL.Count; i++)
                     {
                         VE.TBATCHDTL[i].SLNO = (i + 1).retShort();
-
+                        if (VE.MENU_PARA == "PR")
+                        {
+                            VE.TBATCHDTL[i].PRODGRPGSTPER = Getprodgrpgstper(VE.TBATCHDTL[i].AGDOCDT.retDateStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), VE.TBATCHDTL[i].ITCD);
+                        }
                         if (data != null && data.Rows.Count > 0)
                         {
                             var DATA = data.Select("barno = '" + VE.TBATCHDTL[i].BARNO + "' and itcd= '" + VE.TBATCHDTL[i].ITCD + "' and itgrpcd = '" + VE.TBATCHDTL[i].ITGRPCD + "'");
@@ -4999,7 +5006,7 @@ namespace Improvar.Controllers
                         ContentFlg = "Entry Can't Save ! Previous Tax Group/Price and Current Tax Group/Price not match ";
                         goto dbnotsave;
                     }
-                    var subleg = (from a in DBF1.M_SUBLEG where a.SLCD == VE.T_TXN.SLCD select new { a.SLNM, a.SLAREA, a.DISTRICT, a.GSTNO, a.PSLCD,  a.PANNO, a.PARTYCD, a.REGMOBILE, a.ADD1, a.ADD2, a.ADD3, a.ADD4, a.ADD5, a.ADD6, a.ADD7 }).FirstOrDefault();
+                    var subleg = (from a in DBF1.M_SUBLEG where a.SLCD == VE.T_TXN.SLCD select new { a.SLNM, a.SLAREA, a.DISTRICT, a.GSTNO, a.PSLCD, a.PANNO, a.PARTYCD, a.REGMOBILE, a.ADD1, a.ADD2, a.ADD3, a.ADD4, a.ADD5, a.ADD6, a.ADD7 }).FirstOrDefault();
 
                     if (VE.MENU_PARA == "SBPOS")
                     {
@@ -8090,7 +8097,33 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        public string Getprodgrpgstper(string docdt, string taxgrpcd, string itcd)
+        {
+            string prodgrpgstper = "";
+            string scm = CommVar.CurSchema(UNQSNO);
+            string sql = "";
+            sql += "select a.prodgrpcd, ";
+            sql += Environment.NewLine + "listagg(b.fromrt||chr(126)||b.tort||chr(126)||b.igstper||chr(126)||b.cgstper||chr(126)||b.sgstper,chr(179)) ";
+            sql += Environment.NewLine + "within group (order by a.prodgrpcd) as prodgrpgstper ";
+            sql += Environment.NewLine + "from ";
+            sql += Environment.NewLine + "(select prodgrpcd, effdt from ";
+            sql += Environment.NewLine + "(select a.prodgrpcd, a.effdt, ";
+            sql += Environment.NewLine + "row_number() over (partition by a.prodgrpcd order by a.effdt desc) as rn ";
+            sql += Environment.NewLine + "from " + scm + ".m_prodtax a ";
+            sql += Environment.NewLine + "where a.effdt <= to_date('" + docdt + "','dd/mm/yyyy')  ";
+            sql += Environment.NewLine + ")where rn=1 ) a, " + scm + ".m_prodtax b ";
+            sql += Environment.NewLine + "where a.prodgrpcd=b.prodgrpcd(+) and a.effdt=b.effdt(+) and b.taxgrpcd='" + taxgrpcd + "' ";
+            sql += Environment.NewLine + "and a.prodgrpcd in (select prodgrpcd from " + scm + ".m_sitem where itcd='" + itcd + "' ) ";
+            sql += Environment.NewLine + "group by a.prodgrpcd  ";
 
+
+            DataTable tbl = masterHelp.SQLquery(sql);
+            if (tbl != null && tbl.Rows.Count > 0)
+            {
+                prodgrpgstper = tbl.Rows[0]["prodgrpgstper"].retStr();
+            }
+            return prodgrpgstper;
+        }
 
     }
 }
