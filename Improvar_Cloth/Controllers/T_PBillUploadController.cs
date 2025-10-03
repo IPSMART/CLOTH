@@ -801,6 +801,7 @@ namespace Improvar.Controllers
                         TBATCHDTL.LISTDISCPER = TTXNDTL.LISTDISCPER;
                         //TBATCHDTL.CUTLENGTH = TTXNDTL.CUTLENGTH;
                         TBATCHDTL.STKTYPE = TTXNDTL.STKTYPE;
+                        TBATCHDTL.GSTPER = TTXNDTL.GSTPER;
 
                         //if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "OP") && VE.M_SYSCNFG.MNTNPCSTYPE == "Y")
                         //{
