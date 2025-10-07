@@ -92,5 +92,8 @@ namespace Improvar.Models
         [StringLength(8)]
         public string RTDEBCD { get; set; }
 
+        [StringLength(1)]
+        public string ORDTYPE { get; set; }
+
     }
 }

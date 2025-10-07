@@ -11,7 +11,11 @@ namespace Improvar.Models
         public string text { get; set; }
         public string value { get; set; }
     }
-
+    public class DropDown_list_Tord
+    {
+        public string text { get; set; }
+        public string value { get; set; }
+    }
     public class DropDown_list1
     {
         public string text { get; set; }

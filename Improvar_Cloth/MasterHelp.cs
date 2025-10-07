@@ -981,6 +981,23 @@ namespace Improvar
             DDL.Add(DDL4);
             return DDL;
         }
+        public List<DropDown_list_Tord> TYPE_OF_ORDER()
+        {
+            List<DropDown_list_Tord> DDL = new List<DropDown_list_Tord>();
+            DropDown_list_Tord DDL1 = new DropDown_list_Tord();
+            DDL1.text = "Urgent";
+            DDL1.value = "U";
+            DDL.Add(DDL1);
+            DropDown_list_Tord DDL2 = new DropDown_list_Tord();
+            DDL2.text = "Moderate";
+            DDL2.value = "M";
+            DDL.Add(DDL2);
+            DropDown_list_Tord DDL3 = new DropDown_list_Tord();
+            DDL3.text = "Normal";
+            DDL3.value = "N";
+            DDL.Add(DDL3);
+            return DDL;
+        }
         public List<CashOnDelivery> CashOnDelivery()
         {
             List<CashOnDelivery> DDL = new List<CashOnDelivery>();

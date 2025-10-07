@@ -1526,6 +1526,16 @@
                             @Html.EditorFor(model => model.CONSLNM, new { htmlAttributes = new { @class = "form-control", id = "CONSLNM", maxlength = 45, @title = "Only for View", @placeholder = "Consignee Name", @TabIndex = -1, @readonly = "readonly" } })
                         </div>
                     </div>
+                    <div class="col-md-3">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Type of Order")
+                        </div>
+                    </div>
+                    <div class="col-md-5" style="width:auto;">
+                        <div class="editor-field">
+                            @Html.DropDownListFor(model => model.ordtype, new SelectList(Model.DropDown_list_Tord, "value", "text", Model.ordtype), "==Select==", new { @class = "form-control" })
+                        </div>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-md-5">
@@ -1548,6 +1558,7 @@
                             @Html.EditorFor(model => model.T_SORD.PREFDT, new { htmlAttributes = new { @class = "form-control", id = "PREFDT", @placeholder = "dd/mm/yyyy", onblur = "DocumentDateCHK(this);", autocomplete = "off", maxlength = 10 } })
                         </div>
                     </div>
+
                     <div class="col-md-3">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "Order Rec Mode")

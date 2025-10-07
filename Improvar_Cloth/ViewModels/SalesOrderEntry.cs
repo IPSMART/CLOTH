@@ -31,6 +31,7 @@ namespace Improvar.ViewModels
         public List<DocumentType> DocumentType { get; set; }
         public List<DocumentThrough> DocumentThrough { get; set; }
         public List<DropDown_list> DropDown_list { get; set; }
+        public List<DropDown_list_Tord> DropDown_list_Tord { get; set; }
         public List<DropDown_list1> DropDown_list1 { get; set; }
         public List<DropDown_list4> DropDown_list4 { get; set; }
         public List<DropDown_list5> DropDown_list5 { get; set; }
@@ -41,6 +42,7 @@ namespace Improvar.ViewModels
         public string EFF_DATE_ID { get; set; }
         public string DISC_EFF_DATE_ID { get; set; }
         public string OTHRECMD { get; set; }
+        public string ordtype { get; set; }
         public int SERIAL { get; set; }
 
         [StringLength(15)]
