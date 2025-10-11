@@ -565,7 +565,7 @@ namespace Improvar.Controllers
                     {//Selected row will upload only
                         continue;
                     }
-                    TTXN.TCSPER = 0.1;// 0.075;
+                    //TTXN.TCSPER = 0.1;// 0.075;
                     dupgrid.BLNO = TTXN.PREFNO;
                     string Ddate = DateTime.ParseExact(oudr["INVDATE"].retDateStr(), "dd/MM/yyyy", CultureInfo.InvariantCulture).ToString("dd/MM/yyyy");
                     TTXN.DOCDT = Convert.ToDateTime(Ddate);
@@ -595,11 +595,11 @@ namespace Improvar.Controllers
                     //double blTAX_AMT = oudr["TAX_AMT"].retDbl();
                     double tcsamt = oudr["tcsamt"].retDbl();// (blINV_VALUE * TTXN.TCSPER.retDbl() / 100).toRound(2);
                     TTXN.BLAMT = blINV_VALUE + tcsamt;
-                    TTXN.TDSCODE = "X";
+                    //TTXN.TDSCODE = "X";
                     TTXN.ROYN = "Y";
                     TMPVE.RoundOff = true;
-                    TTXN.TCSON = blINV_VALUE;
-                    TTXN.TCSAMT = tcsamt; dupgrid.TCSAMT = tcsamt.ToString();
+                    //TTXN.TCSON = blINV_VALUE;
+                    //TTXN.TCSAMT = tcsamt; dupgrid.TCSAMT = tcsamt.ToString();
                     sql = "";
                     sql = "select a.autono,b.docno,a.SLCD,a.blamt,a.tcsamt,a.ROAMT  from  " + CommVar.CurSchema(UNQSNO) + ".t_txn a, " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr b ";
                     sql += " where   a.autono=b.autono and a.PREFNO='" + TTXN.PREFNO + "' and a.slcd='" + TTXN.SLCD + "' ";
