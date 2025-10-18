@@ -723,7 +723,7 @@ namespace Improvar.Controllers
                 if (copyno[0] == "N" && copyno[1] == "N" && copyno[2] == "N" && copyno[3] == "N" && copyno[4] == "N" && copyno[5] == "N")
                 {
                     copyno[0] = "Y";
-                }
+                }                
                 if (VE.TEXTBOX6 != null) repname = VE.TEXTBOX6;
                 string str = "";
                 str += "select a.autono,a.slcd,b.cancel, b.docno, b.docdt, b.usr_id, d.recvperson, d.lorryno, ";
@@ -818,21 +818,21 @@ namespace Improvar.Controllers
                 IR_PROG.Columns.Add("totalnos", typeof(double), "");
                 IR_PROG.Columns.Add("hsncode", typeof(string), "");
                 IR_PROG.Columns.Add("copymode", typeof(string), "");
-                if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("issu_uomnm", typeof(string), "");
-                if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("issu_nos", typeof(double), "");
-                if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("issu_cutlength", typeof(double), "");
-                if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("issu_qnty", typeof(double), "");
-                if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("RATE", typeof(double), "");
-                if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("value", typeof(double), "");
-                if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("gstper", typeof(double), "");
-                if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("issu_totqnty", typeof(double), "");
-                if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("issu_totnos", typeof(double), "");
-                if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("totvalue", typeof(double), "");
-                if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("blremarks", typeof(string), "");
+                if (repname == "JobIssue_DIWH.rpt" || repname == "JobIssue_ANKAN.rpt") IR_PROG.Columns.Add("issu_uomnm", typeof(string), "");
+                if (repname == "JobIssue_DIWH.rpt" || repname == "JobIssue_ANKAN.rpt") IR_PROG.Columns.Add("issu_nos", typeof(double), "");
+                if (repname == "JobIssue_DIWH.rpt" || repname == "JobIssue_ANKAN.rpt") IR_PROG.Columns.Add("issu_cutlength", typeof(double), "");
+                if (repname == "JobIssue_DIWH.rpt" || repname == "JobIssue_ANKAN.rpt") IR_PROG.Columns.Add("issu_qnty", typeof(double), "");
+                if (repname == "JobIssue_DIWH.rpt" || repname == "JobIssue_ANKAN.rpt") IR_PROG.Columns.Add("RATE", typeof(double), "");
+                if (repname == "JobIssue_DIWH.rpt" || repname == "JobIssue_ANKAN.rpt") IR_PROG.Columns.Add("value", typeof(double), "");
+                if (repname == "JobIssue_DIWH.rpt" || repname == "JobIssue_ANKAN.rpt") IR_PROG.Columns.Add("gstper", typeof(double), "");
+                if (repname == "JobIssue_DIWH.rpt" || repname == "JobIssue_ANKAN.rpt") IR_PROG.Columns.Add("issu_totqnty", typeof(double), "");
+                if (repname == "JobIssue_DIWH.rpt" || repname == "JobIssue_ANKAN.rpt") IR_PROG.Columns.Add("issu_totnos", typeof(double), "");
+                if (repname == "JobIssue_DIWH.rpt" || repname == "JobIssue_ANKAN.rpt") IR_PROG.Columns.Add("totvalue", typeof(double), "");
+                if (repname == "JobIssue_DIWH.rpt" || repname == "JobIssue_ANKAN.rpt") IR_PROG.Columns.Add("blremarks", typeof(string), "");
                 IR_PROG.Columns.Add("stkdata", typeof(string), "");
 
                 DataTable IR_ISSUE = new DataTable("DTIssue");
-                if (repname != "JobIssue_DIWH.rpt")
+                if (repname != "JobIssue_DIWH.rpt" && repname != "JobIssue_ANKAN.rpt")
                 {
 
                     //issue
@@ -992,7 +992,7 @@ namespace Improvar.Controllers
                                 IR_PROG.Rows[rNo][rfld] = address[g].ToString();
                             }
                             IR_PROG.Rows[rNo]["stkdata"] = STOCK_DATA.Count() == 0 ? "N" : "Y";
-                            if (repname == "JobIssue_DIWH.rpt")
+                            if (repname == "JobIssue_DIWH.rpt" || repname == "JobIssue_ANKAN.rpt")
                             {
                                 IR_PROG.Rows[rNo]["blremarks"] = blrem;
                                 progslno = tbl.Rows[i]["progslno"].retInt();
@@ -1036,7 +1036,7 @@ namespace Improvar.Controllers
                         }
 
                         #endregion
-                        if (repname != "JobIssue_DIWH.rpt")
+                        if (repname != "JobIssue_DIWH.rpt" && repname != "JobIssue_ANKAN.rpt")
                         {
                             #region Issue Material Printing
                             string sel1 = "autono='" + autono + "'";
@@ -1104,7 +1104,7 @@ namespace Improvar.Controllers
 
                 DataSet IR = new DataSet();
                 IR.Tables.Add(IR_PROG);
-                if (repname != "JobIssue_DIWH.rpt")
+                if (repname != "JobIssue_DIWH.rpt" && repname != "JobIssue_ANKAN.rpt")
                 { IR.Tables.Add(IR_ISSUE); }
                 IR.Tables.Add(IR_STOCK);
 

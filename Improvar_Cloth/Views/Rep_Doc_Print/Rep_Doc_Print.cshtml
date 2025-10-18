@@ -275,14 +275,28 @@
                             @Html.Label("", "Report Type")
                         </div>
                     </div>
+                    @if (CommVar.ClientCode(Model.UNQSNO) == "ANKN")
+                    {
                     <div class="col-lg-9">
                         <label class="radio-inline">
-                            @Html.RadioButtonFor(model => model.TEXTBOX1, "Full")  @Html.Label("Full")
+                            @Html.RadioButtonFor(model => model.TEXTBOX1, "Full", new { @checked = "checked" })  @Html.Label("Full")
                         </label>
                         <label class="radio-inline">
-                            @Html.RadioButtonFor(model => model.TEXTBOX1, "Half", new { @checked = "checked" })  @Html.Label("Half")
+                            @Html.RadioButtonFor(model => model.TEXTBOX1, "Half")  @Html.Label("Half")
                         </label>
                     </div>
+                    }
+                    else
+                    {
+                        <div class="col-lg-9">
+                            <label class="radio-inline">
+                                @Html.RadioButtonFor(model => model.TEXTBOX1, "Full")  @Html.Label("Full")
+                            </label>
+                            <label class="radio-inline">
+                                @Html.RadioButtonFor(model => model.TEXTBOX1, "Half", new { @checked = "checked" })  @Html.Label("Half")
+                            </label>
+                        </div>
+                    }
                 </div>
                 <div class="row">
                     <div class="col-lg-2">

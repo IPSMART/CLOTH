@@ -750,6 +750,12 @@
       <DependentUpon>JobIssue.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Report\JobIssue_ANKAN.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>JobIssue_ANKAN.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Report\JobIssue_DIWH.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1789,6 +1795,10 @@
     <Content Include="Report\CashMemo_Sachi_New.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>CashMemo_Sachi_New.cs</LastGenOutput>
+    </Content>
+    <Content Include="Report\JobIssue_ANKAN.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>JobIssue_ANKAN.cs</LastGenOutput>
     </Content>
     <EmbeddedResource Include="Report\PrintBarcode_DIWH_Old.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
