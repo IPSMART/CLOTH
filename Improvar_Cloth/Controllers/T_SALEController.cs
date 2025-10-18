@@ -1127,7 +1127,7 @@ namespace Improvar.Controllers
                             {
                                 v.BALSTOCK = tax_data.Rows[0]["BALQNTY"].retDbl();
                                 PRODGRPGSTPER = tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
-                                if (VE.MENU_PARA == "PR")
+                                if (VE.MENU_PARA == "PR" || VE.MENU_PARA == "SR")
                                 {
                                     PRODGRPGSTPER = Getprodgrpgstper(v.AGDOCDT.retDateStr(), TXNOTH.TAXGRPCD.retStr(), v.ITCD);
                                 }
@@ -3886,7 +3886,7 @@ namespace Improvar.Controllers
                     for (int i = 0; i < VE.TBATCHDTL.Count; i++)
                     {
                         VE.TBATCHDTL[i].SLNO = (i + 1).retShort();
-                        if (VE.MENU_PARA == "PR")
+                        if (VE.MENU_PARA == "PR" || VE.MENU_PARA == "SR")
                         {
                             VE.TBATCHDTL[i].PRODGRPGSTPER = Getprodgrpgstper(VE.TBATCHDTL[i].AGDOCDT.retDateStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), VE.TBATCHDTL[i].ITCD);
                         }
