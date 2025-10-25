@@ -5932,7 +5932,7 @@ namespace Improvar.Controllers
                     _baldistq_b = 0; _baldist_b = 0; _baldisttxblval_b = 0;
                     if (VE.TBATCHDTL != null && VE.TBATCHDTL.Count > 0)
                     {
-                        VE.TBATCHDTL.OrderBy(a => a.TXNSLNO);
+                        VE.TBATCHDTL = VE.TBATCHDTL.OrderBy(a => a.TXNSLNO).ToList();
                         int i = 0;
                         batchdtlstart:
                         while (i <= VE.TBATCHDTL.Count - 1)
