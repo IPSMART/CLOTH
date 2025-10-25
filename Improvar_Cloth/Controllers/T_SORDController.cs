@@ -397,7 +397,7 @@ namespace Improvar.Controllers
             string sql = "select  a.autono, a.doccd, c.docno, to_char(a.docdt,'dd/mm/yyyy') docdt, to_char(e.DELVDT,'dd/mm/yyyy') DELVDT, ";
             sql += "c.docdt ddocdt, a.slcd, d.slnm, d.district, a.prefno, 0 tbox,a.aproxval,sum(e.QNTY)QNTY,e.ITCD,f.ITCD,f.STYLENO,f.ITNM,a.PREFDT,g.SIZECD,g.SIZENM, h.colrnm ";
             sql += " from " + scm + ".t_sord a, " + scm + ".t_cntrl_hdr c, " + scmf + ".m_subleg d, " + scm + ".t_sorddtl e, " + scm + ".M_SITEM f, " + scm + ".m_size g, " + scm + ".m_color h ";
-            sql += "where a.autono = c.autono and a.autono = e.autono and e.ITCD = f.ITCD and e.sizecd=g.sizecd(+) and e.colrcd=h.colrcd(+) and c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and ";
+            sql += "where a.autono = c.autono(+) and a.autono = e.autono(+) and e.ITCD = f.ITCD(+) and e.sizecd=g.sizecd(+) and e.colrcd=h.colrcd(+) and c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and ";
             if (SRC_FDT.retStr() != "") sql += "c.docdt >= to_date('" + SRC_FDT.retDateStr() + "','dd/mm/yyyy') and ";
             if (SRC_TDT.retStr() != "") sql += "c.docdt <= to_date('" + SRC_TDT.retDateStr() + "','dd/mm/yyyy') and ";
             if (SRC_DOCNO.retStr() != "") sql += "(c.vchrno like '%" + SRC_DOCNO.retStr() + "%' or c.docno like '%" + SRC_DOCNO.retStr() + "%') and ";

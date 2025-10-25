@@ -6639,7 +6639,7 @@ namespace Improvar.Controllers
                         {
                             CASHDISCPR = VE.T_VCH_BL.CASHDISCPR.retDbl();
                         }
-                        if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN") blrem = VE.T_TXNOTH.DOCREM;
+                        if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN" || VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR") blrem = VE.T_TXNOTH.DOCREM;
                         dbsql = masterHelp.InsVch_Bl(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, dr,
                            tbl.Rows[0]["parglcd"].ToString(), sslcd, blconslcd, TTXNOTH.AGSLCD, tbl.Rows[0]["class1cd"].ToString(), Convert.ToSByte(Partyisl),
                            VE.T_TXN.BLAMT.retDbl(), strblno, strbldt, strrefno, strduedt, strvtype, TTXN.DUEDAYS.retDbl(), itamt, TTXNOTH.POREFNO,
