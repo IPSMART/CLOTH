@@ -1525,7 +1525,7 @@ function Sale_GetGstPer(i, FieldidStarting) {
     if (DefaultAction == "V") return true;
 
     var prodgrpgstper = "",SCMDISCTYPE="";
-    var rate = 0,SCMDISCRATE=0;
+    var rate = 0,SCMDISCRATE=0,QNTY=0;
     if (FieldidStarting == "") {
         prodgrpgstper = $("#PRODGRPGSTPER").val();
         rate = $("#RATE").val();
@@ -1533,6 +1533,7 @@ function Sale_GetGstPer(i, FieldidStarting) {
 
         SCMDISCTYPE = $("#SCMDISCTYPE").val();
         SCMDISCRATE = retFloat($("#SCMDISCRATE").val());
+        QNTY = retFloat($("#QNTY").val());
     }
     else {
         prodgrpgstper = $(FieldidStarting + "PRODGRPGSTPER_" + i).val();
@@ -1541,9 +1542,10 @@ function Sale_GetGstPer(i, FieldidStarting) {
 
         SCMDISCTYPE = $(FieldidStarting + "SCMDISCTYPE_" + i).val();
         SCMDISCRATE = retFloat($(FieldidStarting + "SCMDISCRATE_" + i).val());
+        QNTY = retFloat($(FieldidStarting + "QNTY_" + i).val());
     }
    
-    var allgst = retGstPerstr(prodgrpgstper, rate,SCMDISCTYPE,SCMDISCRATE);
+    var allgst = retGstPerstr(prodgrpgstper, rate,SCMDISCTYPE,SCMDISCRATE,QNTY);
     if (allgst != "") {
         var str = allgst.split(',');
         if (str.length > 0) {
