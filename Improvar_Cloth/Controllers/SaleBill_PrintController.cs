@@ -2290,6 +2290,7 @@ namespace Improvar.Controllers
                 IR.Columns.Add("sizenm", typeof(string), "");
                 IR.Columns.Add("cutlength", typeof(string), "");
                 IR.Columns.Add("WHATSAPP_NO", typeof(string), "");
+                IR.Columns.Add("diffship", typeof(string), "");
 
                 if (VE.MENU_PARA == "PJBL") IR.Columns.Add("BL_TOP_DSC", typeof(string), "");
                 #endregion
@@ -2682,11 +2683,12 @@ namespace Improvar.Controllers
                                 rfld = "sladd" + Convert.ToString(rf);
                                 dr1[rfld] = tbl.Rows[i]["slactnameof"].ToString();
                             }
+                            dr1["diffship"] = "N";
                             // Consignee
                             cfld = ""; rfld = ""; rf = 0;
                             bool conslcdprn = true;
                             if (tbl.Rows[i]["cslcd"].ToString() == tbl.Rows[i]["slcd"].ToString() && tbl.Rows[i]["othadd1"].ToString() != "") conslcdprn = false;
-
+                            if (tbl.Rows[i]["cslcd"].ToString() != tbl.Rows[i]["slcd"].ToString()) dr1["diffship"] = "Y";
                             if (conslcdprn == true)
                             {
                                 dr1["cslcd"] = tbl.Rows[i]["cslcd"].ToString();
@@ -2752,6 +2754,7 @@ namespace Improvar.Controllers
                             else if (tbl.Rows[i]["othadd1"].ToString() != "")
                             {
                                 //dr1["cslcd"] = "";
+                                dr1["diffship"] = "Y";
                                 dr1["cslcd"] = tbl.Rows[i]["slcd"].ToString();
                                 tbl.Rows[i]["slcd"].ToString();
                                 dr1["cpartycd"] = ""; tbl.Rows[i]["slcd"].ToString();
