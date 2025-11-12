@@ -241,7 +241,7 @@ namespace Improvar
             sql += "d.slcd||nvl(d.linecd,'') repslcd, i.slnm||decode(k.linenm,null,'',' ['||k.linenm||']') repslnm, ";
             sql += "e.docno, e.docdt, d.itcd, f.styleno, f.itnm, f.itgrpcd, g.itgrpnm,g.bargentype, f.uomcd, j.itnm fabitnm, ";
             sql += "d.sizecd, d.partcd, d.colrcd,  h.colrnm, d.cutlength, d.dia, d.shade, d.ordautono, d.ordslno, d.barno, m.commonuniqbar, d.linecd, l.print_seq, ";
-            sql += "a.balqnty,nvl(d.RATE,0)RATE, a.balnos,d.itremark,d.proguniqno,d.sample,l.sizenm,n.docno ORDDOCNO,d.makestyleno,a.stktype,m.BATCHNO,''recdocno,''recslnm,f.brandcd,p.brandnm,0 pcsperbox,''sizecdgrp,0 pcsperset from ";
+            sql += "a.balqnty,nvl(d.RATE,0)RATE, a.balnos,d.itremark,d.proguniqno,d.sample,l.sizenm,n.docno ORDDOCNO,d.makestyleno,a.stktype,m.BATCHNO,''recdocno,''recslnm,f.brandcd,p.brandnm,0 pcsperbox,''sizecdgrp,0 pcsperset,d.mtrljobcd from ";
 
             sql += "(select a.progautono, a.progslno, a.progautono||a.progslno progautoslno,o.stktype,o.txnslno, ";
             sql += "sum(case a.stkdrcr when 'C' then a.qnty when 'D' then a.qnty*-1 end) balqnty, ";
@@ -1478,7 +1478,7 @@ namespace Improvar
             tbl = SQLquery(sql);
             return tbl;
         }
-        public string retGstPer(string prodgrpgstper, double rate = 0, string disctype = "", double discrate = 0)
+        public string retGstPer(string prodgrpgstper, double rate = 0, string disctype = "", double discrate = 0, double qnty = 0)
         {
             //Searchstr value like listagg(b.fromrt||chr(181)||b.tort||chr(181)||b.igstper||chr(181)||b.cgstper||chr(181)||b.sgstper,chr(179))
             //Searchstr value like listagg(b.fromrt||chr(126)||b.tort||chr(126)||b.igstper||chr(126)||b.cgstper||chr(126)||b.sgstper,chr(179))
@@ -1487,6 +1487,10 @@ namespace Improvar
                 if (disctype == "P")
                 {
                     rate = (rate.retDbl() - ((rate.retDbl() * discrate.retDbl()) / 100).retDbl()).retDbl().toRound(3);
+                }
+                else if (disctype == "F")
+                {
+                    rate = (rate.retDbl() - (discrate.retDbl() / qnty.retDbl())).retDbl().toRound(3);
                 }
                 else {
                     rate = (rate.retDbl() - discrate.retDbl()).retDbl().toRound(3);
@@ -1862,7 +1866,7 @@ namespace Improvar
                 sql += "where a.autono = b.autono(+) and a.autono = d.autono(+) and a.autono = e.autono(+) and ";
                 sql += "a.autono not in (select distinct blautono from " + schema + ".t_bilty ) and ";
                 sql += "d.compcd = '" + COM + "' ";
-                    if (loccd.retStr() != "")
+                if (loccd.retStr() != "")
                 {
                     sql += "and d.loccd in (" + loccd + ") ";
                 }

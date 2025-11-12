@@ -75,7 +75,8 @@
                                                 @Html.HiddenFor(model => model.TBATCHDTL[i].COMMONUNIQBAR, new { id = "B_COMMONUNIQBAR_" + i })
                                                 @Html.HiddenFor(model => model.TBATCHDTL[i].DISCTYPE, new { id = "B_DISCTYPE_" + i })
                                                 @Html.HiddenFor(model => model.TBATCHDTL[i].DISCRATE, new { id = "B_DISCRATE_" + i })
-                                            </td>
+                                                @Html.HiddenFor(model => model.TBATCHDTL[i].MTRLJOBCD, new { id = "B_MTRLJOBCD_" + i })
+      </td>
                                             <td class="sticky-cell" style="left:20px;">
                                                 @Html.TextBoxFor(model => Model.TBATCHDTL[i].SLNO, new { id = "B_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                             </td>

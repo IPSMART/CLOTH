@@ -152,7 +152,7 @@ namespace Improvar.Controllers
                     string str1 = "";
                     str1 += "select i.AUTONO,i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM,p.PRTBARCODE,i.STKTYPE,q.STKNAME,i.BARNO, ";
                     str1 += "j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE,i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
-                    str1 += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,i.itrem,i.RECPROGSLNO,k.NEGSTOCK,i.cutlength ";
+                    str1 += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,i.itrem,i.RECPROGSLNO,k.NEGSTOCK,i.cutlength,i.itrem ";
                     str1 += "from " + scm + ".T_BATCHDTL i, " + scm + ".T_BATCHMST j, " + scm + ".M_SITEM k, " + scm + ".M_SIZE l, " + scm + ".M_COLOR m, ";
                     str1 += scm + ".M_GROUP n," + scm + ".M_MTRLJOBMST o," + scm + ".M_PARTS p," + scm + ".M_STKTYPE q ";
                     str1 += "where i.BARNO = j.BARNO(+) and j.ITCD = k.ITCD(+) and j.SIZECD = l.SIZECD(+) and j.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) ";
@@ -274,11 +274,12 @@ namespace Improvar.Controllers
                                     {
                                         var ITCD_material_DATA = (from DataRow x in Mtrl.Rows
                                                                   where x["autono"].retStr() == autono && x["RECPROGSLNO"].retDbl() == progslno
-                                                                  group x by new { ITCD = x["itcd"].retStr(), ITNM = x["itnm"].retStr(), STYLENO = x["styleno"].retStr() } into x
+                                                                  group x by new { ITCD = x["itcd"].retStr(), ITNM = x["itnm"].retStr(), STYLENO = x["styleno"].retStr(), ITREM = x["itrem"].retStr() } into x
                                                                   select new
                                                                   {
                                                                       itcd = x.Key.ITCD,
                                                                       itnm = x.Key.STYLENO + x.Key.ITNM,
+                                                                      itrem = x.Key.ITREM,
                                                                       qnty = x.Sum(s => s["qnty"].retDbl())
                                                                       //TWASTGQNTY = x.Sum(s => s["qnty"].retDbl())
                                                                   }).ToList();
@@ -292,6 +293,7 @@ namespace Improvar.Controllers
                                                 IR.Rows[rNo]["itnm"] = k.itcd.retStr();
                                                 IR.Rows[rNo]["Styleno"] = k.itnm.retStr();
                                                 IR.Rows[rNo]["qnty"] = k.qnty.retStr();
+                                                IR.Rows[rNo]["itremarks"] = k.itrem.retStr();
                                             }
                                         }
                                     }

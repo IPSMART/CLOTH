@@ -124,7 +124,8 @@
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].ITSTYLE, new { id = "P_ITSTYLE_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                             @Html.HiddenFor(model => model.TPROGDTL[i].ITNM, new { id = "P_ITNM_" + i })
                                             @Html.HiddenFor(model => model.TPROGDTL[i].FABITCD, new { id = "P_FABITCD_" + i })
-                                        </td>
+                                            @Html.HiddenFor(model => model.TPROGDTL[i].MTRLJOBCD, new { id = "P_MTRLJOBCD_" + i })
+ </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].UOM, new { id = "P_UOM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                         </td>

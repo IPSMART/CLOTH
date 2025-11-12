@@ -1133,7 +1133,7 @@ namespace Improvar.Controllers
                                 }
                                 if (PRODGRPGSTPER != "")
                                 {
-                                    ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, v.RATE.retDbl(), v.SCMDISCTYPE, v.SCMDISCRATE.retDbl());
+                                    ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, v.RATE.retDbl(), v.SCMDISCTYPE, v.SCMDISCRATE.retDbl(),v.QNTY.retDbl());
                                     if (ALL_GSTPER.retStr() != "")
                                     {
                                         var gst = ALL_GSTPER.Split(',').ToList();
@@ -2483,7 +2483,7 @@ namespace Improvar.Controllers
                 {
                     if (VE.TTXNDTL[p].PRODGRPGSTPER.retStr() != "")
                     {
-                        var gstdata = salesfunc.retGstPer(VE.TTXNDTL[p].PRODGRPGSTPER.retStr(), VE.TTXNDTL[p].RATE.retDbl(), VE.TTXNDTL[p].SCMDISCTYPE.retStr(), VE.TTXNDTL[p].SCMDISCRATE.retDbl());
+                        var gstdata = salesfunc.retGstPer(VE.TTXNDTL[p].PRODGRPGSTPER.retStr(), VE.TTXNDTL[p].RATE.retDbl(), VE.TTXNDTL[p].SCMDISCTYPE.retStr(), VE.TTXNDTL[p].SCMDISCRATE.retDbl(), VE.TTXNDTL[p].QNTY.retDbl());
                         if (gstdata.retStr() != "")
                         {
                             var gst = gstdata.Split(',');
@@ -4359,7 +4359,7 @@ namespace Improvar.Controllers
                                 PRODGRPGSTPER = tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
                                 if (PRODGRPGSTPER != "")
                                 {
-                                    ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, v.RATE.retDbl(), v.SCMDISCTYPE, v.SCMDISCRATE.retDbl());
+                                    ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, v.RATE.retDbl(), v.SCMDISCTYPE, v.SCMDISCRATE.retDbl(), v.QNTY.retDbl());
                                     if (ALL_GSTPER.retStr() != "")
                                     {
                                         var gst = ALL_GSTPER.Split(',').ToList();
@@ -4623,7 +4623,7 @@ namespace Improvar.Controllers
                                     PRODGRPGSTPER = tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
                                     if (PRODGRPGSTPER != "")
                                     {
-                                        ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, v.RATE.retDbl(), v.SCMDISCTYPE, v.SCMDISCRATE.retDbl());
+                                        ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, v.RATE.retDbl(), v.SCMDISCTYPE, v.SCMDISCRATE.retDbl(), v.QNTY.retDbl());
                                         if (ALL_GSTPER.retStr() != "")
                                         {
                                             var gst = ALL_GSTPER.Split(',').ToList();
