@@ -3858,7 +3858,7 @@ namespace Improvar.Controllers
                 {
                     if (CommVar.ClientCode(UNQSNO) == "BNBH")
                     {
-                        BLTYPE = (from DataRow dr in dt.Rows where dr["bltype"].retStr() != "" orderby dr["docdt"].retStr() select dr["bltype"].retStr()).FirstOrDefault();
+                        BLTYPE = (from DataRow dr in dt.Rows where dr["bltype"].retStr() != "" && selectedautoslno.Contains(dr["autono"].retStr() + dr["barno"].retStr()) orderby dr["docdt"].retStr() select dr["bltype"].retStr()).FirstOrDefault();
                     }
                 }
                 string str = "";
