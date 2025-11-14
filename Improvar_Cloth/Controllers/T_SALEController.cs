@@ -1133,7 +1133,7 @@ namespace Improvar.Controllers
                                 }
                                 if (PRODGRPGSTPER != "")
                                 {
-                                    ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, v.RATE.retDbl(), v.SCMDISCTYPE, v.SCMDISCRATE.retDbl(),v.QNTY.retDbl());
+                                    ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, v.RATE.retDbl(), v.SCMDISCTYPE, v.SCMDISCRATE.retDbl(), v.QNTY.retDbl());
                                     if (ALL_GSTPER.retStr() != "")
                                     {
                                         var gst = ALL_GSTPER.Split(',').ToList();
@@ -4091,16 +4091,37 @@ namespace Improvar.Controllers
                     var fschnm = CommVar.FinSchema(UNQSNO);
                     var CLCD = CommVar.ClientCode(UNQSNO);
 
+                    string strblno = "", strbldt = "";
+
+                    if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC" || VE.MENU_PARA == "PR")
+                    {
+                        if (VE.T_TXN.PREFNO.retStr() != "")
+                        {
+                            strblno = VE.T_TXN.PREFNO;
+                            strbldt = VE.T_TXN.PREFDT.retDateStr();
+                        }
+                        else
+                        {
+                            strbldt = VE.T_TXN.DOCDT.retDateStr();
+                            strblno = VE.T_CNTRL_HDR.DOCNO;
+                        }
+                    }
+                    else
+                    {
+                        strbldt = VE.T_TXN.DOCDT.retDateStr();
+                        strblno = VE.T_CNTRL_HDR.DOCNO;
+                    }
+
                     //update to T_TXN//
                     sql = "update " + schnm + ". T_TXN set PREFNO='" + VE.T_TXN.PREFNO + "', PREFDT=to_date('" + VE.T_TXN.PREFDT.retDateStr() + "', 'dd/mm/yyyy') ";
                     sql += " where AUTONO='" + VE.T_TXN.AUTONO + "'  ";
                     OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
                     //update to t_vch_gst//
-                    sql = "update " + fschnm + ". t_vch_gst set BLNO='" + VE.T_TXN.PREFNO + "', BLDT=to_date('" + VE.T_TXN.PREFDT.retDateStr() + "', 'dd/mm/yyyy') ";
+                    sql = "update " + fschnm + ". t_vch_gst set BLNO='" + strblno + "', BLDT=to_date('" + strbldt + "', 'dd/mm/yyyy') ";
                     sql += " where AUTONO='" + VE.T_TXN.AUTONO + "'  ";
                     OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
                     //update to t_vch_bl//
-                    sql = "update " + fschnm + ". t_vch_bl set BLNO='" + VE.T_TXN.PREFNO + "', BLDT=to_date('" + VE.T_TXN.PREFDT.retDateStr() + "', 'dd/mm/yyyy') ";
+                    sql = "update " + fschnm + ". t_vch_bl set BLNO='" + strblno + "', BLDT=to_date('" + strbldt + "', 'dd/mm/yyyy') ";
                     sql += " where AUTONO='" + VE.T_TXN.AUTONO + "'  ";
                     OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
                     if (VE.Last_PREFNO.retStr() != "")
