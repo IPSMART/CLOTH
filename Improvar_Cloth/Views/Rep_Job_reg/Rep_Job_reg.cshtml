@@ -215,10 +215,10 @@
                     </div>
                     <div class="col-lg-8" style="border: 2px groove;width:auto;">
                         <label class="radio-inline">
-                            @Html.RadioButtonFor(g => g.TEXTBOX2, "SHOWALL", new { @checked = "checked" })  @Html.Label("Show All")
+                            @Html.RadioButtonFor(g => g.TEXTBOX2, "SHOWALL")  @Html.Label("Show All")
                         </label>
                         <label class="radio-inline">
-                            @Html.RadioButtonFor(g => g.TEXTBOX2, "PENDING")  @Html.Label("Pending")
+                            @Html.RadioButtonFor(g => g.TEXTBOX2, "PENDING", new { @checked = "checked" })  @Html.Label("Pending")
                         </label>                       
                     </div>
                 </div>

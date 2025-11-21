@@ -59,6 +59,7 @@ namespace Improvar.Controllers
                     VE.Locnm = MasterHelp.ComboFill("loccd", VE.DropDown_list_LOCCD, 1, 0);
 
                     VE.JOBCD = VE.MENU_PARA;
+                    VE.Checkbox2 = true;
                     VE.DefaultView = true;
                     return View(VE);
                 }
