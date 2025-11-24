@@ -3331,7 +3331,35 @@ namespace Improvar
                 return Generate_help(hdr, SB.ToString());
             }
         }
+        public string GetUserITGrpCd()
+        {
+            string Scm1 = CommVar.CurSchema(UNQSNO), LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO);
+            string USR = System.Web.HttpContext.Current.Session["UR_ID"].ToString();
 
+            string QUERY = "";
+            QUERY = QUERY + "select distinct c.itgrpcd, c.itgrpnm ";
+            QUERY = QUERY + "from " + Scm1 + ".m_usr_acs_doccd a, " + Scm1 + ".m_groupdoccd b, " + Scm1 + ".m_group c ";
+            QUERY = QUERY + "where a.user_id='" + USR + "' and a.compcd='" + COM + "' and a.loccd='" + LOC + "' and ";
+            QUERY = QUERY + "a.doccd=b.doccd and b.itgrpcd=c.itgrpcd ";
+            QUERY = QUERY + "union ";
+            QUERY = QUERY + "select a.itgrpcd, a.itgrpnm ";
+            QUERY = QUERY + "from " + Scm1 + ".m_group a ";
+            QUERY = QUERY + "where 0 in ( ";
+            QUERY = QUERY + "select count(b.itgrpcd) ";
+            QUERY = QUERY + "from " + Scm1 + ".m_usr_acs_doccd a, " + Scm1 + ".m_groupdoccd b ";
+            QUERY = QUERY + "where a.user_id='" + USR + "' and a.compcd='" + COM + "' and a.loccd='" + LOC + "' and ";
+            QUERY = QUERY + "a.doccd=b.doccd ) ";
+            DataTable rsTmp = SQLquery(QUERY);
+
+            string GRPCD = "";
+            GRPCD = "";
+            for (int i = 0; i <= rsTmp.Rows.Count - 1; i++)
+            {
+                if (GRPCD != "") GRPCD = GRPCD + "','";
+                GRPCD = GRPCD + rsTmp.Rows[i]["itgrpcd"].ToString();
+            }
+            return GRPCD;
+        }
 
     }
 }

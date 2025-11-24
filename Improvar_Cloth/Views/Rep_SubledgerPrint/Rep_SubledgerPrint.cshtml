@@ -138,6 +138,19 @@
                         @(new HtmlString(Model.Agslnm))
                     </div>
                 </div>
+                @if(CommVar.ClientCode(Model.UNQSNO) == "CHEM" && CommVar.ModuleCode() == "SALESCHEM")
+                { 
+                <div class="row">                  
+                    <div class="col-md-8">
+                    <div class="editor-label" style="margin-top: 6px;">
+                     @Html.Label("", "Group")                            
+                    </div>
+                    </div>
+                    <div class="col-md-6">                       
+                        @(new HtmlString(Model.TEXTBOX8))    
+                    </div>                    
+                </div>
+                }
                 <div class="row" style="margin-top:10PX">
                     <div class="col-md-8">
                         <div class="editor-label" style="margin-top: 6px;">

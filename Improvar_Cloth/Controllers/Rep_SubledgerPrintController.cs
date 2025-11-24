@@ -64,6 +64,13 @@ namespace Improvar.Controllers
                     VE.DropDown_list_AGSLCD = DropDownHelp.GetAgSlcdforSelection();
                     VE.Agslnm = MasterHelp.ComboFill("agslcd", VE.DropDown_list_AGSLCD, 0, 1);
 
+                    if (CommVar.ClientCode(UNQSNO) == "CHEM" && CommVar.ModuleCode() == "SALESCHEM")
+                    {
+                        ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+                        string selgrp = MasterHelp.GetUserITGrpCd().Replace("','", ",");
+                        VE.DropDown_list_ITGRP = DropDownHelp.GetItgrpcdforSelection(selgrp);
+                        VE.TEXTBOX8 = MasterHelp.ComboFill("itgrpcd", VE.DropDown_list_ITGRP, 0, 1);
+                    }
                     VE.Checkbox1 = true;
                     VE.DefaultView = true;
                     VE.DefaultView = true;
@@ -101,6 +108,7 @@ namespace Improvar.Controllers
         {
             try
             {
+                string selitgrpcd = "";
                 string reptype = VE.TEXTBOX5;
                 string dbname = CommVar.FinSchema(UNQSNO);
                 string com = CommVar.Compcd(UNQSNO);
@@ -108,6 +116,8 @@ namespace Improvar.Controllers
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
                 string slcd = "", sql = "", linkcd = "";
                 string scmf = CommVar.FinSchema(UNQSNO), LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO);
+
+                if (FC.AllKeys.Contains("itgrpcdvalue")) selitgrpcd = CommFunc.retSqlformat(FC["itgrpcdvalue"].ToString());
 
                 if (FC.AllKeys.Contains("slcdvalue"))
                 {
@@ -125,10 +135,15 @@ namespace Improvar.Controllers
                     case "SALES":
                         agslcdsql = "( select a.slcd, max(a.agslcd) agslcd from " + CommVar.SaleSchema(UNQSNO) + ".m_subleg_com a where a.compcd='" + COM + "' group by a.slcd ) b, ";
                         break;
-                    case "SALESCHEM": case "SALESREC": case "SALESSMPL": case "SALESELEC": case "SALESMKJ":
+                    case "SALESCHEM":
+                    case "SALESREC":
+                    case "SALESSMPL":
+                    case "SALESELEC":
+                    case "SALESMKJ":
                         agslcdsql = "( select a.slcd, max(a.agslcd) agslcd from " + CommVar.SaleSchema(UNQSNO) + ".m_subleg_sddtl a where a.compcd='" + COM + "' group by a.slcd ) b, ";
                         break;
-                    case "SALESSAREE": case "SALESCLOTH":
+                    case "SALESSAREE":
+                    case "SALESCLOTH":
                         agslcdsql = "( select a.slcd, max(a.agslcd) agslcd from " + CommVar.SaleSchema(UNQSNO) + ".m_subleg_com a where a.compcd='" + COM + "' group by a.slcd ) b, ";
                         break;
                     case "SALESPOLY":
@@ -148,14 +163,16 @@ namespace Improvar.Controllers
                     if (FC.AllKeys.Contains("agslcdvalue")) agslcdvalue = CommFunc.retSqlformat(FC["agslcdvalue"].ToString());
 
                     query = "Select distinct a.SLCD,a.SLNM,a.FULLNAME,a.PARTYCD,a.add1,a.add2,a.add3,a.add4,a.add5,a.add6,a.add7,a.STATE,a.SLAREA,a.PANNO, b.agslcd, z.slnm agslnm, ";
-                    query += "a.GSTNO,a.ADHAARNO,a.MSMENO,a.REGMOBILE,a.REGEMAILID,a.PARTYNM,nvl(a.AUTOREMINDEROFF,'N') AUTOREMINDEROFF,s.parentcd, s.parentnm,t.USR_ENTDT,a.TCSAPPL,a.TOT194Q from  ";
+                    query += "a.GSTNO,a.ADHAARNO,a.MSMENO,a.REGMOBILE,a.REGEMAILID,a.PARTYNM,nvl(a.AUTOREMINDEROFF,'N') AUTOREMINDEROFF,s.parentcd, s.parentnm,t.USR_ENTDT,a.TCSAPPL,a.TOT194Q,a.DISTRICT from  ";
 
-                    query += "(Select distinct a.m_autono,a.SLCD,a.SLNM,a.FULLNAME,a.PARTYCD,a.add1,a.add2,a.add3,a.add4,a.add5,a.add6,a.add7,a.STATE,a.SLAREA,a.PANNO,a.GSTNO,a.ADHAARNO,a.MSMENO,a.REGMOBILE,a.REGEMAILID,b.PARTYNM,nvl(a.AUTOREMINDEROFF,'N')AUTOREMINDEROFF,a.TCSAPPL,a.TOT194Q  ";
+                    query += "(Select distinct a.m_autono,a.SLCD,a.SLNM,a.FULLNAME,a.PARTYCD,a.add1,a.add2,a.add3,a.add4,a.add5,a.add6,a.add7,a.STATE,a.SLAREA,a.PANNO,a.GSTNO,a.ADHAARNO,a.MSMENO,a.REGMOBILE,a.REGEMAILID,b.PARTYNM,nvl(a.AUTOREMINDEROFF,'N')AUTOREMINDEROFF,a.TCSAPPL,a.TOT194Q,a.DISTRICT  ";
                     query += " from " + dbname + ".m_subleg a," + dbname + ".M_PARTYGRP b," + dbname + ".m_subleg_link c where a.PARTYCD=b.PARTYCD(+) and a.slcd=c.slcd(+)  ";
                     if (linkcd != "") query += " and c.linkcd in(" + linkcd + ") " + Environment.NewLine;
                     query += ") a , ";
 
                     query += agslcdsql + Environment.NewLine;
+
+                    if (selitgrpcd != "") query += "( select a.slcd from " + CommVar.SaleSchema(UNQSNO) + ".m_subleg_sddtl_itgrp a where a.itgrpcd in (" + selitgrpcd + ")) g, " + Environment.NewLine;
 
                     query += "(select a.grpcd, a.parentcd, c.slcdgrpnm||'  '||b.slcdgrpnm parentnm, " + Environment.NewLine;
                     query += "a.grpcdfull, a.slcdgrpnm, a.class1cd, a.slcd, a.slcdclass1cd from " + Environment.NewLine;
@@ -171,10 +188,15 @@ namespace Improvar.Controllers
                     query += "(select distinct a.slcdgrpcd, a.slcdgrpnm, a.grpcdfull " + Environment.NewLine;
                     query += "from " + scmf + ".m_subleg_grp a where a.slcd is null) c " + Environment.NewLine;
 
-                    query += "where a.rootcd = c.slcdgrpcd(+) and a.parentcd=b.slcdgrpcd(+) ) s," + scmf + ".m_cntrl_hdr t, " + scmf + ".m_subleg z " + Environment.NewLine;
+                    query += "where a.rootcd = c.slcdgrpcd(+) and a.parentcd=b.slcdgrpcd(+) ) s," + Environment.NewLine;
+
+                    query += scmf + ".m_cntrl_hdr t, " + scmf + ".m_subleg z " + Environment.NewLine;
                     query += " where a.slcd=s.slcd(+) and a.m_autono=t.m_autono(+) and a.slcd=b.slcd(+) and b.agslcd=z.slcd(+) ";
+                    if (selitgrpcd != "") query += "and a.slcd=g.slcd " + Environment.NewLine;
                     if (selslcdgrpcd.retStr() != "") query += "and (nvl(s.parentcd,' ') in (" + selslcdgrpcd + ") ) " + Environment.NewLine;
                     if (agslcdvalue != "") query += " and b.agslcd in (" + agslcdvalue + ") " + Environment.NewLine;
+                    if (slcd.retStr() != "") query += " and a.slcd in (" + slcd + ") ";
+
                     if (selslcdgrpcd.retStr() != "") query += " order by s.parentnm,a.SLNM "; else query += " order by a.SLNM ";
                     tbl = MasterHelp.SQLquery(query);
                     if (tbl.Rows.Count == 0)
@@ -194,6 +216,7 @@ namespace Improvar.Controllers
                         HC.GetPrintHeader(IR, "PARTYNM", "string", "c,26", "Party Group Name");
                         HC.GetPrintHeader(IR, "STATE", "string", "c,26", "State");
                         HC.GetPrintHeader(IR, "SLAREA", "string", "c,50", "Area");
+                        HC.GetPrintHeader(IR, "DISTRICT", "string", "c,50", "City");
                         HC.GetPrintHeader(IR, "ADDRESS", "string", "c,50", "Address");
                         HC.GetPrintHeader(IR, "PANNO", "string", "c,14", "PANNO");
                         HC.GetPrintHeader(IR, "GSTNO", "string", "c,17", "GSTNO");
@@ -229,8 +252,9 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["PARTYNM"] = tbl.Rows[i]["PARTYNM"];
                                 IR.Rows[rNo]["STATE"] = tbl.Rows[i]["STATE"];
                                 IR.Rows[rNo]["SLAREA"] = tbl.Rows[i]["SLAREA"];
+                                IR.Rows[rNo]["DISTRICT"] = tbl.Rows[i]["DISTRICT"];
                                 IR.Rows[rNo]["ADDRESS"] = tbl.Rows[i]["add1"].ToString() + "," + tbl.Rows[i]["add2"].ToString() + "," + tbl.Rows[i]["add3"].ToString() + "," +
-                                     tbl.Rows[i]["add4"].ToString() + "," + tbl.Rows[i]["add5"].ToString() + "," + tbl.Rows[i]["add6"].ToString() + "," + tbl.Rows[i]["add7"].ToString();
+                                tbl.Rows[i]["add4"].ToString() + "," + tbl.Rows[i]["add5"].ToString() + "," + tbl.Rows[i]["add6"].ToString() + "," + tbl.Rows[i]["add7"].ToString();
                                 IR.Rows[rNo]["PANNO"] = tbl.Rows[i]["PANNO"];
                                 IR.Rows[rNo]["GSTNO"] = tbl.Rows[i]["GSTNO"];
                                 IR.Rows[rNo]["ADHAARNO"] = tbl.Rows[i]["ADHAARNO"];
