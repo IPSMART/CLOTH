@@ -1141,7 +1141,7 @@ namespace Improvar.Controllers
                                     }
                                     v.PRODGRPGSTPER = PRODGRPGSTPER;
                                     v.ALL_GSTPER = ALL_GSTPER;
-                                    if (VE.MENU_PARA != "PB" && VE.MENU_PARA != "PR")
+                                    if (VE.MENU_PARA != "PB" && VE.MENU_PARA != "PR" && VE.MENU_PARA != "SR")
                                     {
                                         v.GSTPER = GSTPER.retDbl();
                                     }
@@ -5772,7 +5772,7 @@ namespace Improvar.Controllers
                                         ContentFlg = "Please link up Product Group with Tax Rate for this Item (" + VE.TTXNDTL[i].ITSTYLE.retStr() + ") !!"; goto dbnotsave;
                                     }
                                 }
-                                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR")
+                                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "SR")
                                 {
                                     var batchgst = (from a in VE.TBATCHDTL where a.TXNSLNO == VE.TTXNDTL[i].SLNO select a.GSTPER).FirstOrDefault();
                                     if (batchgst != (VE.TTXNDTL[i].IGSTPER.retDbl() + VE.TTXNDTL[i].CGSTPER.retDbl() + VE.TTXNDTL[i].SGSTPER.retDbl()))
