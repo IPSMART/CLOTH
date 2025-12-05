@@ -202,5 +202,6 @@ namespace Improvar.Models
         public int ParentSerialNo { get; set; }
         public string RECPROGUOMNM { get; set; }
         public double RECPROGQNTY { get; set; }
+        public bool CheckedStatusUnchange { get; set; }
     }
 }
