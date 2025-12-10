@@ -477,7 +477,9 @@ namespace Improvar.Controllers
                     }
                 }
                 //string str = Master_Help.T_TXN_BARNO_help(barnoOrStyle, menupara, DOCDT, "C001", GOCD, "WP", MTRLJOBCD);
-                string str = Master_Help.T_TXN_BARNO_help(barnoOrStyle, menupara, DOCDT, "C001", GOCD, "WP", MTRLJOBCD, "", exactbarno, "", barno, "", false, "", true);
+                //string str = Master_Help.T_TXN_BARNO_help(barnoOrStyle, menupara, DOCDT, "C001", GOCD, "WP", MTRLJOBCD, "", exactbarno, "", barno, "", false, "", true);
+                string str = Master_Help.T_TXN_BARNO_help(barnoOrStyle, menupara, DOCDT, "C001", GOCD, "WP", MTRLJOBCD, "", exactbarno, "", barno, "", false, "", false);
+
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);

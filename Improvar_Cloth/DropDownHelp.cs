@@ -146,7 +146,7 @@ namespace Improvar
                           value = a.SLCD,
                           //text1 = a.DISTRICT,
                           slarea = a.SLAREA == null ? a.DISTRICT : a.SLAREA,
-                          City = a.SLAREA == null ? a.DISTRICT : a.SLAREA
+                          City = a.DISTRICT == null ? a.SLAREA : a.DISTRICT
                       }).Distinct().OrderBy(A => A.text).ToList();
             return sllist;
         }
