@@ -787,6 +787,11 @@ namespace Improvar.Controllers
                     //}
                     v.DISC_TYPE = masterHelp.DISC_TYPE();
                     v.SAMPLE = VE.TPROGDTL.Where(a => a.PROGAUTONO == v.RECPROGAUTONO && a.PROGSLNO == v.RECPROGSLNO).Select(b => b.SAMPLE).FirstOrDefault();
+                    string issMTRLJOBCD = DB.T_PROGMAST.Where(a => a.AUTONO == v.RECPROGAUTONO && a.SLNO == v.RECPROGSLNO).Select(b => b.MTRLJOBCD).FirstOrDefault();
+                    if (v.SAMPLE.retStr() != "Y" && v.MTRLJOBCD.retStr() == issMTRLJOBCD.retStr())
+                    {
+                        v.CheckedStatusUnchange = true;
+                    }
                 }
                 //fill prodgrpgstper in t_txndtl
                 double IGST_PER = 0; double CGST_PER = 0; double SGST_PER = 0; double CESS_PER = 0; double DUTY_PER = 0;
@@ -797,7 +802,11 @@ namespace Improvar.Controllers
                                 && a.RATE == v.RATE && a.DISCTYPE == v.DISCTYPE && a.DISCRATE == v.DISCRATE && a.TDDISCTYPE == v.TDDISCTYPE
                                  && a.TDDISCRATE == v.TDDISCRATE && a.SCMDISCTYPE == v.SCMDISCTYPE && a.SCMDISCRATE == v.SCMDISCRATE
                                 select a.SAMPLE).FirstOrDefault();
-
+                    v.CheckedStatusUnchange = (from a in VE.TBATCHDTL
+                                               where a.TXNSLNO == v.SLNO && a.ITGRPCD == v.ITGRPCD && a.ITCD == a.ITCD && a.STKTYPE == v.STKTYPE
+                                               && a.RATE == v.RATE && a.DISCTYPE == v.DISCTYPE && a.DISCRATE == v.DISCRATE && a.TDDISCTYPE == v.TDDISCTYPE
+                                                && a.TDDISCRATE == v.TDDISCRATE && a.SCMDISCTYPE == v.SCMDISCTYPE && a.SCMDISCRATE == v.SCMDISCRATE
+                                               select a.CheckedStatusUnchange).FirstOrDefault();
                     //string PRODGRPGSTPER = "", ALL_GSTPER = "";
                     //var tax_data = (from a in VE.TBATCHDTL
                     //                where a.TXNSLNO == v.SLNO && a.ITGRPCD == v.ITGRPCD && a.ITCD == a.ITCD && a.STKTYPE == v.STKTYPE
@@ -2112,7 +2121,8 @@ namespace Improvar.Controllers
                                   x.DISCRATE,
                                   x.SAMPLE,
                                   x.ITREM,
-                                  x.MTRLJOBCD
+                                  x.MTRLJOBCD,
+                                  x.CheckedStatusUnchange
                               } into P
                               select new TTXNDTL
                               {
@@ -2130,7 +2140,8 @@ namespace Improvar.Controllers
                                   DISCRATE = P.Key.DISCRATE,
                                   SAMPLE = P.Key.SAMPLE,
                                   ITREM = P.Key.ITREM,
-                                  MTRLJOBCD = P.Key.MTRLJOBCD
+                                  MTRLJOBCD = P.Key.MTRLJOBCD,
+                                  CheckedStatusUnchange = P.Key.CheckedStatusUnchange
                               }).ToList();
 
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
@@ -3068,7 +3079,7 @@ namespace Improvar.Controllers
                             TTXNDTL.DTAG = TTXN.DTAG;
                             TTXNDTL.AUTONO = TTXN.AUTONO;
                             TTXNDTL.SLNO = VE.TTXNDTL[i].SLNO;
-                            TTXNDTL.MTRLJOBCD = VE.TTXNDTL[i].SAMPLE.retStr() == "Y" ? VE.TTXNDTL[i].MTRLJOBCD : VE.MTRLJOBCD;
+                            TTXNDTL.MTRLJOBCD = (VE.TTXNDTL[i].SAMPLE.retStr() == "Y" || VE.TTXNDTL[i].CheckedStatusUnchange == true) ? VE.TTXNDTL[i].MTRLJOBCD : VE.MTRLJOBCD;
                             TTXNDTL.ITCD = VE.TTXNDTL[i].ITCD;
                             TTXNDTL.PARTCD = VE.TTXNDTL[i].PARTCD;
                             TTXNDTL.COLRCD = VE.TTXNDTL[i].COLRCD;
@@ -3206,7 +3217,7 @@ namespace Improvar.Controllers
                                     TBATCHMST.SLNO = VE.TBATCHDTL[i].SLNO; // ++COUNTERBATCH;
                                     TBATCHMST.AUTONO = TTXN.AUTONO;
                                     TBATCHMST.SLCD = TTXN.SLCD;
-                                    TBATCHMST.MTRLJOBCD = VE.TBATCHDTL[i].SAMPLE.retStr() == "Y" ? VE.TBATCHDTL[i].MTRLJOBCD : VE.MTRLJOBCD;
+                                    TBATCHMST.MTRLJOBCD = (VE.TBATCHDTL[i].SAMPLE.retStr() == "Y" || VE.TBATCHDTL[i].CheckedStatusUnchange == true) ? VE.TBATCHDTL[i].MTRLJOBCD : VE.MTRLJOBCD;
                                     //TBATCHMST.STKTYPE = "F";
                                     TBATCHMST.JOBCD = TTXN.JOBCD;
                                     TBATCHMST.BARNO = barno;
@@ -3286,7 +3297,7 @@ namespace Improvar.Controllers
                                 TBATCHDTL.SLNO = VE.TBATCHDTL[i].SLNO;  //COUNTER.retShort();
                                 TBATCHDTL.GOCD = VE.T_TXN.GOCD;
                                 TBATCHDTL.BARNO = barno;
-                                TBATCHDTL.MTRLJOBCD = VE.TBATCHDTL[i].SAMPLE.retStr() == "Y" ? VE.TBATCHDTL[i].MTRLJOBCD : VE.MTRLJOBCD;
+                                TBATCHDTL.MTRLJOBCD = (VE.TBATCHDTL[i].SAMPLE.retStr() == "Y" || VE.TBATCHDTL[i].CheckedStatusUnchange == true) ? VE.TBATCHDTL[i].MTRLJOBCD : VE.MTRLJOBCD;
                                 TBATCHDTL.PARTCD = VE.TBATCHDTL[i].PARTCD;
                                 TBATCHDTL.HSNCODE = VE.TBATCHDTL[i].HSNCODE;
                                 TBATCHDTL.STKDRCR = CheckedJOBTXNTY == true ? "N" : stkdrcr;
@@ -5018,7 +5029,8 @@ namespace Improvar.Controllers
                                 COMMONUNIQBAR = dr["COMMONUNIQBAR"].retStr(),
                                 CUTLENGTH = dr["CUTLENGTH"].retDbl(),
                                 ITSTYLE = dr["STYLENO"].retStr() + " " + dr["ITNM"].retStr(),
-                                MTRLJOBCD = dr["sample"].retStr() == "Y" ? dr["MTRLJOBCD"].retStr() : "",
+                                //MTRLJOBCD = dr["sample"].retStr() == "Y" ? dr["MTRLJOBCD"].retStr() : "",
+                                MTRLJOBCD = dr["MTRLJOBCD"].retStr(),
                             }).ToList();
                 if (VE.TPROGDTL != null)
                 {

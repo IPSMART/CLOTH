@@ -223,6 +223,7 @@ namespace Improvar.Models
         public double PROGQNTY { get; set; }
         public string SAMPLE { get; set; }
         public double tempslno { get; set; }
+        public bool CheckedStatusUnchange { get; set; }
 
     }
 }
