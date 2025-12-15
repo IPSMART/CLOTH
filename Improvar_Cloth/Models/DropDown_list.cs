@@ -282,6 +282,11 @@ namespace Improvar.Models
         public string text { get; set; }
         public string value { get; set; }
     }
+    public class DropDown_list_District
+    {
+        public string text { get; set; }
+        public string value { get; set; }
+    }
     public class DropDown_list_SubLegGrp
     {
         public string text { get; set; }

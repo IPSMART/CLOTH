@@ -76,6 +76,7 @@ namespace Improvar.ViewModels
         public List<DropDown_list_COMP> DropDown_list_COMP { get; set; }
         public List<DropDown_list_StkType> DropDown_list_StkType { get; set; }
         public List<DropDown_list_SubLegGrp> DropDown_list_SubLegGrp { get; set; }
+        public List<DropDown_list_District> DropDown_list_District { get; set; }
         public List<DropDown_list_EMPCD> DropDown_list_EMPCD { get; set; }
         public List<DropDown_list_DOCCD> DropDown_list_DOCCD { get; set; }
         public List<Database_Combo1> Database_Combo1 { get; set; }
@@ -106,6 +107,7 @@ namespace Improvar.ViewModels
         public string JOBNM { get; set; }
         public string TEXTBOX11 { get; set; }
         public string TEXTBOX12 { get; set; }
+        public string DISTRICT { get; set; }
         public List<DropDown_list_BLTYPE> DropDown_list_BLTYPE { get; set; }
 
 

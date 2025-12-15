@@ -61,6 +61,9 @@ namespace Improvar.Controllers
                     VE.DropDown_list_SubLegGrp = DropDownHelp.GetSubLegGrpforSelection();
                     VE.SubLeg_Grp = MasterHelp.ComboFill("slcdgrpcd", VE.DropDown_list_SubLegGrp, 0, 1);
 
+                    VE.DropDown_list_District = DropDownHelp.GetDistrictforSelection();
+                    VE.DISTRICT = MasterHelp.ComboFill("district", VE.DropDown_list_District, 0, 1);
+
                     VE.DropDown_list_AGSLCD = DropDownHelp.GetAgSlcdforSelection();
                     VE.Agslnm = MasterHelp.ComboFill("agslcd", VE.DropDown_list_AGSLCD, 0, 1);
 
@@ -114,7 +117,7 @@ namespace Improvar.Controllers
                 string com = CommVar.Compcd(UNQSNO);
                 string loc = CommVar.Loccd(UNQSNO);
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-                string slcd = "", sql = "", linkcd = "";
+                string slcd = "", sql = "", linkcd = "", district = "";
                 string scmf = CommVar.FinSchema(UNQSNO), LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO);
 
                 if (FC.AllKeys.Contains("itgrpcdvalue")) selitgrpcd = CommFunc.retSqlformat(FC["itgrpcdvalue"].ToString());
@@ -126,6 +129,10 @@ namespace Improvar.Controllers
                 if (FC.AllKeys.Contains("linkcdvalue"))
                 {
                     linkcd = FC["linkcdvalue"].ToString().retSqlformat();
+                }
+                if (FC.AllKeys.Contains("districtvalue"))
+                {
+                    district = FC["districtvalue"].ToString().retSqlformat();
                 }
                 DataTable tbl;
                 string query = "";
@@ -196,6 +203,7 @@ namespace Improvar.Controllers
                     if (selslcdgrpcd.retStr() != "") query += "and (nvl(s.parentcd,' ') in (" + selslcdgrpcd + ") ) " + Environment.NewLine;
                     if (agslcdvalue != "") query += " and b.agslcd in (" + agslcdvalue + ") " + Environment.NewLine;
                     if (slcd.retStr() != "") query += " and a.slcd in (" + slcd + ") ";
+                    if (district.retStr() != "") query += " and a.DISTRICT in (" + district + ") ";
 
                     if (selslcdgrpcd.retStr() != "") query += " order by s.parentnm,a.SLNM "; else query += " order by a.SLNM ";
                     tbl = MasterHelp.SQLquery(query);

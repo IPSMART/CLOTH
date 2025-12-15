@@ -264,6 +264,24 @@ namespace Improvar
                       }).ToList();
             return sllist;
         }
+
+        public List<DropDown_list_District> GetDistrictforSelection(string grpcd = "")
+        {
+            List<DropDown_list_District> sllist = new List<DropDown_list_District>();
+            string sql = "", scmf = CommVar.FinSchema(UNQSNO);
+
+            sql += "select distinct a.district ";
+            sql += "from " + scmf + ".m_subleg a ";
+            DataTable tbl = MasterHelp.SQLquery(sql);
+
+            sllist = (from DataRow dr in tbl.Rows
+                      select new DropDown_list_District()
+                      {
+                          text = dr["district"].ToString(),
+                          value = dr["district"].ToString(),
+                      }).ToList();
+            return sllist;
+        }
         public List<DropDown_list_ITEM> GetItcdforSelection(string itgrpcd = "")
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
