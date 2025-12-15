@@ -595,7 +595,7 @@ namespace Improvar.Controllers
                 str += "from " + scm + ".T_BATCHMST_PRICE a ";
                 //str += "where a.prccd = 'WP' ) where rn = 1 ) b, ";
                 str += "where a.prccd = 'WP' ";
-                if (CommVar.ClientCode(UNQSNO) == "DIWH" || CommVar.ClientCode(UNQSNO) == "SNFP") str += "and a.effdt=(select max(effdt) from " + scm + ".T_BATCHMST_PRICE  where barno = a.barno and prccd = 'WP'  ) ";//for diwans/SN FABRIC max effdt rate comes
+                if (CommVar.ClientCode(UNQSNO) == "DIWH" || CommVar.ClientCode(UNQSNO) == "SNFP" || CommVar.ClientCode(UNQSNO) == "ANKN") str += "and a.effdt=(select max(effdt) from " + scm + ".T_BATCHMST_PRICE  where barno = a.barno and prccd = 'WP'  ) ";//for diwans/SN FABRIC max effdt rate comes
                 else str += "and nvl(a.rate,0) !=0 ";
                 str += ") where rn = 1 ) b, ";
 
@@ -605,7 +605,7 @@ namespace Improvar.Controllers
                 str += "from " + scm + ".T_BATCHMST_PRICE a ";
                 //str += "where a.prccd = 'WP' ) where rn = 1 ) b, ";
                 str += "where a.prccd = 'RP' ";
-                if (CommVar.ClientCode(UNQSNO) == "DIWH" || CommVar.ClientCode(UNQSNO) == "SNFP") str += "and a.effdt=(select max(effdt) from " + scm + ".T_BATCHMST_PRICE  where barno = a.barno and prccd = 'RP'  ) ";//for diwans/SN FABRIC max effdt rate comes
+                if (CommVar.ClientCode(UNQSNO) == "DIWH" || CommVar.ClientCode(UNQSNO) == "SNFP" || CommVar.ClientCode(UNQSNO) == "ANKN") str += "and a.effdt=(select max(effdt) from " + scm + ".T_BATCHMST_PRICE  where barno = a.barno and prccd = 'RP'  ) ";//for diwans/SN FABRIC max effdt rate comes
                 else str += "and nvl(a.rate,0) !=0 ";
                 str += " ) where rn = 1 ) c, ";
 
