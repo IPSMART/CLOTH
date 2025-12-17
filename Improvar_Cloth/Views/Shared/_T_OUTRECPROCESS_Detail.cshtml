@@ -109,6 +109,7 @@
                                             @Html.HiddenFor(model => model.TTXNDTL[i].CESSAMT, new { id = "D_CESSAMT_" + i })
                                             @Html.HiddenFor(model => model.TTXNDTL[i].NETAMT, new { id = "D_NETAMT_" + i })
                                             @Html.HiddenFor(model => model.TTXNDTL[i].SAMPLE, new { id = "D_SAMPLE_" + i })
+                                            @Html.HiddenFor(model => model.TTXNDTL[i].JOBTXNTY, new { id = "D_JOBTXNTY_" + i })
                                         </td>
                                         <td class="sticky-cell" style="left:27px;">
                                             @Html.TextBoxFor(model => Model.TTXNDTL[i].SLNO, new { id = "D_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })

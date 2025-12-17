@@ -604,7 +604,7 @@ namespace Improvar.Controllers
                 str1 = "";
                 str1 += "select i.SLNO,j.ITGRPCD,k.ITGRPNM,i.MTRLJOBCD,l.MTRLJOBNM,l.MTBARCODE,i.ITCD,j.ITNM,j.STYLENO,j.UOMCD,i.STKTYPE,m.STKNAME,i.NOS,i.QNTY,i.FLAGMTR, ";
                 str1 += "i.BLQNTY,i.RATE,i.AMT,i.DISCTYPE,i.DISCRATE,i.DISCAMT,i.TDDISCTYPE,i.TDDISCRATE,i.TDDISCAMT,i.SCMDISCTYPE,i.SCMDISCRATE,i.SCMDISCAMT, ";
-                str1 += "i.TXBLVAL,i.IGSTPER,i.CGSTPER,i.SGSTPER,i.CESSPER,i.IGSTAMT,i.CGSTAMT,i.SGSTAMT,i.CESSAMT,i.NETAMT,i.HSNCODE,i.BALENO,i.GLCD,i.BALEYR,i.TOTDISCAMT,i.ITREM ";
+                str1 += "i.TXBLVAL,i.IGSTPER,i.CGSTPER,i.SGSTPER,i.CESSPER,i.IGSTAMT,i.CGSTAMT,i.SGSTAMT,i.CESSAMT,i.NETAMT,i.HSNCODE,i.BALENO,i.GLCD,i.BALEYR,i.TOTDISCAMT,i.ITREM,i.JOBTXNTY ";
                 str1 += "from " + Scm + ".T_TXNDTL i, " + Scm + ".M_SITEM j, " + Scm + ".M_GROUP k, " + Scm + ".M_MTRLJOBMST l, " + Scm + ".M_STKTYPE m ";
                 str1 += "where i.ITCD = j.ITCD(+) and j.ITGRPCD=k.ITGRPCD(+) and i.MTRLJOBCD=l.MTRLJOBCD(+)  and i.STKTYPE=m.STKTYPE(+)  and i.slno<=1000 ";
                 str1 += "and i.AUTONO = '" + TXN.AUTONO + "' ";
@@ -659,6 +659,7 @@ namespace Improvar.Controllers
                                   BALEYR = dr["BALEYR"].retStr(),
                                   TOTDISCAMT = dr["TOTDISCAMT"].retDbl(),
                                   ITREM = dr["ITREM"].retStr(),
+                                  JOBTXNTY = dr["JOBTXNTY"].retStr(),
                               }).OrderBy(s => s.SLNO).ToList();
 
                 VE.Det_UomTotal = string.Join(", ", (from x in VE.TTXNDTL
@@ -682,12 +683,7 @@ namespace Improvar.Controllers
                 VE.T_CESS_AMT = VE.TTXNDTL.Sum(a => a.CESSAMT).retDbl();
                 VE.T_NET_AMT = VE.TTXNDTL.Sum(a => a.NETAMT).retDbl();
 
-                if (VE.TTXNDTL != null && VE.TTXNDTL.Count() > 0)
-                {
-                    var temp = (from a in VE.TTXNDTL where a.SAMPLE != "Y" select new { a.MTRLJOBCD, a.MTRLJOBNM }).FirstOrDefault();
-                    VE.MTRLJOBCD = temp.MTRLJOBCD;
-                    VE.MTRLJOBNM = temp.MTRLJOBNM;
-                }
+                
                 //fill prodgrpgstper in t_batchdtl
                 DataTable allprodgrpgstper_data = new DataTable();
                 string BARNO = (from a in VE.TBATCHDTL select a.BARNO).ToArray().retSqlfromStrarray();
@@ -705,6 +701,7 @@ namespace Improvar.Controllers
                 //}
                 foreach (var v in VE.TBATCHDTL)
                 {
+                    v.JOBTXNTY = VE.TTXNDTL.Where(a => a.SLNO == v.TXNSLNO).Select(b => b.JOBTXNTY).FirstOrDefault().retStr();
                     string PRODGRPGSTPER = "", ALL_GSTPER = "", GSTPER = "";
                     v.GSTPER = VE.TTXNDTL.Where(a => a.SLNO == v.TXNSLNO).Sum(b => b.IGSTPER + b.CGSTPER + b.SGSTPER).retDbl();
                     if (allprodgrpgstper_data != null && allprodgrpgstper_data.Rows.Count > 0)
@@ -786,7 +783,8 @@ namespace Improvar.Controllers
                     //    }
                     //}
                     v.DISC_TYPE = masterHelp.DISC_TYPE();
-                    v.SAMPLE = VE.TPROGDTL.Where(a => a.PROGAUTONO == v.RECPROGAUTONO && a.PROGSLNO == v.RECPROGSLNO).Select(b => b.SAMPLE).FirstOrDefault();
+                    //v.SAMPLE = VE.TPROGDTL.Where(a => a.PROGAUTONO == v.RECPROGAUTONO && a.PROGSLNO == v.RECPROGSLNO).Select(b => b.SAMPLE).FirstOrDefault();
+                    v.SAMPLE = DB.T_PROGMAST.Where(a => a.AUTONO == v.RECPROGAUTONO && a.SLNO == v.RECPROGSLNO).Select(b => b.SAMPLE).FirstOrDefault();
                     string issMTRLJOBCD = DB.T_PROGMAST.Where(a => a.AUTONO == v.RECPROGAUTONO && a.SLNO == v.RECPROGSLNO).Select(b => b.MTRLJOBCD).FirstOrDefault();
                     if (v.SAMPLE.retStr() != "Y" && v.MTRLJOBCD.retStr() == issMTRLJOBCD.retStr())
                     {
@@ -848,6 +846,12 @@ namespace Improvar.Controllers
                         DUTY_PER = DUTY;
                     }
                     v.DISC_TYPE = masterHelp.DISC_TYPE();
+                }
+                if (VE.TTXNDTL != null && VE.TTXNDTL.Count() > 0)
+                {
+                    var temp = (from a in VE.TTXNDTL where a.SAMPLE != "Y" select new { a.MTRLJOBCD, a.MTRLJOBNM }).FirstOrDefault();
+                    VE.MTRLJOBCD = temp.MTRLJOBCD;
+                    VE.MTRLJOBNM = temp.MTRLJOBNM;
                 }
                 string S_P = "";
                 if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "OP") { S_P = "P"; } else { S_P = "S"; }
@@ -1978,6 +1982,7 @@ namespace Improvar.Controllers
                                     COMMONUNIQBAR = a.COMMONUNIQBAR.retStr(),
                                     SHORTQNTY = a.SHORTQNTY.retDbl(),
                                     MTRLJOBCD = a.MTRLJOBCD.retStr(),
+                                    JOBTXNTY = a.CheckedJOBTXNTY == true ? "Y" : "N",
                                 }).ToList();
 
                 //string[] progautoslno = VE.TPROGDTL.Select(x => x.PROGAUTOSLNO).ToArray();
@@ -2122,7 +2127,8 @@ namespace Improvar.Controllers
                                   x.SAMPLE,
                                   x.ITREM,
                                   x.MTRLJOBCD,
-                                  x.CheckedStatusUnchange
+                                  x.CheckedStatusUnchange,
+                                  x.JOBTXNTY
                               } into P
                               select new TTXNDTL
                               {
@@ -2141,7 +2147,8 @@ namespace Improvar.Controllers
                                   SAMPLE = P.Key.SAMPLE,
                                   ITREM = P.Key.ITREM,
                                   MTRLJOBCD = P.Key.MTRLJOBCD,
-                                  CheckedStatusUnchange = P.Key.CheckedStatusUnchange
+                                  CheckedStatusUnchange = P.Key.CheckedStatusUnchange,
+                                  JOBTXNTY = P.Key.JOBTXNTY
                               }).ToList();
 
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
@@ -3055,10 +3062,10 @@ namespace Improvar.Controllers
                         if (VE.TTXNDTL[i].SLNO != 0 && VE.TTXNDTL[i].ITCD != null)
                         {
                             short slno = VE.TTXNDTL[i].SLNO;
-                            bool CheckedJOBTXNTY = (from a in VE.TBATCHDTL
-                                                    join b in VE.TPROGDTL on a.RECPROGAUTONO equals b.PROGAUTONO
-                                                    where a.RECPROGSLNO == b.PROGSLNO && a.TXNSLNO == slno
-                                                    select b.CheckedJOBTXNTY).FirstOrDefault();
+                            //bool CheckedJOBTXNTY = (from a in VE.TBATCHDTL
+                            //                        join b in VE.TPROGDTL on a.RECPROGAUTONO equals b.PROGAUTONO
+                            //                        where a.RECPROGSLNO == b.PROGSLNO && a.TXNSLNO == slno
+                            //                        select b.CheckedJOBTXNTY).FirstOrDefault();
 
                             if (i == lastitemno) { _rpldist = _baldist; _rpldistq = _baldistq; }
                             else
@@ -3084,7 +3091,7 @@ namespace Improvar.Controllers
                             TTXNDTL.PARTCD = VE.TTXNDTL[i].PARTCD;
                             TTXNDTL.COLRCD = VE.TTXNDTL[i].COLRCD;
                             TTXNDTL.SIZECD = VE.TTXNDTL[i].SIZECD;
-                            TTXNDTL.STKDRCR = CheckedJOBTXNTY == true ? "N" : stkdrcr;
+                            TTXNDTL.STKDRCR = VE.TTXNDTL[i].JOBTXNTY.retStr() == "Y" ? "N" : stkdrcr;// CheckedJOBTXNTY == true ? "N" : stkdrcr;
                             TTXNDTL.STKTYPE = "F";
                             TTXNDTL.HSNCODE = VE.TTXNDTL[i].HSNCODE;
                             TTXNDTL.ITREM = VE.TTXNDTL[i].ITREM;
@@ -3131,6 +3138,7 @@ namespace Improvar.Controllers
                             TTXNDTL.PRCEFFDT = VE.TTXNDTL[i].PRCEFFDT;
                             TTXNDTL.GLCD = VE.TTXNDTL[i].GLCD;
                             TTXNDTL.CLASS1CD = VE.TTXNDTL[i].CLASS1CD;
+                            TTXNDTL.JOBTXNTY = VE.TTXNDTL[i].JOBTXNTY;
                             dbsql = masterHelp.RetModeltoSql(TTXNDTL);
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
@@ -3152,9 +3160,9 @@ namespace Improvar.Controllers
                             {
                                 string progautono = VE.TBATCHDTL[i].RECPROGAUTONO;
                                 short progslno = VE.TBATCHDTL[i].RECPROGSLNO.retShort();
-                                bool CheckedJOBTXNTY = (from a in VE.TPROGDTL
-                                                        where a.PROGAUTONO == progautono && a.PROGSLNO == progslno
-                                                        select a.CheckedJOBTXNTY).FirstOrDefault();
+                                //bool CheckedJOBTXNTY = (from a in VE.TPROGDTL
+                                //                        where a.PROGAUTONO == progautono && a.PROGSLNO == progslno
+                                //                        select a.CheckedJOBTXNTY).FirstOrDefault();
 
                                 bool isNewBatch = false;
                                 string barno = "";
@@ -3300,7 +3308,7 @@ namespace Improvar.Controllers
                                 TBATCHDTL.MTRLJOBCD = (VE.TBATCHDTL[i].SAMPLE.retStr() == "Y" || VE.TBATCHDTL[i].CheckedStatusUnchange == true) ? VE.TBATCHDTL[i].MTRLJOBCD : VE.MTRLJOBCD;
                                 TBATCHDTL.PARTCD = VE.TBATCHDTL[i].PARTCD;
                                 TBATCHDTL.HSNCODE = VE.TBATCHDTL[i].HSNCODE;
-                                TBATCHDTL.STKDRCR = CheckedJOBTXNTY == true ? "N" : stkdrcr;
+                                TBATCHDTL.STKDRCR = VE.TBATCHDTL[i].JOBTXNTY.retStr() == "Y" ? "N" : stkdrcr;// CheckedJOBTXNTY == true ? "N" : stkdrcr;
                                 TBATCHDTL.NOS = VE.TBATCHDTL[i].NOS;
                                 TBATCHDTL.QNTY = VE.TBATCHDTL[i].QNTY;
                                 TBATCHDTL.BLQNTY = VE.TBATCHDTL[i].BLQNTY;

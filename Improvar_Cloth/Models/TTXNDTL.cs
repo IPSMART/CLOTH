@@ -225,5 +225,7 @@ namespace Improvar.Models
         public double tempslno { get; set; }
         public bool CheckedStatusUnchange { get; set; }
 
+        [StringLength(1)]
+        public string JOBTXNTY { get; set; }
     }
 }

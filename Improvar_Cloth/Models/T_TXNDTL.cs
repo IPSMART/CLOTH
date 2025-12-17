@@ -175,6 +175,8 @@ namespace Improvar.Models
         public double? LISTDISCPER { get; set; }
         [StringLength(3)]
         public string BLUOMCD { get; set; }
+        [StringLength(1)]
+        public string JOBTXNTY { get; set; }
 
     }
 }

@@ -203,5 +203,7 @@ namespace Improvar.Models
         public string RECPROGUOMNM { get; set; }
         public double RECPROGQNTY { get; set; }
         public bool CheckedStatusUnchange { get; set; }
+        [StringLength(1)]
+        public string JOBTXNTY { get; set; }
     }
 }
