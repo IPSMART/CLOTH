@@ -85,7 +85,7 @@ namespace Improvar.Models
         [StringLength(1)]
         public string INSBY { get; set; }
 
-        [StringLength(30)]
+        [StringLength(50)]
         public string PAYTERMS { get; set; }
 
         [StringLength(500)]
