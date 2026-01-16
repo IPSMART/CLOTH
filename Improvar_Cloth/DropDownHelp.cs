@@ -449,5 +449,25 @@ namespace Improvar
                                  }).ToList();
             return sllist;
         }
+        public List<DropDown_list_Ordnmbr> DropDownOrderNo()
+        {
+            List<DropDown_list_Ordnmbr> sllist = new List<DropDown_list_Ordnmbr>();
+
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scm = CommVar.CurSchema(UNQSNO);
+
+            string SQL = "select a.autono,b.docno,a.prefno  ";
+            SQL += "from " + scm + ".t_sord a, " + scm + ".t_cntrl_hdr b ";
+            SQL += "where a.autono = b.autono(+) ";
+            SQL += "order by b.docno ";
+            DataTable tbl = MasterHelp.SQLquery(SQL);
+
+            sllist = (from DataRow DR in tbl.Rows
+                      select new DropDown_list_Ordnmbr()
+                      {
+                          Value = DR["docno"].ToString(),
+                          Text = DR["prefno"].ToString()
+                      }).ToList();
+            return sllist;
+        }
     }
 }

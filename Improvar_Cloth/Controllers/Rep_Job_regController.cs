@@ -58,6 +58,9 @@ namespace Improvar.Controllers
                     VE.DropDown_list_LOCCD = DropDownHelp.DropDownLoccation();
                     VE.Locnm = MasterHelp.ComboFill("loccd", VE.DropDown_list_LOCCD, 1, 0);
 
+                    VE.DropDown_list_Ordnmbr = DropDownHelp.DropDownOrderNo();
+                    VE.Ordnmbr = MasterHelp.ComboFill("docno", VE.DropDown_list_Ordnmbr, 1, 0);
+
                     VE.JOBCD = VE.MENU_PARA;
                     VE.Checkbox2 = true;
                     VE.DefaultView = true;
@@ -83,10 +86,11 @@ namespace Improvar.Controllers
                 string ShowPending = VE.TEXTBOX2.retStr();
                 ReportType = VE.TEXTBOX3.retStr();
                 string RepFormat = VE.TEXTBOX4.retStr();
-                string jobslcd = "", itcd = "", loccd = "", pghdr2 = "";
+                string jobslcd = "", itcd = "", loccd = "", pghdr2 = "", docno = "";
                 string JOBCD = VE.JOBCD;
                 if (FC.AllKeys.Contains("slcdvalue")) jobslcd = CommFunc.retSqlformat(FC["slcdvalue"].ToString());
                 if (FC.AllKeys.Contains("itcdvalue")) itcd = CommFunc.retSqlformat(FC["itcdvalue"].ToString());
+                if (FC.AllKeys.Contains("docnovalue")) docno = CommFunc.retSqlformat(FC["docnovalue"].ToString());
                 if (FC.AllKeys.Contains("loccdvalue"))
                 {
                     loccd = FC["loccdvalue"].ToString().retSqlformat();
@@ -111,7 +115,7 @@ namespace Improvar.Controllers
                     sql += "where a.autono = b.autono(+) and " + Environment.NewLine;
                     sql += "b.compcd = '" + COM + "' and nvl(b.cancel, 'N') = 'N' and " + Environment.NewLine;
                     if (jobslcd != "") sql += "a.slcd in(" + jobslcd + ") and " + Environment.NewLine;
-                    if (itcd != "") sql += "a.itcd in(" + itcd + ") and " + Environment.NewLine;
+                    if (itcd != "") sql += "a.itcd in(" + itcd + ") and " + Environment.NewLine;                    
                     if (fdt != "") sql += "b.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and " + Environment.NewLine;
                     if (loccd.retStr() != "")
                     {
@@ -145,7 +149,9 @@ namespace Improvar.Controllers
                     sql += scmf + ".m_subleg g, " + scm + ".t_batchmst h, " + scm + ".m_sitem i, " + scm + ".m_group j, " + scmf + ".m_uom k, " + scm + ".m_sitem l, " + scm + ".t_cntrl_hdr m, " + scm + ".t_sord n "+ Environment.NewLine;
                     sql += "where a.autono=c.autono(+) and a.slno=c.slno(+) and a.autoslno = b.progautoslno(+) and a.autoslno = y.progautoslno(+) and a.autoslno = z.progautoslno(+) and " + Environment.NewLine;
                     sql += "a.autono = ptch.autono(+) and b.autono = rtch.autono(+) and C.JOBCD='" + JOBCD + "' and i.fabitcd=l.itcd(+) and c.ordautono=m.autono(+) and c.ordautono=n.autono(+) and  " + Environment.NewLine;
+                    
                     if (ShowPending == "PENDING") sql += "c.qnty-nvl(z.qnty,0) <> 0 and " + Environment.NewLine;
+                    if (docno != "") sql += "m.docno in(" + docno + ") and " + Environment.NewLine;
                     sql += "c.slcd = g.slcd(+) and c.barno = h.barno(+) and h.itcd = i.itcd(+) and i.itgrpcd = j.itgrpcd(+) and i.uomcd = k.uomcd(+) " + Environment.NewLine;
                     sql += "order by slnm, slcd, docdt, docno, autono, slno, recdocdt, recdocno " + Environment.NewLine;
                     DataTable tbl = MasterHelp.SQLquery(sql);

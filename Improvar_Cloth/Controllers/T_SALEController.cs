@@ -1127,7 +1127,7 @@ namespace Improvar.Controllers
                             {
                                 v.BALSTOCK = tax_data.Rows[0]["BALQNTY"].retDbl();
                                 PRODGRPGSTPER = tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
-                                if (VE.MENU_PARA == "PR" || VE.MENU_PARA == "SR")
+                                if ((VE.MENU_PARA == "PR" || VE.MENU_PARA == "SR") && v.AGDOCDT.retDateStr() != "")
                                 {
                                     PRODGRPGSTPER = Getprodgrpgstper(v.AGDOCDT.retDateStr(), TXNOTH.TAXGRPCD.retStr(), v.ITCD);
                                 }

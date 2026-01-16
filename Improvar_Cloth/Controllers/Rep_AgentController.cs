@@ -649,7 +649,7 @@ namespace Improvar.Controllers
                             IR.Rows[rNo]["itamt"] = iamt1;
                             IR.Rows[rNo]["retamt"] = pRetamt;
                             IR.Rows[rNo]["discamt"] = pDiscamt;
-                            IR.Rows[rNo]["discamt"] = pTdsamt;
+                            //IR.Rows[rNo]["discamt"] = pTdsamt;
                             IR.Rows[rNo]["payamt"] = pPayamt;
                             IR.Rows[rNo]["othamt"] = pOthamt;
                             IR.Rows[rNo]["paytxbl"] = pPaytxbl;

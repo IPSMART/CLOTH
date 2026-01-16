@@ -109,7 +109,8 @@ namespace Improvar.ViewModels
         public string TEXTBOX12 { get; set; }
         public string DISTRICT { get; set; }
         public List<DropDown_list_BLTYPE> DropDown_list_BLTYPE { get; set; }
-
+        public string Ordnmbr { get; set; }
+        public List<DropDown_list_Ordnmbr> DropDown_list_Ordnmbr { get; set; }
 
     }
 }
