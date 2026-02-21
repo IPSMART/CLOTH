@@ -882,6 +882,12 @@
       <DependentUpon>SaleBill_ANKN.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Report\SaleBill_ANKN_New.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SaleBill_ANKN_New.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Report\SaleBill_BHURA.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1831,6 +1837,10 @@
     <Content Include="Report\SaleBill_ANKN.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>SaleBill_ANKN.cs</LastGenOutput>
+    </Content>
+    <Content Include="Report\SaleBill_ANKN_New.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>SaleBill_ANKN_New.cs</LastGenOutput>
     </Content>
     <EmbeddedResource Include="Report\SaleBill_Sachi.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
