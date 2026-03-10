@@ -5110,7 +5110,7 @@ namespace Improvar.Controllers
                 sql += " b.gocd, k.gonm, k.goadd1, k.goadd2, k.goadd3, k.gophno, k.goemail, h.usr_id, h.usr_entdt, h.vchrno, nvl(e.pslcd, e.slcd) oslcd, b.slcd, " + Environment.NewLine;
                 //sql += " nvl(e.fullname, e.slnm) slnm, " + prnemailid + ", e.add1 sladd1, e.add2 sladd2, e.add3 sladd3, e.add4 sladd4, e.add5 sladd5, e.add6 sladd6, e.add7 sladd7,  ";
                 sql += " nvl(x.nm,nvl(e.fullname, e.slnm)) slnm, " + prnemailid + ", e.add1 sladd1, e.add2 sladd2, e.add3 sladd3, e.add4 sladd4, e.add5 sladd5, e.add6 sladd6, e.add7 sladd7,  " + Environment.NewLine;
-                sql += " e.gstno, e.panno, trim(e.regmobile || decode(e.regmobile, null, '', ',') || e.slphno || decode(e.phno1, null, '', ',' || e.phno1)) phno, e.state, e.country, e.statecd, e.actnameof slactnameof,e.subdistrict sldistrict,  " + Environment.NewLine;
+                sql += " e.gstno, e.panno, trim(e.regmobile || decode(e.regmobile, null, '', ',') || e.slphno || decode(e.phno1, null, '', ',' || e.phno1)) phno,nvl(e.regmobile,e.slphno)regmobile, e.state, e.country, e.statecd, e.actnameof slactnameof,e.subdistrict sldistrict,  " + Environment.NewLine;
                 sql += " nvl(b.conslcd, b.slcd) cslcd, '' cpartycd, nvl(f.fullname, f.slnm) cslnm, f.add1 csladd1, f.add2 csladd2, f.add3 csladd3, f.add4 csladd4, f.add5 csladd5, " + Environment.NewLine;
                 sql += " f.add6 csladd6, f.add7 csladd7, nvl(f.gstno, f.gstno) cgstno, nvl(f.panno, f.panno) cpanno,f.actnameof cslactnameof,f.subdistrict csldistrict, " + Environment.NewLine;
                 sql += " trim(f.regmobile || decode(f.regmobile, null, '', ',') || f.slphno || decode(f.phno1, null, '', ',' || f.phno1)) cphno, f.state cstate, f.statecd cstatecd,  " + Environment.NewLine;
@@ -5222,7 +5222,7 @@ namespace Improvar.Controllers
                 #endregion
                 DataView dv = new DataView(tblinv);
                 //string[] COL = new string[] { "slcd", "slnm", "sladd1", "sladd2", "sladd3", "sladd4", "sladd5", "sladd6", "sladd7", "phno", "regemailid", "gstno", "trslnm", "docno", "EWAYBILLNO" };               
-                string[] COL = new string[] { "slcd", "slnm", "sladd1", "sladd2", "sladd3", "sladd4", "sladd5", "sladd6", "sladd7", "phno", "regemailid", "gstno", "trslnm", "docno", "EWAYBILLNO", "othnm", "othadd1", "othadd2", "othadd3", "othadd4", "othaddpin", "OTHADDEMAIL", "cslcd", "cpartycd", "cslnm", "csladd1", "csladd2", "csladd3", "csladd4", "csladd5", "csladd6", "csladd7", "cgstno", "cpanno" };
+                string[] COL = new string[] { "slcd", "slnm", "sladd1", "sladd2", "sladd3", "sladd4", "sladd5", "sladd6", "sladd7", "phno", "regemailid", "gstno", "trslnm", "docno", "EWAYBILLNO", "othnm", "othadd1", "othadd2", "othadd3", "othadd4", "othaddpin", "OTHADDEMAIL", "cslcd", "cpartycd", "cslnm", "csladd1", "csladd2", "csladd3", "csladd4", "csladd5", "csladd6", "csladd7", "cgstno", "cpanno", "regmobile" };
                 DataTable tbl = dv.ToTable(true, COL);
 
                 sql = "select a.compcd, a.compnm, b.add1, b.add2,  b.add3, b.add4, b.add5, b.add6, b.add7, ";
@@ -5306,11 +5306,11 @@ namespace Improvar.Controllers
                             IR.Rows[rNo]["sladd5"] = tbl.Rows[i]["sladd5"];
                             IR.Rows[rNo]["sladd6"] = tbl.Rows[i]["sladd6"];
                             IR.Rows[rNo]["sladd7"] = tbl.Rows[i]["sladd7"];
-                            IR.Rows[rNo]["slphno"] = tbl.Rows[i]["phno"] == DBNull.Value ? "" : "Ph. " + tbl.Rows[i]["phno"];
+                            //IR.Rows[rNo]["slphno"] = tbl.Rows[i]["phno"] == DBNull.Value ? "" : "Ph. " + tbl.Rows[i]["phno"];
                             IR.Rows[rNo]["slemail"] = tbl.Rows[i]["regemailid"] == DBNull.Value ? "" : "Email : " + tbl.Rows[i]["regemailid"];
                         }
                         IR.Rows[rNo]["slgstno"] = tbl.Rows[i]["gstno"] == DBNull.Value ? "" : "GSTIN : " + tbl.Rows[i]["gstno"];
-                        IR.Rows[rNo]["slphno"] = tbl.Rows[i]["phno"] == DBNull.Value ? "" : "Ph. " + tbl.Rows[i]["phno"];
+                        IR.Rows[rNo]["slphno"] = tbl.Rows[i]["regmobile"] == DBNull.Value ? "" : "Ph. " + tbl.Rows[i]["regmobile"];
                     }
                     else
                     {
