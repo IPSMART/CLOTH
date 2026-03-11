@@ -3213,7 +3213,7 @@ namespace Improvar.Controllers
 
                             maxR = rsemailid1.Rows.Count - 1;
                             Int32 iz = 0;
-                            string slnm = "", emlslcd = "", body = "", chkfld = "", chkfld1 = "", ccemailid = "";
+                            string slnm = "", emlslcd = "", body = "", chkfld = "", chkfld1 = "", ccemailid = "", billnum = "";
                             emlslcd = rsemailid[z].slcd.ToString();
                             DataTable tblslcd = MasterHelpFa.retslcdCont(emlslcd, "S", true);
                             for (int sz = 0; sz <= tblslcd.Rows.Count - 1; sz++)
@@ -3240,7 +3240,7 @@ namespace Improvar.Controllers
                                     body += "</tr>";
                                 }
 
-
+                                billnum = rsemailid1.Rows[iz]["docno"].retStr();
                                 chkfld = rsemailid1.Rows[iz]["autono"].ToString().Substring(0, rsemailid1.Rows[iz]["autono"].ToString().Length - 1);
 
                                 while (rsemailid1.Rows[iz]["autono"].ToString().Substring(0, rsemailid1.Rows[iz]["autono"].ToString().Length - 1) == chkfld)
@@ -3277,12 +3277,13 @@ namespace Improvar.Controllers
                             stream.Seek(0, SeekOrigin.Begin);
                             if (!System.IO.Directory.Exists(path_Save)) { System.IO.Directory.CreateDirectory(path_Save); }
                             //path_Save = path_Save +"\\"+ doccd + "-" + emlslcd + "-" + ldt.Substring(6, 4) + ldt.Substring(3, 2) + ldt.Substring(0, 2) + ".pdf";
-                            var edocno = (Regex.Replace(billno, @"[^0-9a-zA-Z_]+", ""));
+                            var edocno = (Regex.Replace(billnum, @"[^0-9a-zA-Z_]+", ""));
                             path_Save = path_Save + "\\" + doccd + "-" + edocno + ".pdf";
                             if (System.IO.File.Exists(path_Save)) { System.IO.File.Delete(path_Save); }
 
                             reportdocument.ExportToDisk(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat, path_Save);
                             reportdocument.Close();
+
                             // email
 
                             sql = "select b.compnm, b.add1, b.add2, b.add3, b.add4, b.add5, b.add6, b.state, b.country, b.panno, b.cinno, b.propname, ";
@@ -3301,6 +3302,20 @@ namespace Improvar.Controllers
                             //System.Net.Mail.Attachment attchmail = new System.Net.Mail.Attachment(path_Save);
                             List<System.Net.Mail.Attachment> attchmail = new List<System.Net.Mail.Attachment>();// System.Net.Mail.Attachment(path_Save);
                             attchmail.Add(new System.Net.Mail.Attachment(path_Save));
+                            //doc attach
+                            string docfilesavepath = "";
+                            if (VE.Checkbox13 == true)
+                            {
+                                docfilesavepath = SaveDocFile(chkfld.retSqlformat());
+                                if (docfilesavepath.retStr() != "")
+                                {
+                                    string[] tempflnm = docfilesavepath.Split(',');
+                                    foreach (var v in tempflnm)
+                                    {
+                                        attchmail.Add(new System.Net.Mail.Attachment(v));
+                                    }
+                                }
+                            }
                             string template = "";
                             template = "Salebill_" + CommVar.Compcd(UNQSNO) + ".htm";
                             string filePath = Server.MapPath("~/Templates/Email/" + template + "");
@@ -3392,7 +3407,17 @@ namespace Improvar.Controllers
                                 }
                             }
                             System.IO.File.Delete(path_Save);
-                            //eof email sending
+                            if (VE.Checkbox13 == true)
+                            {
+                                if (docfilesavepath.retStr() != "")
+                                {
+                                    string[] tempflnm = docfilesavepath.Split(',');
+                                    foreach (var v in tempflnm)
+                                    {
+                                        System.IO.File.Delete(v);
+                                    }
+                                }
+                            }                            //eof email sending
                         }
                     }
                     reportdocument.Dispose(); GC.Collect();
@@ -5869,6 +5894,71 @@ namespace Improvar.Controllers
             }
 
         }
+        public string SaveDocFile(string AUTONO)
+        {
+            string autonum = "";
+            string errautono = "";
+            try
+            {
+                //  string ITEMIMGPATH = @ConfigurationManager.AppSettings["ITEMIMGPATH"].retStr();
+                string outputFolder = @"C:\\Ipsmart\\Temp\";
+                List<string> imgTypes = new List<string> { "jpg", "jpeg", "jpe", "bmp", "gif", "png" };
+
+                string scm1 = CommVar.CurSchema(UNQSNO);
+                string sql = "";
+                Improvar.Models.ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+                List<UploadDOC> UploadDOC1 = new List<UploadDOC>();
+
+                sql = "select distinct a.autono, a.doc_ctg, a.doc_desc, a.doc_extn, a.doc_flname, a.slno, b.rslno, b.doc_string,c.docno,c.docdt,c.doccd ";
+                sql += "from " + scm1 + ".t_cntrl_hdr_doc a, " + scm1 + ".t_cntrl_hdr_doc_dtl b, " + scm1 + ".t_cntrl_hdr C ";
+                sql += "where a.autono = b.autono(+) and a.slno = b.slno(+) and b.autono=c.autono(+) ";
+                sql += "and a.autono in ( " + AUTONO + " )";
+                sql += "order by autono, slno, rslno ";
+                DataTable maintbl = masterHelp.SQLquery(sql);
+                DataView dv = new DataView(maintbl);
+                string[] cloum = new string[] { "slno", "doc_ctg", "doc_flname", "doc_desc", "autono", "docno", "docdt", "doccd" };
+                DataTable slnotbl = dv.ToTable(true, cloum);
+
+                string savefilepath = "";
+                foreach (DataRow dr in slnotbl.Rows)
+                {
+                    autonum = dr["autono"].retStr() + " " + dr["docdt"].retStr();
+                    Int16 slno = Convert.ToInt16(dr["slno"].retStr());
+                    string autono = dr["AUTONO"].retStr();
+                    string base64String = string.Join("", maintbl.AsEnumerable()
+                .Where(r => ((Int16)r["slno"]) == slno && r["autono"].retStr() == autono)
+                                     .Select(x => x["doc_string"].ToString())
+                                     .ToArray());
+
+                    var base64Data = base64String.Substring(base64String.IndexOf(",") + 1);
+                    byte[] fileData = Convert.FromBase64String(base64Data);
+                    string extn = dr["DOC_FLNAME"].ToString().Split('.').Last();
+
+                    var edocno = (Regex.Replace(dr["docno"].ToString(), @"[^0-9a-zA-Z_]+", ""));
+
+                    string imageName = dr["doccd"].ToString() + "-" + edocno + "_" + dr["DOC_FLNAME"].ToString(); // e.g., "example.jpg"
+                    string fullPath = Path.Combine(outputFolder, imageName);
+
+                    if (System.IO.File.Exists(fullPath))
+                    {
+                        System.IO.File.Delete(fullPath); //Delete file if it  exist
+                    }
+                    System.IO.File.WriteAllBytes(fullPath, fileData);
+                    if (savefilepath != "") savefilepath += ",";
+                    savefilepath += fullPath;
+
+
+                }
+                return savefilepath;
+            }
+            catch (Exception ex)
+            {
+                errautono += autonum + "/";
+                Cn.SaveException(ex, "");
+                return null;
+            }
+        }
+
 
     }
 }
