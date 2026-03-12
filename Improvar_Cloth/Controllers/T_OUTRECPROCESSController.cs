@@ -683,7 +683,7 @@ namespace Improvar.Controllers
                 VE.T_CESS_AMT = VE.TTXNDTL.Sum(a => a.CESSAMT).retDbl();
                 VE.T_NET_AMT = VE.TTXNDTL.Sum(a => a.NETAMT).retDbl();
 
-                
+
                 //fill prodgrpgstper in t_batchdtl
                 DataTable allprodgrpgstper_data = new DataTable();
                 string BARNO = (from a in VE.TBATCHDTL select a.BARNO).ToArray().retSqlfromStrarray();
@@ -2083,6 +2083,19 @@ namespace Improvar.Controllers
                                 prograte = progtotalamt / progtotalqnty;
                             }
                             VE.TBATCHDTL[p].MTRLCOST = (prograte.retDbl() * VE.TBATCHDTL[p].QNTY.retDbl()).toRound(2);
+                        }
+                    }
+                    if (tempTBATCHDTL != null)
+                    {
+                        string RECPROGAUTONO = VE.TBATCHDTL[p].RECPROGAUTONO;
+                        short? RECPROGSLNO = VE.TBATCHDTL[p].RECPROGSLNO;
+                        string ITCD = VE.TBATCHDTL[p].ITCD;
+                        if (VE.TBATCHDTL[p].SAMPLE.retStr() != "Y")
+                        {
+                            short SLNO = VE.TBATCHDTL[p].SLNO;
+                            short TXNSLNO = VE.TBATCHDTL[p].TXNSLNO;
+
+                            VE.TBATCHDTL[p].RATE = (from a in tempTBATCHDTL where a.RECPROGAUTONO == RECPROGAUTONO && a.RECPROGSLNO == RECPROGSLNO && a.SLNO == SLNO && a.TXNSLNO == TXNSLNO && a.ITCD == ITCD select a.RATE).FirstOrDefault();
                         }
                     }
                 }

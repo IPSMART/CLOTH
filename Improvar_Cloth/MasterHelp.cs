@@ -33,8 +33,8 @@ namespace Improvar
                     if (ITGTYPE.IndexOf(',') == -1 && ITGTYPE.IndexOf("'") == -1) ITGTYPE = "'" + ITGTYPE + "'";
                 }
                 sql += "select a.itcd, a.itnm, a.uomcd, a.itgrpcd, b.itgrpnm,b.bargentype, b.itgrptype,a.styleno, a.PCSPERSET,nvl(a.hsncode,b.hsncode)hsncode, a.fabitcd, c.itnm fabitnm, a.styleno||' '||a.itnm itstyle,a.convqtypunit,a.convuomcd ";
-                sql += " from " + scm1 + ".m_sitem a, " + scm1 + ".m_group b, " + scm1 + ".m_sitem c ";
-                sql += "where a.itgrpcd=b.itgrpcd and a.fabitcd=c.itcd(+) ";
+                sql += " from " + scm1 + ".m_sitem a, " + scm1 + ".m_group b, " + scm1 + ".m_sitem c, " + scm1 + ".m_cntrl_hdr d ";
+                sql += "where a.itgrpcd=b.itgrpcd and a.fabitcd=c.itcd(+) and a.m_autono=d.m_autono(+) and nvl(d.inactive_tag,'N') = 'N' ";
                 if (DOC_EFF_DT.retStr() != "" || JOB_CD.retStr() != "")
                 {
                     sql += "and a.itcd = (select distinct y.itcd from " + scm1 + ".v_sjobmst_stdrt y where a.itcd=y.itcd ";
@@ -2324,7 +2324,7 @@ namespace Improvar
             //if (menupara == "OP" || menupara == "OTH" || menupara == "PJRC")//menupara == "PB" || 
             if (menupara == "PB" || menupara == "OP" || menupara == "OTH" || menupara == "PJRC")
             {
-                tbl = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, menupara, "", "", false, false, exactbarno, PARTCD, showonlycommonbar,exactstyleno,slcdfrrt);
+                tbl = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, menupara, "", "", false, false, exactbarno, PARTCD, showonlycommonbar, exactstyleno, slcdfrrt);
             }
             //else if (menupara == "ALL")
             //{
@@ -2332,9 +2332,21 @@ namespace Improvar
             //}
             else
             {
-                tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD.retStr(), SKIPAUTONO.retStr(), "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, exactbarno, PARTCD, true, doctag, SLCD,false,false,false,skipNegetivStock,"",exactstyleno,"", slcdfrrt);
-
+                tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD.retStr(), SKIPAUTONO.retStr(), "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, exactbarno, PARTCD, true, doctag, SLCD, false, false, false, skipNegetivStock, "", exactstyleno, "", slcdfrrt);
+                if (tbl != null && tbl.Rows.Count > 0)
+                {
+                    var temptbl = tbl.Select("itminactive_tag='N'");
+                    if (temptbl != null && temptbl.Count() > 0)
+                    {
+                        tbl = temptbl.CopyToDataTable();
+                    }
+                    else
+                    {
+                        tbl = tbl.Clone();
+                    }
+                }
             }
+
             if (barnoOrStyle.retStr() == "" || tbl.Rows.Count > 1)
             {
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
@@ -3303,8 +3315,8 @@ namespace Improvar
                 }
             }
         }
-       
-    
+
+
         public string SCMITMGRPCD_help(ImprovarDB DB)
         {
             using (DB)
