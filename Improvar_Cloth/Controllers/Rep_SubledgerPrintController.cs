@@ -169,7 +169,7 @@ namespace Improvar.Controllers
                     if (FC.AllKeys.Contains("slcdgrpcdvalue")) { selslcdgrpcd = CommFunc.retSqlformat(FC["slcdgrpcdvalue"].ToString()); fld = "parentcd"; }
                     if (FC.AllKeys.Contains("agslcdvalue")) agslcdvalue = CommFunc.retSqlformat(FC["agslcdvalue"].ToString());
 
-                    query = "Select distinct a.SLCD,a.SLNM,a.FULLNAME,a.PARTYCD,a.add1,a.add2,a.add3,a.add4,a.add5,a.add6,a.add7,a.STATE,a.SLAREA,a.PANNO, b.agslcd, z.slnm agslnm, ";
+                    query = "Select distinct a.SLCD,a.SLNM,a.FULLNAME,a.PARTYCD,a.add1,a.add2,a.add3,a.add4,a.add5,a.add6,a.add7,a.STATE,a.SLAREA,a.PANNO, b.agslcd, z.slnm agslnm,y.cperson, ";
                     query += "a.GSTNO,a.ADHAARNO,a.MSMENO,a.REGMOBILE,a.REGEMAILID,a.PARTYNM,nvl(a.AUTOREMINDEROFF,'N') AUTOREMINDEROFF,s.parentcd, s.parentnm,t.USR_ENTDT,a.TCSAPPL,a.TOT194Q,a.DISTRICT from  ";
 
                     query += "(Select distinct a.m_autono,a.SLCD,a.SLNM,a.FULLNAME,a.PARTYCD,a.add1,a.add2,a.add3,a.add4,a.add5,a.add6,a.add7,a.STATE,a.SLAREA,a.PANNO,a.GSTNO,a.ADHAARNO,a.MSMENO,a.REGMOBILE,a.REGEMAILID,b.PARTYNM,nvl(a.AUTOREMINDEROFF,'N')AUTOREMINDEROFF,a.TCSAPPL,a.TOT194Q,a.DISTRICT  ";
@@ -197,8 +197,14 @@ namespace Improvar.Controllers
 
                     query += "where a.rootcd = c.slcdgrpcd(+) and a.parentcd=b.slcdgrpcd(+) ) s," + Environment.NewLine;
 
+                    query += "(select cperson, slcd from ";
+                    query += "(select a.cperson, a.slcd, ";
+                    query += "row_number() over(partition by a.slcd order by a.slno) as rn ";
+                    query += "from " + scmf + ".M_SUBLEG_CONT a, " + scmf + ".M_SUBLEG b  where b.slcd = a.slcd(+) ) ";
+                    query += "where rn = 1 ) y, ";
+
                     query += scmf + ".m_cntrl_hdr t, " + scmf + ".m_subleg z " + Environment.NewLine;
-                    query += " where a.slcd=s.slcd(+) and a.m_autono=t.m_autono(+) and a.slcd=b.slcd(+) and b.agslcd=z.slcd(+) ";
+                    query += " where a.slcd=s.slcd(+) and a.m_autono=t.m_autono(+) and a.slcd=b.slcd(+) and b.agslcd=z.slcd(+) and a.slcd=y.slcd(+) ";
                     if (selitgrpcd != "") query += "and a.slcd=g.slcd " + Environment.NewLine;
                     if (selslcdgrpcd.retStr() != "") query += "and (nvl(s.parentcd,' ') in (" + selslcdgrpcd + ") ) " + Environment.NewLine;
                     if (agslcdvalue != "") query += " and b.agslcd in (" + agslcdvalue + ") " + Environment.NewLine;
@@ -232,6 +238,7 @@ namespace Improvar.Controllers
                         HC.GetPrintHeader(IR, "MSMENO", "string", "c,13", "MSME No");
                         HC.GetPrintHeader(IR, "REGMOBILE", "string", "c,13", "Mobile");
                         HC.GetPrintHeader(IR, "REGEMAILID", "string", "c,27", "Email");
+                        HC.GetPrintHeader(IR, "CPARSON", "string", "c,26", "Contact Person");
                         if (VE.Checkbox2 == true) HC.GetPrintHeader(IR, "AUTOREMINDEROFF", "string", "c,10", "Auto Send Email/Sms of reminder disable");
                         if (VE.Checkbox3 != true)HC.GetPrintHeader(IR, "USR_ENTDT", "string", "c,27", "Entry Date");
                         if (VE.Checkbox3 != true) HC.GetPrintHeader(IR, "AGSLCD", "string", "c,10", "Agent Code");
@@ -256,6 +263,7 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["SLCD"] = tbl.Rows[i]["SLCD"];
                                 IR.Rows[rNo]["SLNM"] = tbl.Rows[i]["SLNM"];
                                 IR.Rows[rNo]["FULLNAME"] = tbl.Rows[i]["FULLNAME"];
+                                IR.Rows[rNo]["CPARSON"] = tbl.Rows[i]["cperson"];
                                 if (VE.Checkbox3 != true) IR.Rows[rNo]["PARTYCD"] = tbl.Rows[i]["PARTYCD"];
                                 if (VE.Checkbox3 != true) IR.Rows[rNo]["PARTYNM"] = tbl.Rows[i]["PARTYNM"];
                                 IR.Rows[rNo]["STATE"] = tbl.Rows[i]["STATE"];
