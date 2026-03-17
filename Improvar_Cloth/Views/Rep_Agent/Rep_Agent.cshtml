@@ -38,7 +38,7 @@
                 $("#showbil").css("display", "block");
                 $("#showbildate").css("display", "block");
                 $("#shortingon").css("display", "block");
-                $("#showpartytotal").css("display", "block");
+                $(".showpartytotal").css("display", "block");
             }
             else {
                 $('#showItdet').show(); $('#shorton').show();
@@ -46,7 +46,7 @@
                 $("#showbil").css("display", "none");
                 $("#showbildate").css("display", "none");
                 $("#shortingon").css("display", "none");
-                $("#showpartytotal").css("display", "none");
+                $(".showpartytotal").css("display", "none");
             }
         });
     });
@@ -257,7 +257,7 @@
                         </div>
                     </div>*@
                 </div>
-                <div class="row" id="showpartytotal"style="display:none">
+                <div class="showpartytotal row" style="display:none">
                     <div class="col-lg-2">
                         <div class="editor-label" style="margin-top: 4px;">
                             @Html.Label("", "Show Party Wise Total")
@@ -266,6 +266,18 @@
                     <div class="col-lg-1">
                         <div class="editor-field">
                             @Html.CheckBoxFor(model => model.Checkbox4)
+                        </div>
+                    </div>
+                </div>
+                <div class="showpartytotal row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 4px;">
+                            @Html.Label("", "Payment Breakup(Group Wise)")
+                        </div>
+                    </div>
+                    <div class="col-lg-1">
+                        <div class="editor-field">
+                            @Html.CheckBoxFor(model => model.Checkbox6)
                         </div>
                     </div>
                 </div>

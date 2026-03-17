@@ -108,7 +108,7 @@ namespace Improvar.Controllers
                 string sorton = FC["sorton"]; //Party,Date
                 if (repon == "S") agdsp = "Sub Agent";
                 if (showdocno == false) sorton = "P";
-               
+
                 string sql = "";
                 sql = "";
                 sql += "select a.autono, a.slcd, d.docno, d.docdt, b.slnm, nvl(b.slarea,b.district) slarea, ";
@@ -347,10 +347,11 @@ namespace Improvar.Controllers
                 if (showdocno == false) sorton = "P";
                 bool sortingonBillwise = VE.Checkbox5;
                 string showbill = FC["reptypeBil"].retStr();
-                string agslcd = repon=="A"? "e.agslcd" : "e.sagslcd";
+                string agslcd = repon == "A" ? "e.agslcd" : "e.sagslcd";
+                bool PaymentBreakup = VE.Checkbox6;
                 string sql = "";
 
-                sql += "select a.autono, a.slno, e.glcd, d.docno, d.docdt, a.autoslno,"+agslcd+ " agslcd, g.slnm agslnm,nvl(g.slarea,g.district) agslarea, a.slcd,f.slnm,nvl(f.slarea,f.district) slarea, a.vchtype, e.bltype, a.drcr, a.amt, a.linkcd, e.itamt, " + Environment.NewLine;
+                sql += "select a.autono, a.slno, e.glcd, d.docno, d.docdt, a.autoslno," + agslcd + " agslcd, g.slnm agslnm,nvl(g.slarea,g.district) agslarea, a.slcd,f.slnm,nvl(f.slarea,f.district) slarea, a.vchtype, e.bltype, a.drcr, a.amt, a.linkcd, e.itamt, " + Environment.NewLine;
                 sql += "b.vchtype adjtype, b.trcd, nvl(b.amt, 0) adjamt ";
                 sql += " from ";
 
@@ -400,7 +401,7 @@ namespace Improvar.Controllers
                 sql += "" + scmf + ".t_vch_bl e," + scmf + ".m_subleg f," + scmf + ".m_subleg g " + Environment.NewLine;
 
                 sql += "where a.autoslno = b.autoslno(+) and a.autoslno = c.autoslno(+) and a.autono = d.autono(+) and " + Environment.NewLine;
-                sql += "a.autono = e.autono(+) and a.slno = e.slno(+) and "+ agslcd + " = g.slcd(+) and a.slcd = f.slcd(+) " + Environment.NewLine;
+                sql += "a.autono = e.autono(+) and a.slno = e.slno(+) and " + agslcd + " = g.slcd(+) and a.slcd = f.slcd(+) " + Environment.NewLine;
                 if (selagslcd != "") sql += " and " + agslcd + " in(" + selagslcd + ") " + Environment.NewLine;
                 if (fbldt != "") sql += "and d.docdt >= to_date('" + fbldt + "','dd/mm/yyyy') " + Environment.NewLine;
                 if (tbldt != "") sql += "and d.docdt <= to_date('" + tbldt + "','dd/mm/yyyy') " + Environment.NewLine;
@@ -408,7 +409,7 @@ namespace Improvar.Controllers
                 if (detail == "D" && sortingonBillwise == true)
                 { sql += "docdt,docno " + Environment.NewLine; }
                 else { sql += " linkcd, glcd,agslcd, slcd, autoslno " + Environment.NewLine; }
-                
+
                 DataTable tbl = MasterHelp.SQLquery(sql);
                 tbl.DefaultView.Sort = "agslcd";
                 tbl = tbl.DefaultView.ToTable();
@@ -420,6 +421,151 @@ namespace Improvar.Controllers
                     return RedirectToAction("NoRecords", "RPTViewer");
                 }
 
+                DataTable tblgrp = new DataTable();
+                DataTable colgrp = new DataTable();
+                if (PaymentBreakup == true)
+                {
+                    sql = "";
+                    for (int a = 0; a < 2; a++)
+                    {
+                        string prevscm = "", prevscmf = "";
+                        if (a == 0)
+                        {
+                            prevscm = CommVar.CurSchema(UNQSNO);
+                            prevscmf = CommVar.FinSchema(UNQSNO);
+                        }
+                        else
+                        {
+                            prevscm = CommVar.LastYearSchema(UNQSNO);
+                            prevscmf = CommVar.FinSchemaPrevYr(UNQSNO);
+                        }
+                        if (prevscm.retStr() != "")
+                        {
+                            if (a > 0)
+                            {
+                                sql += "union all ";
+                            }
+                            sql += "select a.autono, nvl(f.grpnm, f.itgrpnm) grpnm, e.itamt, " + Environment.NewLine;
+                            sql += "row_number() over(partition by a.autono order by nvl(f.grpnm, f.itgrpnm) desc) as rno, " + Environment.NewLine;
+                            sql += "sum(a.txblval) txblval,c.slcd,h.agslcd " + Environment.NewLine;
+                            sql += "from " + prevscm + ".t_txndtl a, " + prevscm + ".m_sitem b, " + prevscm + ".t_txn c, " + prevscmf + ".m_genleg d, " + Environment.NewLine;
+                            sql += "" + prevscmf + ".t_vch_bl e, " + prevscm + ".m_group f, " + prevscm + ".t_cntrl_hdr g, " + prevscm + ".t_txnoth h " + Environment.NewLine;
+                            sql += "where a.itcd = b.itcd(+) and a.autono = c.autono(+) and b.itgrpcd = f.itgrpcd(+) and " + Environment.NewLine;
+                            sql += "c.parglcd = d.glcd(+) and d.linkcd in ('D') and a.autono = g.autono(+) and g.autono=h.autono(+) and g.compcd = '" + COM + "' and " + Environment.NewLine;
+                            sql += "a.autono = e.autono(+) and(e.slno = 1 or e.slno is null) " + Environment.NewLine;
+                            // sql += "and a.autono like '%SSSBIL%' and c.slcd = 'DG00041' " + Environment.NewLine;
+
+                            if (fbldt.retStr() != "") sql += "and g.docdt >= to_date('" + fbldt + "','dd/mm/yyyy') " + Environment.NewLine;
+                            if (tbldt.retStr() != "") sql += "and g.docdt <= to_date('" + tbldt + "','dd/mm/yyyy') " + Environment.NewLine;
+                            if (selslcd.retStr() != "") sql += " and c.slcd in(" + selslcd + ") " + Environment.NewLine;
+                            if (selagslcd.retStr() != "") sql += " and h.agslcd in(" + selagslcd + ") " + Environment.NewLine;
+
+                            sql += "group by a.autono, nvl(f.grpnm, f.itgrpnm), e.itamt,c.slcd,h.agslcd " + Environment.NewLine;
+                            sql += " order by autono " + Environment.NewLine;
+                        }
+                    }
+                    tblgrp = MasterHelp.SQLquery(sql);
+                    tblgrp.Columns.Add("payamt", typeof(double));
+                    var autonos = new HashSet<string>(tbl.AsEnumerable().Select(r => r["autono"].ToString()));
+
+                    var tblgrptemp = tblgrp.AsEnumerable()
+                         .Where(r => autonos.Contains(r["autono"].ToString()));
+                    tblgrp = tblgrptemp.Any() ? tblgrptemp.CopyToDataTable() : tblgrp.Clone();
+
+                    double _baldisttxblval_b = 0, _rpldisttxblval_b = 0;
+
+                    if (tblgrp != null && tblgrp.Rows.Count > 0)
+                    {
+                        i = 0;
+                        while (i <= tblgrp.Rows.Count - 1)
+                        {
+                            string autono = tblgrp.Rows[i]["autono"].retStr();
+                            if (autono == "2025ANKNKOLKSSSPSL0000000147")
+                            {
+                                var aa = "";
+                            }
+                            var tbltemp = (from DataRow dr in tbl.Rows
+                                           where dr["autono"].retStr() == autono
+                                           group dr by 1 into g
+                                           select new
+                                           {
+                                               itamt = g.Sum(dr => dr["itamt"].retDbl()),
+                                               blamt = g.Sum(dr => dr["amt"].retDbl()),
+
+                                               chkPayamt = g.Sum(dr =>
+                                                   (((dr["trcd"].retStr() == "BV" || dr["trcd"].retStr() == "C") && dr["adjtype"].retStr() == "") ||
+                                                   (dr["trcd"].retStr() == "" && dr["adjtype"].retStr() == "ADV"))
+                                                   ? ((dr["drcr"].retStr() == dr["linkcd"].retStr())
+                                                       ? dr["adjamt"].retDbl()
+                                                       : dr["adjamt"].retDbl() * -1)
+                                                   : 0
+                                               ),
+
+                                               chkDiscamt = g.Sum(dr =>
+                                                   dr["adjtype"].retStr() == "DSC"
+                                                   ? ((dr["drcr"].retStr() == dr["linkcd"].retStr())
+                                                       ? dr["adjamt"].retDbl()
+                                                       : dr["adjamt"].retDbl() * -1)
+                                                   : 0
+                                               )
+                                           }).FirstOrDefault();
+
+                            double payamt = 0;
+                            if (tbltemp != null)
+                            {
+                                payamt = (((tbltemp.itamt / tbltemp.blamt) * (tbltemp.chkPayamt + tbltemp.chkDiscamt)) - tbltemp.chkDiscamt).toRound(2);
+                            }
+                            _baldisttxblval_b = payamt;
+                            while (tblgrp.Rows[i]["autono"].retStr() == autono)
+                            {
+                                int j = i;
+
+                                int bi = 1, maxBi = 0;
+                                while (tblgrp.Rows[i]["autono"].retStr() == autono)
+                                {
+                                    maxBi++;
+                                    i++;
+                                    if (i > tblgrp.Rows.Count - 1) break;
+                                }
+                                i = j;
+
+                                if (bi == maxBi)
+                                {
+                                    _rpldisttxblval_b = _baldisttxblval_b;
+                                }
+                                else
+                                {
+                                    if (tblgrp.Rows[i]["itamt"].retDbl() != 0)
+                                    {
+                                        _rpldisttxblval_b = ((tblgrp.Rows[i]["TXBLVAL"].retDbl() / tblgrp.Rows[i]["itamt"].retDbl()) * payamt).retDbl().toRound();
+                                    }
+                                    else
+                                    {
+                                        _rpldisttxblval_b = 0;
+                                    }
+                                    _baldisttxblval_b = _baldisttxblval_b - _rpldisttxblval_b;
+                                }
+
+                                tblgrp.Rows[i]["payamt"] = _rpldisttxblval_b.retDbl();
+
+
+                                i++;
+                                if (i > tblgrp.Rows.Count - 1) break;
+                            }
+                            //i++;
+                            if (i > tblgrp.Rows.Count - 1) break;
+                        }
+
+
+                        var colnm = (from DataRow dr in tblgrp.Rows orderby dr["grpnm"].retStr() select dr["grpnm"].retStr()).Distinct().ToList();
+                        foreach (var v in colnm)
+                        {
+                            colgrp.Columns.Add(v, typeof(double));
+                        }
+                        colgrp.Columns.Add("UNDEFINED GROUP", typeof(double));
+                    }
+                }
+                i = 0;
                 DataTable IR = new DataTable("mstrep");
 
                 Models.PrintViewer PV = new Models.PrintViewer();
@@ -445,6 +591,15 @@ namespace Improvar.Controllers
                 HC.GetPrintHeader(IR, "blncamt", "double", "n,15,2", "Balance");
                 HC.GetPrintHeader(IR, "retper", "double", "n,15,2", "Return %");
                 HC.GetPrintHeader(IR, "discper", "double", "n,15,2", "Disc %");
+                if (PaymentBreakup == true)
+                {
+                    for (int a = 0; a <= colgrp.Columns.Count - 1; a++)
+                    {
+                        string colnm = colgrp.Columns[a].ColumnName.retStr();
+                        HC.GetPrintHeader(IR, colnm, "double", "n,12,2", colnm);
+                    }
+                }
+                IR.Columns.Add("agslcd", typeof(string));
 
                 Int32 rNo = 0;
                 double gamt1 = 0, gamt2 = 0, giamt1 = 0, gRetamt = 0, gDiscamt = 0, gPayamt = 0, gOthamt = 0, gPaytxbl = 0, gTdsamt = 0;
@@ -456,11 +611,11 @@ namespace Improvar.Controllers
                 while (i <= maxR)
                 {
                     chkval1 = tbl.Rows[i]["agslcd"].ToString();
-                    if(chkval1== "AG00003")
+                    if (chkval1 == "AG00003")
                     {
 
                     }
-                        glcd = tbl.Rows[i]["glcd"].ToString();
+                    glcd = tbl.Rows[i]["glcd"].ToString();
                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                     IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + agdsp + " -" + " </span>" + tbl.Rows[i]["agslnm"].retStr() + "  " + "[ " + tbl.Rows[i]["agslarea"].retStr() + " ]" + "  " + "[ " + tbl.Rows[i]["agslcd"].retStr() + " ]";
                     IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
@@ -479,7 +634,9 @@ namespace Improvar.Controllers
                         chkval = tbl.Rows[i][chkval2fld].ToString();
                         double pamt1 = 0, pamt2 = 0, pqnty = 0, pRetamt = 0, pDiscamt = 0, pPayamt = 0, pOthamt = 0, pPaytxbl = 0, pTdsamt = 0;
                         double iamt1 = 0, iamt2 = 0, iqnty = 0;
-                        PrintSkip = false; ShowPrintRow = true; SkipPendingBill = false;
+                        PrintSkip = false; ShowPrintRow = true; SkipPendingBill = false; string autonos = "";
+                        colgrp = colgrp.Clone();
+
                         while (tbl.Rows[i]["agslcd"].ToString() == chkval1 && tbl.Rows[i]["glcd"].ToString() == glcd && tbl.Rows[i][chkval2fld].ToString() == chkval2)
                         {
                             PrintSkip = false; ShowPrintRow = true; SkipPendingBill = false;
@@ -531,7 +688,13 @@ namespace Improvar.Controllers
                             calcPaytxblamt = (((tbl.Rows[i - 1]["itamt"].retDbl() / tbl.Rows[i - 1]["amt"].retDbl()) * (chkPayamt + chkDiscamt)) - chkDiscamt).toRound(2);
                             calcBalamt = (tbl.Rows[i - 1]["amt"].retDbl() - chkRetamt - chkDiscamt - chkOthamt - chkPayamt - chkTdsamt).retDbl().toRound();
                             calcBalamt = balamt.toRound();
-                            calcPaytxblamt = (((itamt / blamt) * (chkPayamt + chkDiscamt)) - chkDiscamt).toRound(2);
+                            //calcPaytxblamt = (((itamt / blamt) * (chkPayamt + chkDiscamt)) - chkDiscamt).toRound(2);
+                            double amt = 0;
+                            if (blamt.retDbl() != 0)
+                            {
+                                amt = (itamt / blamt);
+                            }
+                            calcPaytxblamt = ((amt * (chkPayamt + chkDiscamt)) - chkDiscamt).toRound(2);
                             //if (((tbl.Rows[i - 1]["amt"].retDbl() == chkRetamt) || (tbl.Rows[i - 1]["amt"].retDbl() == chkDiscamt) || (tbl.Rows[i - 1]["amt"].retDbl() == chkTdsamt) || (tbl.Rows[i - 1]["amt"].retDbl() == chkPayamt) || (tbl.Rows[i - 1]["amt"].retDbl() == chkOthamt)) && (tbl.Rows[i - 1]["vchtype"].retStr() != "BL"))
                             //{
                             //    PrintSkip = true;
@@ -547,11 +710,11 @@ namespace Improvar.Controllers
                             {
                                 if (ShowPrintRow == true)
                                 {
-                                    if(tbl.Rows[i - 1]["slcd"].retStr()== "DT00023")
+                                    if (tbl.Rows[i - 1]["slcd"].retStr() == "DT00023")
                                     {
 
                                     }
-                                        
+
                                     scount++; acount++;
                                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                                     IR.Rows[rNo]["retamt"] = chkRetamt.retDbl();
@@ -569,7 +732,25 @@ namespace Improvar.Controllers
                                     IR.Rows[rNo]["itamt"] = tbl.Rows[i - 1]["itamt"].retDbl();
                                     IR.Rows[rNo]["paytxbl"] = calcPaytxblamt.retDbl();
                                     IR.Rows[rNo]["blncamt"] = calcBalamt.retDbl();
+                                    IR.Rows[rNo]["agslcd"] = tbl.Rows[i - 1]["agslcd"].retStr();
+                                    if (PaymentBreakup == true)
+                                    {
+                                        bool flag = false;
+                                        for (int a = 0; a <= colgrp.Columns.Count - 1; a++)
+                                        {
 
+                                            string colnm = colgrp.Columns[a].ColumnName.retStr();
+                                            IR.Rows[rNo][colnm] = (from DataRow dr in tblgrp.Rows where dr["autono"].retStr() == autono && dr["grpnm"].retStr() == colnm select dr["payamt"].retDbl()).Sum().retDbl();
+                                            if (IR.Rows[rNo][colnm].retDbl() != 0)
+                                            {
+                                                flag = true;
+                                            }
+                                        }
+                                        if (flag == false)
+                                        {
+                                            IR.Rows[rNo]["UNDEFINED GROUP"] = calcPaytxblamt.retDbl();
+                                        }
+                                    }
                                 }
                             }
                             if (PrintSkip == false && detail == "S")
@@ -582,22 +763,46 @@ namespace Improvar.Controllers
                                 }
                                 if (PrintSkip == true && detail == "D")
                                 {
-                                   
-                                        if (scount == 0)
-                                        {
 
-                                            IR.Rows.RemoveAt(IR.Rows.Count - 1); IR.AcceptChanges();
-                                        }
-                                    
+                                    if (scount == 0)
+                                    {
+
+                                        IR.Rows.RemoveAt(IR.Rows.Count - 1); IR.AcceptChanges();
+                                    }
+
                                 }
                             }
                             if (PrintSkip == false)
                             {
                                 if (ShowPrintRow == true)
                                 {
+
+
                                     pamt1 = pamt1 + tbl.Rows[i - 1]["amt"].retDbl(); pamt2 = pamt2 + calcBalamt; pRetamt = pRetamt + chkRetamt;
                                     iamt1 = iamt1 + tbl.Rows[i - 1]["itamt"].retDbl(); pDiscamt = pDiscamt + chkDiscamt; pPayamt = pPayamt + chkPayamt; pOthamt = pOthamt + chkOthamt; pPaytxbl = pPaytxbl + calcPaytxblamt.retDbl();
                                     pTdsamt = pTdsamt + chkTdsamt;
+
+                                    if (PaymentBreakup == true && detail == "S")
+                                    {
+                                        DataRow dr = colgrp.NewRow();
+
+                                        bool flag = false;
+                                        for (int a = 0; a <= colgrp.Columns.Count - 1; a++)
+                                        {
+                                            string colnm = colgrp.Columns[a].ColumnName.retStr();
+
+                                            dr[colnm] = dr[colnm].retDbl() + (from DataRow dr1 in tblgrp.Rows where dr1["autono"].retStr() == autono && dr1["grpnm"].retStr() == colnm select dr1["payamt"].retDbl()).Sum().retDbl();
+                                            if (dr[colnm].retDbl() != 0)
+                                            {
+                                                flag = true;
+                                            }
+                                        }
+                                        if (flag == false)
+                                        {
+                                            dr["UNDEFINED GROUP"] = dr["UNDEFINED GROUP"].retDbl() + calcPaytxblamt.retDbl();
+                                        }
+                                        colgrp.Rows.Add(dr);
+                                    }
                                 }
                             }
                             if (i > maxR) break;
@@ -605,7 +810,7 @@ namespace Improvar.Controllers
 
                         if (detail == "S")
                         {
-                            
+
                             ShowPrintRow = true;
                             if (pamt2 == 0 && showbill == "Pending Balance") { ShowPrintRow = false; }
                             else
@@ -614,7 +819,7 @@ namespace Improvar.Controllers
 
                             if (ShowPrintRow == true)
                             {
-                               
+
                                 acount++;
 
                                 IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
@@ -629,6 +834,15 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["itamt"] = iamt1.retDbl();
                                 IR.Rows[rNo]["paytxbl"] = pPaytxbl.retDbl();
                                 IR.Rows[rNo]["blncamt"] = pamt2;
+                                IR.Rows[rNo]["agslcd"] = tbl.Rows[i - 1]["agslcd"].retStr();
+                                if (PaymentBreakup == true)
+                                {
+                                    for (int a = 0; a <= colgrp.Columns.Count - 1; a++)
+                                    {
+                                        string colnm = colgrp.Columns[a].ColumnName.retStr();
+                                        IR.Rows[rNo][colnm] = (from DataRow dr in colgrp.Rows select dr[colnm].retDbl()).Sum().retDbl();
+                                    }
+                                }
                             }
                         }
                         if (detail == "S")
@@ -639,7 +853,7 @@ namespace Improvar.Controllers
                                 //if ((showbill == "Pending Balance" && ShowPrintRow == false) || (showbill == "Clear Bill" && ShowPrintRow == false) || PrintSkip == true) IR.Rows.RemoveAt(IR.Rows.Count - 1); IR.AcceptChanges();
                             }
                         }
-                        if (detail == "D" && scount > 0 && VE.Checkbox4==true)
+                        if (detail == "D" && scount > 0 && VE.Checkbox4 == true)
                         {
                             IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                             IR.Rows[rNo]["dammy"] = "";
@@ -654,6 +868,14 @@ namespace Improvar.Controllers
                             IR.Rows[rNo]["othamt"] = pOthamt;
                             IR.Rows[rNo]["paytxbl"] = pPaytxbl;
                             IR.Rows[rNo]["blncamt"] = pamt2;
+                            if (PaymentBreakup == true)
+                            {
+                                for (int a = 0; a <= colgrp.Columns.Count - 1; a++)
+                                {
+                                    string colnm = colgrp.Columns[a].ColumnName.retStr();
+                                    IR.Rows[rNo][colnm] = (from DataRow dr in IR.Rows where dr["slcd"].retStr() == chkval2 && dr["agslcd"].retStr() == chkval1 select dr[colnm].retDbl()).Sum();
+                                }
+                            }
 
                         }
                         if (acount > 0)
@@ -678,10 +900,18 @@ namespace Improvar.Controllers
                         IR.Rows[rNo]["othamt"] = aOthamt;
                         IR.Rows[rNo]["paytxbl"] = aPaytxbl;
                         IR.Rows[rNo]["blncamt"] = agamt2;
+                        if (PaymentBreakup == true)
+                        {
+                            for (int a = 0; a <= colgrp.Columns.Count - 1; a++)
+                            {
+                                string colnm = colgrp.Columns[a].ColumnName.retStr();
+                                IR.Rows[rNo][colnm] = (from DataRow dr in IR.Rows where dr["agslcd"].retStr() == chkval1 select dr[colnm].retDbl()).Sum();
+                            }
+                        }
 
 
                     }
-                    if ((showbill == "Pending Balance" && ShowPrintRow == false && acount == 0) || (showbill == "Clear Bill" && ShowPrintRow == false && acount == 0) || (PrintSkip ==true&& acount==0))
+                    if ((showbill == "Pending Balance" && ShowPrintRow == false && acount == 0) || (showbill == "Clear Bill" && ShowPrintRow == false && acount == 0) || (PrintSkip == true && acount == 0))
                     { IR.Rows.RemoveAt(IR.Rows.Count - 1); IR.AcceptChanges(); }
 
                     //if (PrintSkip == false)
@@ -705,10 +935,20 @@ namespace Improvar.Controllers
                 IR.Rows[rNo]["othamt"] = gOthamt;
                 IR.Rows[rNo]["paytxbl"] = gPaytxbl;
                 IR.Rows[rNo]["blncamt"] = gamt2;
+                if (PaymentBreakup == true)
+                {
+                    for (int a = 0; a <= colgrp.Columns.Count - 1; a++)
+                    {
+                        string colnm = colgrp.Columns[a].ColumnName.retStr();
+                        IR.Rows[rNo][colnm] = (from DataRow dr in IR.Rows where dr["slcd"].retStr() != "" select dr[colnm].retDbl()).Sum();
+                    }
+                }
+                IR.Columns.Remove("agslcd");
+
                 string cap = "";
                 cap = showbill == "All Bill" ? " (All Bill)" : showbill == "Clear Bill" ? " (Clear Bill)" : " (Pending Balance)";
-                string pghdr1 = agdsp + " Report"+ cap + (detail == "D" ? "[Detail]" : "[Summary]") + "from " + fdt + " to " + tdt;
-                string repname = agdsp + cap+(detail == "D" ? "Detail" : "Summary");
+                string pghdr1 = agdsp + " Report" + cap + (detail == "D" ? "[Detail]" : "[Summary]") + "from " + fdt + " to " + tdt;
+                string repname = agdsp + cap + (detail == "D" ? "Detail" : "Summary");
                 PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "L", false);
 
                 TempData[repname] = PV;
