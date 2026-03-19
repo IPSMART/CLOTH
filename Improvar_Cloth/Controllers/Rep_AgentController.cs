@@ -728,7 +728,7 @@ namespace Improvar.Controllers
                                     if (detail == "D") IR.Rows[rNo]["docdt"] = tbl.Rows[i - 1]["docdt"].retDateStr();
                                     if (detail == "D") IR.Rows[rNo]["bltype"] = tbl.Rows[i - 1]["bltype"].retStr();
                                     if (detail == "D") IR.Rows[rNo]["docno"] = tbl.Rows[i - 1]["docno"].retStr();
-                                    if (detail == "D") IR.Rows[rNo]["amt"] = tbl.Rows[i - 1]["amt"].retDbl();
+                                    if (detail == "D") IR.Rows[rNo]["amt"] = (tbl.Rows[i - 1]["drcr"].retStr() == checkdrcr ? tbl.Rows[i - 1]["amt"].retDbl() : 0);
                                     IR.Rows[rNo]["itamt"] = tbl.Rows[i - 1]["itamt"].retDbl();
                                     IR.Rows[rNo]["paytxbl"] = calcPaytxblamt.retDbl();
                                     IR.Rows[rNo]["blncamt"] = calcBalamt.retDbl();
@@ -778,7 +778,7 @@ namespace Improvar.Controllers
                                 {
 
 
-                                    pamt1 = pamt1 + tbl.Rows[i - 1]["amt"].retDbl(); pamt2 = pamt2 + calcBalamt; pRetamt = pRetamt + chkRetamt;
+                                    pamt1 = pamt1 + (tbl.Rows[i - 1]["drcr"].retStr() == checkdrcr ? tbl.Rows[i - 1]["amt"].retDbl() : 0); pamt2 = pamt2 + calcBalamt; pRetamt = pRetamt + chkRetamt;
                                     iamt1 = iamt1 + tbl.Rows[i - 1]["itamt"].retDbl(); pDiscamt = pDiscamt + chkDiscamt; pPayamt = pPayamt + chkPayamt; pOthamt = pOthamt + chkOthamt; pPaytxbl = pPaytxbl + calcPaytxblamt.retDbl();
                                     pTdsamt = pTdsamt + chkTdsamt;
 
