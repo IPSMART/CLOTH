@@ -808,7 +808,7 @@ namespace Improvar.Controllers
                             if (i > maxR) break;
                         }
 
-                        if (detail == "S")
+                        if (detail == "S" && scount > 0)
                         {
 
                             ShowPrintRow = true;
