@@ -579,7 +579,7 @@ namespace Improvar.Controllers
                 if (detail == "D") HC.GetPrintHeader(IR, "docdt", "string", "d,10", "Bill Date");
                 if (detail == "D") HC.GetPrintHeader(IR, "bltype", "string", "c,20", "Type");
                 if (detail == "D") HC.GetPrintHeader(IR, "docno", "string", "c,20", "Bill No");
-                if (detail == "D") HC.GetPrintHeader(IR, "amt", "double", "n,15,2", "Bill Amt");
+                /*if (detail == "D")*/ HC.GetPrintHeader(IR, "amt", "double", "n,15,2", "Bill Amt");
                 HC.GetPrintHeader(IR, "itamt", "double", "n,15,2", "Item Value");
                 HC.GetPrintHeader(IR, "retamt", "double", "n,15,2", "Return Amt");
                 HC.GetPrintHeader(IR, "discamt", "double", "n,15,2", "Disc");
@@ -834,6 +834,7 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["itamt"] = iamt1.retDbl();
                                 IR.Rows[rNo]["paytxbl"] = pPaytxbl.retDbl();
                                 IR.Rows[rNo]["blncamt"] = pamt2;
+                                IR.Rows[rNo]["amt"] = pamt1;
                                 IR.Rows[rNo]["agslcd"] = tbl.Rows[i - 1]["agslcd"].retStr();
                                 if (PaymentBreakup == true)
                                 {
@@ -891,7 +892,7 @@ namespace Improvar.Controllers
                         IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                         IR.Rows[rNo]["slnm"] = "Total of [" + tbl.Rows[i - 1]["agslnm"] + "] ";
                         IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
-                        if (detail == "D") IR.Rows[rNo]["amt"] = agamt1;
+                        /*if (detail == "D")*/ IR.Rows[rNo]["amt"] = agamt1;
                         IR.Rows[rNo]["itamt"] = aiamt1;
                         IR.Rows[rNo]["retamt"] = aRetamt;
                         IR.Rows[rNo]["discamt"] = aDiscamt;
@@ -926,7 +927,7 @@ namespace Improvar.Controllers
                 IR.Rows[rNo]["slcd"] = gcount.retStr();
                 IR.Rows[rNo]["slnm"] = "Grand Total";
                 IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
-                if (detail == "D") IR.Rows[rNo]["amt"] = gamt1;
+                /*if (detail == "D")*/ IR.Rows[rNo]["amt"] = gamt1;
                 IR.Rows[rNo]["itamt"] = giamt1;
                 IR.Rows[rNo]["retamt"] = gRetamt;
                 IR.Rows[rNo]["discamt"] = gDiscamt;
