@@ -378,4 +378,19 @@ namespace Improvar.Models
         public string Value { get; set; }
         public string Text { get; set; }
     }
+    public class DropDown_list_SLPartyGrp
+    {
+        public string text { get; set; }
+        public string value { get; set; }
+    }
+    public class DropDown_list_GLTBGrp
+    {
+        public string text { get; set; }
+        public string value { get; set; }
+    }
+    public class DropDown_list_CompanyLocationName
+    {
+        public string text { get; set; }
+        public string value { get; set; }
+    }
 }

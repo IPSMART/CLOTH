@@ -270,6 +270,7 @@
     <Compile Include="Controllers\M_Doc_AttachedController.cs" />
     <Compile Include="Controllers\M_FinProductController.cs" />
     <Compile Include="Controllers\M_FloorController.cs" />
+    <Compile Include="Controllers\Rep_GLController.cs" />
     <Compile Include="Controllers\Rep_ItemPartySummController.cs" />
     <Compile Include="Controllers\Rep_PartyItemSummController.cs" />
     <Compile Include="Controllers\M_GrpMastController.cs" />
@@ -491,6 +492,7 @@
     <Compile Include="Models\M_EMPMAS_DET.cs" />
     <Compile Include="Models\M_FLRLOCA.cs" />
     <Compile Include="Models\M_GENLEG.cs" />
+    <Compile Include="Models\M_GLTBGRP.cs" />
     <Compile Include="Models\M_GODLINK.cs" />
     <Compile Include="Models\M_GODOWN.cs" />
     <Compile Include="Models\M_GROUP.cs" />
@@ -1649,6 +1651,7 @@
     <Content Include="Views\Shared\_T_OUTRECPROCESS_Pending_Prog.cshtml" />
     <Content Include="Views\Rep_ItemPartySumm\Rep_ItemPartySumm.cshtml" />
     <Content Include="Views\Shared\_Rep_ItemPartySumm_Item_Det.cshtml" />
+    <Content Include="Views\Rep_GL\Rep_GL.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

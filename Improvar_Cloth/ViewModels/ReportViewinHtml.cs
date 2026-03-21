@@ -84,6 +84,10 @@ namespace Improvar.ViewModels
         public List<DropDown_list_JOBCD> DropDown_list_JOBCD { get; set; }
         public List<DropDown_list_RTCD> DropDown_list_RTCD { get; set; }
         public List<DropDown_list_MTRLJOBCDList> DropDown_list_MTRLJOBCDList { get; set; }
+        public List<DropDown_list_SLPartyGrp> DropDown_list_SLPartyGrp { get; set; }
+        public List<DropDown_list_GLTBGrp> DropDown_list_GLTBGrp { get; set; }
+        public List<DropDown_list_CompanyLocationName> DropDown_list_CompanyLocationName { get; set; }
+
 
         public string SubLeg_Grp { get; set; }
         public string Agslnm { get; set; }
@@ -111,6 +115,12 @@ namespace Improvar.ViewModels
         public List<DropDown_list_BLTYPE> DropDown_list_BLTYPE { get; set; }
         public string Ordnmbr { get; set; }
         public List<DropDown_list_Ordnmbr> DropDown_list_Ordnmbr { get; set; }
+        public string SLPartyGrp { get; set; }
+        public string GLTBGrp { get; set; }
+        public string CompanyLocationName { get; set; }
+        public bool SkipClosingVoucher { get; set; }
+
+
 
     }
 }

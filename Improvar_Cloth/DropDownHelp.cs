@@ -469,5 +469,76 @@ namespace Improvar
                       }).ToList();
             return sllist;
         }
+        public List<DropDown_list_SLPartyGrp> GetSLPartyGrpforSelection()
+        {
+            List<DropDown_list_SLPartyGrp> sllist = new List<DropDown_list_SLPartyGrp>();
+            using (ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO)))
+            {
+                string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+
+                sllist = (from a in DBF.M_SUBLEG
+                          select new DropDown_list_SLPartyGrp()
+                          {
+                              text = a.PARTYGRP,
+                              value = a.PARTYGRP
+                          }).DistinctBy(B => B.value).OrderBy(A => A.text).ToList();
+            }
+            return sllist;
+        }
+        public List<DropDown_list_GLTBGrp> GetGLTBGrpforSelection(string TBType = "")
+        {
+            List<DropDown_list_GLTBGrp> sllist = new List<DropDown_list_GLTBGrp>();
+            using (ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO)))
+            {
+                string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+
+                sllist = (from a in DBF.M_GLTBGRP
+                          join i in DBF.M_CNTRL_HDR on a.M_AUTONO equals i.M_AUTONO
+                          where (i.INACTIVE_TAG != "Y")
+                          select new DropDown_list_GLTBGrp()
+                          {
+                              text = a.GLTBGRPNM,
+                              value = a.GLTBGRPCD
+                          }).DistinctBy(B => B.value).OrderBy(A => A.text).ToList();
+            }
+            return sllist;
+        }
+        public List<DropDown_list_CompanyLocationName> GetCompanyLocationName(string menu_name = "", double menu_index = -1, string compcd = "", string loccd = "", bool onlyCompany = false)
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            string UR_ID = System.Web.HttpContext.Current.Session["UR_ID"].ToString(); //Module.Comp_Code;
+            string scmf = CommVar.FinSchema(UNQSNO);
+            string scm = CommVar.FinSchema(UNQSNO);
+            string sql = "";
+
+            sql += "select a.compcd, a.loccd, a.schema_name, a.menu_name, a.menu_index, b.compnm, c.locnm from ";
+            sql += "(select a.compcd, a.loccd, a.schema_name, a.menu_name, a.menu_index  from " + scm + ".m_usr_acs a ";
+            sql += "where a.user_id='" + UR_ID + "' ";
+            sql += "union ";
+            sql += "select b.compcd, b.loccd, b.schema_name, b.menu_name, b.menu_index ";
+            sql += "from " + scm + ".m_usr_acs_grpdtl a, " + scm + ".m_usr_acs b ";
+            sql += "where a.linkuser_id=b.user_id and ";
+            sql += "a.user_id='" + UR_ID + "' ";
+            sql += ") a, " + scmf + ".m_comp b, " + scmf + ".m_loca c ";
+            sql += "where a.menu_name='" + menu_name + "' and a.menu_index=" + menu_index + " and ";
+            if (compcd != "") sql += "a.compcd='" + compcd + "' and ";
+            if (loccd != "") sql += "a.loccd='" + loccd + "' and ";
+            sql += "a.compcd=b.compcd and a.compcd||a.loccd=c.compcd||c.loccd ";
+
+            if (onlyCompany == true)
+            {
+                sql = "select distinct compcd, compnm from (" + sql + ") order by compnm";
+            }
+            List<DropDown_list_CompanyLocationName> sllist = new List<DropDown_list_CompanyLocationName>();
+            DataTable tbl = MasterHelp.SQLquery(sql);
+            sllist = (from DataRow dr in tbl.Rows
+                      select new DropDown_list_CompanyLocationName()
+                      {
+                          text = dr["compnm"].ToString() + (onlyCompany == true ? "" : " - " + dr["locnm"].ToString()),
+                          value = dr["compcd"].ToString() + (onlyCompany == true ? "" : dr["loccd"].ToString()),
+                      }).ToList();
+            return sllist;
+        }
+
     }
 }

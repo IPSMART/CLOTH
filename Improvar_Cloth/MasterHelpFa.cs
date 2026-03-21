@@ -5,6 +5,8 @@ using System.Data;
 using Oracle.ManagedDataAccess.Client;
 using System.Collections.Generic;
 using System.Reflection;
+using Microsoft.Win32;
+using System.Text;
 
 namespace Improvar
 {
@@ -2745,6 +2747,74 @@ namespace Improvar
                 }
             }
         }
+        public string retIntTds(string inttds)
+        {
+            string rval = "";
+            switch (inttds)
+            {
+                case "I":
+                    rval = "Int"; break;
+                case "T":
+                    rval = "Tds"; break;
+                case "C":
+                    rval = "Clos"; break;
+                case "D":
+                    rval = "Dep"; break;
+            }
+            return rval;
+        }
+        public string DataTbltoCSV(string strfile, string sqlquery = "", DataTable rsTmp = null, string commseperator = ",")
+        {
+            try
+            {
+                if (sqlquery != "") rsTmp = SQLquery(sqlquery);
+
+                //string strfile = Server.MapPath("~/Templates/Improvar.xlt");
+
+                String dpath = ""; //String.Empty;
+
+                RegistryKey rKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Internet Explorer\Main");
+                if (rKey != null)
+                    dpath = (String)rKey.GetValue("Default Download Directory");
+                if (String.IsNullOrEmpty(dpath))
+                    dpath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\downloads";
+
+                string[] columnNames = rsTmp.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToArray();
+                string strfile1 = dpath + "\\" + strfile + ".csv";
+
+                var lines = new List<string>();
+                var header = string.Join(commseperator, columnNames);
+                lines.Add(header);
+
+                var valueLines = rsTmp.AsEnumerable()
+                                   .Select(row => string.Join(commseperator, row.ItemArray));
+                lines.AddRange(valueLines);
+
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                foreach (var x in lines)
+                {
+                    SB.AppendLine(x.ToString());
+                }
+                var Response = System.Web.HttpContext.Current.Response;
+                Response.ClearContent();
+                Response.Buffer = true;
+                Response.AddHeader("content-disposition", "attachment; filename=" + strfile + ".csv");
+                Response.ContentType = "text/plain";
+                Response.ContentEncoding = Encoding.Unicode;
+                Response.Write(SB.ToString());
+                //Response.Flush();
+                Response.End();
+
+                //File.WriteAllLines(strfile1, lines);
+                //return (strfile1);
+                return (strfile + ".csv");
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
 
     }
 }
