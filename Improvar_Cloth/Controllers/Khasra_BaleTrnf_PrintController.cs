@@ -52,6 +52,8 @@ namespace Improvar.Controllers
                             ViewBag.formname = "Receive from Mutia Report"; break;
                         case "TRWB":
                             ViewBag.formname = "Stock Transfer With Waybill  Bale Printing"; break;
+                        case "PYMT":
+                            ViewBag.formname = "Bill Adjustment"; break;
                         default: ViewBag.formname = ""; break;
                     }
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
@@ -104,7 +106,8 @@ namespace Improvar.Controllers
                 string tdocno = FC["TDOCNO"].ToString();
                 string doccd = FC["doccd"].ToString();
                 string slcd = VE.TEXTBOX3;
-
+                string RTDEBCD = VE.RTDEBCD.retStr();
+                string AUTONO = VE.AUTONO.retStr();
                 string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
                 string yr_cd = CommVar.YearCode(UNQSNO);
                 string section = "", filename = "";
@@ -116,6 +119,7 @@ namespace Improvar.Controllers
                     default: return (View());
                 }
                 DataTable tbl = new DataTable(); ; DataTable restbl = new DataTable("restbl"); DataTable restblgodown = new DataTable("restblgodown");
+                DataTable adjbal = new DataTable();
                 if (VE.MENU_PARA == "BLTR")
                 {
                     string Scm = CommVar.CurSchema(UNQSNO);
@@ -203,6 +207,15 @@ namespace Improvar.Controllers
                     if (fdate.retStr() != "") sql += "and c.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') ";
                     if (tdate.retStr() != "") sql += "and c.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') ";
                     restblgodown = masterHelp.SQLquery(sql);
+                }                
+                else if (VE.MENU_PARA == "PYMT")
+                {
+                    string query = "select a.autono, d.RTDEBCD,d.RTDEBNM,d.sex,d.mobile,d.altno,d.email,d.city,d.pin,d.statecd,d.state,d.country, " + Environment.NewLine;
+                    query += "d.add1,d.add2,d.add3,d.area,a.amt,c.docno,c.docdt " + Environment.NewLine;
+                    query += "from " + scm + ".T_TXNPYMT a, " + scm + ".T_TXNPYMT_HDR b, " + scm + ".T_CNTRL_HDR c, " + scmf + ".M_RETDEB d " + Environment.NewLine;
+                    query += "where a.autono = b.autono(+) and a.autono = c.autono(+) and b.RTDEBCD = d.RTDEBCD(+) and b.RTDEBCD = " + RTDEBCD.retSqlformat() + "" + Environment.NewLine;
+                    query += "and a.autono = "+VE.AUTONO.retSqlformat()+"";
+                    adjbal = masterHelp.SQLquery(query);
                 }
                 #region old query
                 //string sql = "select a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, e.lrno, e.lrdt, ";
@@ -243,10 +256,11 @@ namespace Improvar.Controllers
                 #region Print
                 if (section == "Print")
                 {
-                    if (restbl.Rows.Count == 0)
-                    {
-                        return RedirectToAction("NoRecords", "RPTViewer", new { errmsg = "No Records Found !!" });
-                    }
+                    //if (restbl.Rows.Count == 0)
+                    //{
+                    //    return RedirectToAction("NoRecords", "RPTViewer", new { errmsg = "No Records Found !!" });
+                    //}
+                    #region IR Generate 
                     DataTable IR = new DataTable();
                     IR.Columns.Add("autono", typeof(string), "");
                     IR.Columns.Add("docno", typeof(string), "");
@@ -289,6 +303,51 @@ namespace Improvar.Controllers
                     IR.Columns.Add("gonm", typeof(string), "");
                     IR.Columns.Add("baleopen", typeof(string), "");
                     IR.Columns.Add("totalbaleno", typeof(double), "");
+
+                    IR.Columns.Add("RTDEBCD", typeof(string), "");
+                    IR.Columns.Add("RTDEBNM", typeof(string), "");
+                    IR.Columns.Add("add1", typeof(string), "");
+                    IR.Columns.Add("add2", typeof(string), "");
+                    IR.Columns.Add("add3", typeof(string), "");
+                    IR.Columns.Add("city", typeof(string), "");
+                    IR.Columns.Add("pin", typeof(string), "");
+                    IR.Columns.Add("state", typeof(string), "");
+                    IR.Columns.Add("mobile", typeof(string), "");
+                    IR.Columns.Add("amt", typeof(double), "");
+                    #endregion
+
+
+                    if (VE.MENU_PARA == "PYMT")
+                    {
+                        int max = adjbal.Rows.Count - 1;
+                        Int32 j = 0;
+                        while (j <= max)
+                        {
+                            string rtdebcd = adjbal.Rows[j]["RTDEBCD"].ToString();
+                            while (adjbal.Rows[j]["RTDEBCD"].ToString() == rtdebcd)
+                            {
+                                DataRow dr1 = IR.NewRow();
+                                dr1["RTDEBCD"] = adjbal.Rows[j]["RTDEBCD"].ToString();
+                                dr1["RTDEBNM"] = adjbal.Rows[j]["RTDEBNM"].ToString();
+                                dr1["add1"] = adjbal.Rows[j]["add1"].ToString();
+                                dr1["add2"] = adjbal.Rows[j]["add2"].ToString();
+                                dr1["add3"] = adjbal.Rows[j]["add3"].ToString();
+                                dr1["city"] = adjbal.Rows[j]["city"].ToString();
+                                dr1["pin"] = " - " + adjbal.Rows[j]["pin"].ToString();
+                                dr1["state"] = adjbal.Rows[j]["state"].ToString();
+                                dr1["mobile"] = adjbal.Rows[j]["mobile"].ToString();
+                                dr1["docno"] = adjbal.Rows[j]["docno"].ToString();
+                                dr1["docdt"] = adjbal.Rows[j]["docdt"].retDateStr();
+                                dr1["amt"] = adjbal.Rows[j]["amt"].retDbl();
+                                IR.Rows.Add(dr1);
+                                j++;
+                                if (j > max) break;
+                            }
+                            
+                        }
+                    }
+                    else
+                    { 
 
                     int maxR = restbl.Rows.Count - 1;
                     Int32 i = 0;
@@ -393,9 +452,14 @@ namespace Improvar.Controllers
 
                         if (i > maxR) break;
                     }
+                }
                     //
                     string rptfile = "Khasra_BaleTrnf.rpt";
                     if (VE.TEXTBOX6 != null) rptfile = VE.TEXTBOX6;
+                    if(VE.MENU_PARA == "PYMT")
+                    {
+                        rptfile = "Khasra_BaleAdj.rpt";
+                    }
                     string rptname = "~/Report/" + rptfile; // "SaleBill.rpt";
 
                     string compaddress;
@@ -429,6 +493,7 @@ namespace Improvar.Controllers
                     reportdocument.SetParameterValue("corpcommu", compaddress.retCompValue("corpcommu"));
                     reportdocument.SetParameterValue("formerlynm", compaddress.retCompValue("formerlynm"));
                     reportdocument.SetParameterValue("menu_para", VE.MENU_PARA);
+                    reportdocument.SetParameterValue("reptype", VE.TEXTBOX7.retStr());
 
                     Response.Buffer = false;
                     Response.ClearContent();

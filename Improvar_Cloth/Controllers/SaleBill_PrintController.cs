@@ -1927,7 +1927,7 @@ namespace Improvar.Controllers
                 //sql += " b.curr_cd,a.listprice,a.listdiscper,p.ackno,to_char(p.ackdt,'dd-mm-yyyy hh24:mi:ss') ackdt,d.mutslcd,q.slnm mutslnm,a.flagmtr,d.payterms,d.bltype,a.pdesign,t.itcd fabitcd,t.itnm fabitnm,e.district plsupply,u.slnm sagslnm,v.courcd,w.slnm cournm,  ";
                 sql += " b.curr_cd,a.listprice,a.listdiscper,p.ackno,to_char(p.ackdt,'dd-mm-yyyy hh24:mi:ss') ackdt,d.mutslcd,q.slnm mutslnm,a.flagmtr,d.payterms,d.bltype,y.pdesign,t.itcd fabitcd,t.itnm fabitnm,e.district plsupply,u.slnm sagslnm,v.courcd,w.slnm cournm,  " + Environment.NewLine;
                 sql += "x.nm,x.addr addr1,x.city addr2,decode(x.mobile, null, '', 'Ph. # '||x.mobile)addr3,''addr4,''addr5,''addr6,''addr7,''addr8,''addr9,''addr10,''addr11,''addr12,x.mobile,b.PREFNO,b.PREFdt,d.topay, " + Environment.NewLine;
-                sql += "a.partcd,pr.partnm,a.colrcd,cl.colrnm,a.sizecd,sz.sizenm from ";
+                sql += "a.partcd,pr.partnm,a.colrcd,cl.colrnm,a.sizecd,sz.sizenm,y.pordno from ";
 
                 //sql += " (select a.autono, '' addless,a.autono || a.slno autoslno, a.slno, a.itcd, d.itnm,o.pdesign, nvl(nvl(o.pdesign,o.ourdesign),d.styleno) styleno, nvl(a.bluomcd,d.uomcd)uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)) hsncode,  ";
                 sql += " (select a.autono, '' addless,a.autono || a.slno autoslno, a.slno, a.itcd, d.itnm,''pdesign, d.styleno, nvl(a.bluomcd,d.uomcd)uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)) hsncode,  " + Environment.NewLine;
@@ -1988,13 +1988,15 @@ namespace Improvar.Controllers
                 sql += "c.compcd = d.compcd(+) ) s, " + Environment.NewLine;
 
                 sql += "(select listagg(t.pdesign, ', ') within group (order by t.autono, t.slno)pdesign, " + Environment.NewLine;
+                sql += "listagg(t.pordno, ', ') within group (order by t.autono, t.slno)pordno, " + Environment.NewLine;
                 sql += "listagg(nvl(nvl(t.pdesign, t.ourdesign), t.styleno), ', ') within group(order by t.autono, t.slno)styleno, " + Environment.NewLine;
                 sql += "t.autono,t.slno from ( " + Environment.NewLine;
-                sql += "select distinct a.pdesign, a.ourdesign, d.styleno, c.autono, c.slno " + Environment.NewLine;
-                sql += "from " + Scm1 + ".t_batchmst a, " + Scm1 + ".t_batchdtl  b, " + Scm1 + ".t_txndtl c, " + Scm1 + ".m_sitem d where  a.barno = b.barno(+) " + Environment.NewLine;
+                sql += "select distinct a.pdesign, a.ourdesign, d.styleno, c.autono, c.slno, e.pdesign pordno " + Environment.NewLine;
+                sql += "from " + Scm1 + ".t_batchmst a, " + Scm1 + ".t_batchdtl  b, " + Scm1 + ".t_txndtl c, " + Scm1 + ".m_sitem d, " + Scm1 + ".t_sorddtl e " + Environment.NewLine;
+                sql += "where  a.barno = b.barno(+) and b.ordautono = e.autono(+) and b.ordslno = e.slno(+) " + Environment.NewLine;
                 sql += "and b.autono = c.autono(+) and b.txnslno = c.slno(+) and c.itcd = d.itcd " + Environment.NewLine;
                 sql += ") t " + Environment.NewLine;
-                sql += "group by t.autono,t.slno)y, " + Environment.NewLine; //for pdesgin differn of same item for tres
+                sql += "group by t.autono,t.slno)y, " + Environment.NewLine; //for pdesgin differn of same item for tres   
 
                 sql += " " + Scm1 + ".t_txndtl z, " + Scm1 + ".t_txn b, " + Scm1 + ".t_txntrans c, " + Scm1 + ".t_txnoth d, " + Scmf + ".m_subleg e, " + Scmf + ".m_subleg f, " + Scmf + ".m_subleg g,  " + Environment.NewLine;
                 //sql += " " + Scm1 + ".t_cntrl_hdr h, " + Scmf + ".m_uom i, " + Scm1 + ".m_group j, " + Scmf + ".m_godown k, " + Scm1 + ".m_sitem l, " + Scmf + ".m_subleg m," + Scmf + ".t_txneinv p, " + Scmf + ".m_subleg q, " + Scm1 + ".m_sitem t," + Scmf + ".m_subleg u," + Scm1 + ".m_subleg_sddtl v," + Scmf + ".m_subleg w  ";
@@ -2027,9 +2029,10 @@ namespace Improvar.Controllers
                 sql += "from " + Scm1 + ".t_batchdtl a, " + Scm1 + ".t_txn b, " + Scm1 + ".t_cntrl_hdr c ";
                 sql += "where  ";
                 sql += sqlc;
-                sql += "a.autono=b.autono and a.autono=c.autono order by a.autono,a.slno ";
+                sql += "a.autono=b.autono and a.autono=c.autono ";
+                sql += "order by a.autono,a.slno ";
                 rsStkPrcDesc = masterHelp.SQLquery(sql);
-
+                
                 string blterms = "", inspoldesc = "", dealsin = "";
                 Int16 bankslno = 0;
                 sql = "select blterms, inspoldesc, dealsin, nvl(bankslno,0) bankslno from " + Scm1 + ".m_mgroup_spl where compcd='" + CommVar.Compcd(UNQSNO) + "' ";
@@ -2271,7 +2274,8 @@ namespace Improvar.Controllers
                 IR.Columns.Add("bltype", typeof(string), "");
                 IR.Columns.Add("netqnty", typeof(double), "");
                 IR.Columns.Add("nqdecimal", typeof(double), "");
-                IR.Columns.Add("PDESIGN", typeof(string), "");
+                IR.Columns.Add("PDESIGN", typeof(string), ""); 
+                IR.Columns.Add("pordno", typeof(string), "");
                 IR.Columns.Add("fabitcd", typeof(string), "");
                 IR.Columns.Add("fabitnm", typeof(string), "");
                 IR.Columns.Add("printby", typeof(string), "");
@@ -2956,8 +2960,9 @@ namespace Improvar.Controllers
                                 dr1["sizecd"] = tbl.Rows[i]["sizecd"].ToString();
                                 dr1["sizenm"] = tbl.Rows[i]["sizenm"].ToString();
 
-
+                                
                                 dr1["pdesign"] = tbl.Rows[i]["pdesign"].ToString();
+                                dr1["pordno"] = tbl.Rows[i]["pordno"].ToString();
                                 dr1["itgrpnm"] = tbl.Rows[i]["itgrpnm"].ToString();
                                 dr1["fabitcd"] = tbl.Rows[i]["fabitcd"].ToString();
                                 dr1["fabitnm"] = tbl.Rows[i]["fabitnm"].ToString();

@@ -132,7 +132,7 @@
         $.ajax({
             type: 'POST',
             url: "@Url.Action("Print", PageControllerName)",
-            data: $('form').serialize() + "&DOCNO=" + $("#DOCONLYNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val(),
+            data: $('form').serialize() + "&DOCNO=" + $("#DOCONLYNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val() + "&AUTONO=" + $("#AUTONO").val() + "&RTDEBCD=" + $("#RTDEBCD").val(),
             success: function (result) {
                 window.open("@Url.Action("Khasra_BaleTrnf_Print", "Khasra_BaleTrnf_Print", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
             },
@@ -235,7 +235,7 @@
             }
             else if (BALADJAMT <= AMOUNT && AMOUNT >= (PREAMT + ADJAMT) && callfrom == "I_Checked") {
                 document.getElementById('I_ADJ_AMT_' + rowindex).value = (BALADJAMT).toFixed(2);
-                document.getElementById('I_BAL_AMT_' + rowindex).value = (AMOUNT - BALADJAMT).toFixed(2);
+                document.getElementById('I_BAL_AMT_' + rowindex).value = ((AMOUNT - PREAMT) - BALADJAMT).toFixed(2);
             }
             else if (BALADJAMT >= ADJAMT && AMOUNT < (PREAMT + ADJAMT) && callfrom == "I_ADJ_AMT") {
                 document.getElementById('I_ADJ_AMT_' + rowindex).value = (AMOUNT - PREAMT).toFixed(2);

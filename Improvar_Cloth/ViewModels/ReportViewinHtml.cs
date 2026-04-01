@@ -119,8 +119,7 @@ namespace Improvar.ViewModels
         public string GLTBGrp { get; set; }
         public string CompanyLocationName { get; set; }
         public bool SkipClosingVoucher { get; set; }
-
-
-
+        public string RTDEBCD { get; set;}
+        public string AUTONO { get; set; }
     }
 }

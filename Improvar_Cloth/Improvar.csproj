@@ -770,6 +770,12 @@
       <DependentUpon>JobRecv.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Report\Khasra_BaleAdj.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Khasra_BaleAdj.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Report\Order.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1809,6 +1815,10 @@
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>JobIssue_ANKAN.cs</LastGenOutput>
     </Content>
+    <EmbeddedResource Include="Report\Khasra_BaleAdj.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>Khasra_BaleAdj.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Report\PrintBarcode_DIWH_Old.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>PrintBarcode_DIWH_Old.cs</LastGenOutput>

@@ -10,6 +10,8 @@
             ViewBag.Title = "Receive from Mutia Report"; break;
         case "TRWB":
             ViewBag.Title = "Stock Transfer With Waybill  Bale Printing"; break;
+        case "PYMT":
+            ViewBag.Title = "Bill Adjustment"; break;
         default: ViewBag.Title = ""; break;
     }
     Layout = "~/Views/Shared/_ReportLayout.cshtml";
@@ -48,7 +50,8 @@
                     <div class="col-lg-2">
                         <div class="editor-field">
                             @Html.EditorFor(model => model.DOCCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "DOCCD", onkeyup = "GetHelp('" + @Url.Action("Getdocno", PageControllerName) + "','DOCCD/TEXTBOX2','1/0','Select UOM Details','DOCCD');", @placeholder = "Code", maxlength = 4, required = "required" } })
-                            @*<img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("Getdocno", PageControllerName)','DOCCD/TEXTBOX2','1/0','Select Docno and Docdt Details','DOCCD')" />*@
+                            @Html.HiddenFor(model => model.AUTONO, new { @class = "form-control", id = "AUTONO" })
+                            @Html.HiddenFor(model => model.RTDEBCD, new { @class = "form-control", id = "RTDEBCD" })
                         </div>
                     </div>
                 </div>
@@ -132,6 +135,21 @@
                         </div>
                     </div>
                 </div>
+                @*<div class="row" style="margin-top:10PX">
+                    <div class="col-md-8">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Report Type")
+                        </div>
+                    </div>
+                    <div class="col-lg-9">
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(g => g.TEXTBOX7, "Full")  @Html.Label("Full")
+                        </label>
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(g => g.TEXTBOX7, "Half", new { @checked = "checked" })  @Html.Label("Half")
+                        </label>
+                    </div>
+                </div>*@
                 @if (Model.MENU_PARA == "BLTR")
                 { <div class="row" style="margin-top:10PX">
                     <div class="col-lg-2">

@@ -143,10 +143,13 @@ namespace Improvar.Controllers
                                 sql += " where a.RTDEBCD=b.RTDEBCD and  a.retdebslcd=d.slcd(+)  and  ";//and a.retdebslcd='DR00021'
                                 sql += "a.retdebslcd=C.SLCD(+) and c.compcd='" + COM + "' and c.loccd='" + LOC + "' and d.prccd=e.prccd(+) ";
 
-                                DataTable syscnfgdt = masterHelp.SQLquery(sql);
+                                DataTable syscnfgdt1 = masterHelp.SQLquery(sql);
+
+                                DataTable syscnfgdt = salesfunc.GetSyscnfgData(TCH.DOCDT.retDateStr());
                                 if (syscnfgdt != null && syscnfgdt.Rows.Count > 0)
                                 {
                                     TXNMEMO.RTDEBCD = syscnfgdt.Rows[0]["RTDEBCD"].retStr();
+                                    VE.NM = syscnfgdt.Rows[0]["RTDEBNM"].retStr();
                                     VE.RTDEBNM = syscnfgdt.Rows[0]["RTDEBNM"].retStr();
                                     var addrs = syscnfgdt.Rows[0]["add1"].retStr() + " " + syscnfgdt.Rows[0]["add2"].retStr() + " " + syscnfgdt.Rows[0]["add3"].retStr();
                                     VE.ADDR = addrs + "/" + syscnfgdt.Rows[0]["city"].retStr();
@@ -259,6 +262,7 @@ namespace Improvar.Controllers
 
                 VE.RTDEBNM = sl.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == sl.RTDEBCD).Select(b => b.RTDEBNM).FirstOrDefault();
                 VE.MOBILE = sl.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == sl.RTDEBCD).Select(b => b.MOBILE).FirstOrDefault();
+                //VE.NM = sl.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == sl.RTDEBCD).Select(b => b.RTDEBNM).FirstOrDefault();
                 var add1 = sl.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == sl.RTDEBCD).Select(b => b.ADD1).FirstOrDefault();
                 var add2 = sl.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == sl.RTDEBCD).Select(b => b.ADD2).FirstOrDefault();
                 var add3 = sl.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == sl.RTDEBCD).Select(b => b.ADD3).FirstOrDefault();
@@ -352,7 +356,8 @@ namespace Improvar.Controllers
                 VE.TOT_PRE_ADJ = VE.SLPYMTADJ.Select(a => a.PRE_ADJ_AMT).Sum().retDbl();
                 VE.TOT_ADJ = VE.SLPYMTADJ.Select(a => a.ADJ_AMT).Sum().retDbl();
                 VE.TOT_BAL = VE.SLPYMTADJ.Select(a => a.BAL_AMT).Sum().retDbl();
-
+                var amt = (from i in DBF.T_VCH_BL_ADJ where (i.AUTONO == sl.AUTONO) select i.R_AMT).FirstOrDefault();
+                VE.AVLBALFORADJ = amt - TOT_ADJ.retDbl();
                 if (TCH.CANCEL == "Y") VE.CancelRecord = true; else VE.CancelRecord = false;
             }
             return VE;
@@ -1297,7 +1302,7 @@ namespace Improvar.Controllers
                 }
             }
         }
-        public ActionResult Print(SalePymtEntry VE, FormCollection FC, string DOCNO, string DOC_CD, string DOCDT)
+        public ActionResult Print(SalePymtEntry VE, FormCollection FC, string DOCNO, string DOC_CD, string DOCDT,string AUTONO, string RTDEBCD)
         {
             try
             {
@@ -1308,6 +1313,8 @@ namespace Improvar.Controllers
                 ind.TDOCNO = DOCNO;
                 ind.FDT = DOCDT;
                 ind.TDT = DOCDT;
+                ind.AUTONO = AUTONO;
+                ind.RTDEBCD = RTDEBCD;
                 ind.MENU_PARA = VE.MENU_PARA;
                 if (TempData["printparameter"] != null)
                 {
