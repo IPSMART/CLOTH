@@ -127,17 +127,17 @@
 
             <div class="report_center" style="background-color:lightgrey; padding:1%;border: 1px solid; margin: 2% 22% 2% 22%;">
                 @*<div class="row" style="margin-top:6px">
-                    <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top:5px">
-                            @Html.Label("", "Item Group")
+                        <div class="col-lg-2">
+                            <div class="editor-label" style="margin-top:5px">
+                                @Html.Label("", "Item Group")
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        @(new HtmlString(Model.Itgrpnm))
-                    </div>
-                </div>*@
-                 @if (CommVar.ClientCode(Model.UNQSNO) == "SACH" || CommVar.ClientCode(Model.UNQSNO) == "LALF" || CommVar.ClientCode(Model.UNQSNO) == "TRES" || CommVar.ClientCode(Model.UNQSNO) == "DIWH" || CommVar.ClientCode(Model.UNQSNO) == "ROPS")
-                 {
+                        <div class="col-md-6">
+                            @(new HtmlString(Model.Itgrpnm))
+                        </div>
+                    </div>*@
+                @if (CommVar.ClientCode(Model.UNQSNO) == "SACH" || CommVar.ClientCode(Model.UNQSNO) == "LALF" || CommVar.ClientCode(Model.UNQSNO) == "TRES" || CommVar.ClientCode(Model.UNQSNO) == "DIWH" || CommVar.ClientCode(Model.UNQSNO) == "ROPS" || CommVar.ClientCode(Model.UNQSNO) == "KNYA" || CommVar.ClientCode(Model.UNQSNO) == "DDYA" || CommVar.ClientCode(Model.UNQSNO) == "ANKN")
+                {
                     <div class="row">
                         <div class="col-lg-2">
                             <div class="editor-label">
@@ -176,7 +176,7 @@
                         </div>
                     </div>
                 }
-                @if (CommVar.ClientCode(Model.UNQSNO) == "DIWH")
+                @if (CommVar.ClientCode(Model.UNQSNO) == "DIWH" || CommVar.ClientCode(Model.UNQSNO) == "DDYA" || CommVar.ClientCode(Model.UNQSNO) == "ANKN")
                 {
                     <div class="row">
                         <div class="col-lg-2">
