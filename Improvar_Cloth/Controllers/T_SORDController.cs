@@ -68,7 +68,7 @@ namespace Improvar.Controllers
                     if (op.Length != 0)
                     {
                         string[] XYZ = VE.DocumentType.Select(i => i.value).ToArray();
-                        VE.IndexKey = (from p in DB.T_SORD join q in DB.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO) where XYZ.Contains(p.DOCCD) && q.LOCCD == LOC && q.COMPCD == COMP select new IndexKey() { Navikey = p.AUTONO }).OrderBy(a => a.Navikey).ToList();
+                        VE.IndexKey = (from p in DB.T_SORD join q in DB.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO) where XYZ.Contains(p.DOCCD) && q.LOCCD == LOC && q.COMPCD == COMP && q.YR_CD == yr1 select new IndexKey() { Navikey = p.AUTONO }).OrderBy(a => a.Navikey).ToList();
                         if (op == "E" || op == "D" || op == "V" || loadOrder == "Y")
                         {
                             if (searchValue.Length != 0)
