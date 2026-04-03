@@ -143,9 +143,8 @@ namespace Improvar.Controllers
                                 sql += " where a.RTDEBCD=b.RTDEBCD and  a.retdebslcd=d.slcd(+)  and  ";//and a.retdebslcd='DR00021'
                                 sql += "a.retdebslcd=C.SLCD(+) and c.compcd='" + COM + "' and c.loccd='" + LOC + "' and d.prccd=e.prccd(+) ";
 
-                                DataTable syscnfgdt1 = masterHelp.SQLquery(sql);
+                                DataTable syscnfgdt = masterHelp.SQLquery(sql);
 
-                                DataTable syscnfgdt = salesfunc.GetSyscnfgData(TCH.DOCDT.retDateStr());
                                 if (syscnfgdt != null && syscnfgdt.Rows.Count > 0)
                                 {
                                     TXNMEMO.RTDEBCD = syscnfgdt.Rows[0]["RTDEBCD"].retStr();
@@ -240,6 +239,7 @@ namespace Improvar.Controllers
         public SalePymtEntry Navigation(SalePymtEntry VE, ImprovarDB DB, int index, string searchValue)
         {
             string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
+            ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
             ImprovarDB DBI = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
             string COM_CD = CommVar.Compcd(UNQSNO);
@@ -262,7 +262,7 @@ namespace Improvar.Controllers
 
                 VE.RTDEBNM = sl.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == sl.RTDEBCD).Select(b => b.RTDEBNM).FirstOrDefault();
                 VE.MOBILE = sl.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == sl.RTDEBCD).Select(b => b.MOBILE).FirstOrDefault();
-                //VE.NM = sl.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == sl.RTDEBCD).Select(b => b.RTDEBNM).FirstOrDefault();
+                VE.NM = sl.RTDEBCD.retStr() == "" ? "" : DB1.T_TXNPYMT_HDR.Where(a => a.AUTONO == sl.AUTONO).Select(b => b.NM).FirstOrDefault();
                 var add1 = sl.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == sl.RTDEBCD).Select(b => b.ADD1).FirstOrDefault();
                 var add2 = sl.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == sl.RTDEBCD).Select(b => b.ADD2).FirstOrDefault();
                 var add3 = sl.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == sl.RTDEBCD).Select(b => b.ADD3).FirstOrDefault();
@@ -919,6 +919,7 @@ namespace Improvar.Controllers
                         string Ddate = Convert.ToString(TCH.DOCDT);
                         TBHDR.CLCD = CommVar.ClientCode(UNQSNO);
                         TBHDR.RTDEBCD = VE.T_TXNPYMT_HDR.RTDEBCD;
+                        TBHDR.NM = VE.NM.retStr();
                         TBHDR.DRCR = "D";
                         string auto_no = ""; string Month = "";
                         if (VE.DefaultAction == "A")

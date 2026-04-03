@@ -136,6 +136,21 @@
                             @(new HtmlString(Model.Itgrpnm))
                         </div>
                     </div>*@
+                @if (CommVar.ClientCode(Model.UNQSNO) == "ANKN")
+                {
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <div class="editor-label">
+                                @Html.Label("", "Pendorder Order Transfer")
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="editor-field" style="margin-top: 1px;">
+                                @Html.CheckBoxFor(model => model.Checkbox1)
+                            </div>
+                        </div>
+                    </div>
+                }
                 @if (CommVar.ClientCode(Model.UNQSNO) == "SACH" || CommVar.ClientCode(Model.UNQSNO) == "LALF" || CommVar.ClientCode(Model.UNQSNO) == "TRES" || CommVar.ClientCode(Model.UNQSNO) == "DIWH" || CommVar.ClientCode(Model.UNQSNO) == "ROPS" || CommVar.ClientCode(Model.UNQSNO) == "KNYA" || CommVar.ClientCode(Model.UNQSNO) == "DDYA" || CommVar.ClientCode(Model.UNQSNO) == "ANKN")
                 {
                     <div class="row">

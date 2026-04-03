@@ -1977,7 +1977,7 @@ namespace Improvar
                 return "";
             }
         }
-        public string GetPendOrderSql(string slcd = "", string ordupto = "", string ordautono = "", string orderslno = "", string txnupto = "", string skipautono = "", string menupara = "SB", string brandcd = "", bool OnlyBal = true, string ordfromdt = "", string itcd = "", string agslcd = "", string slmslcd = "", string itgrpcd = "", string curschema = "", string finschema = "")
+        public string GetPendOrderSql(string slcd = "", string ordupto = "", string ordautono = "", string orderslno = "", string txnupto = "", string skipautono = "", string menupara = "SB", string brandcd = "", bool OnlyBal = true, string ordfromdt = "", string itcd = "", string agslcd = "", string slmslcd = "", string itgrpcd = "", string curschema = "", string finschema = "", bool Skipngtv = false)
         {
             string UNQSNO = CommVar.getQueryStringUNQSNO();
             string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
@@ -2053,13 +2053,21 @@ namespace Improvar
             sql += "n.agslcd=k.slcd(+) and n.slmslcd=l.slcd(+)  and m.partcd=p.partcd(+)  and ";
             if (brandcd != "") sql += "h.brandcd in (" + brandcd + ") and ";
             if (itgrpcd != "") sql += "d.itgrpcd in (" + itgrpcd + ") and ";
-            sql += "nvl(a.qnty,0) - nvl(b.qnty,0) - nvl(c.qnty,0) <> 0 ";
+            if(Skipngtv == true)
+            {
+                sql += "nvl(a.qnty,0) - nvl(b.qnty,0) - nvl(c.qnty,0) > 0 ";
+            }
+            else
+            {
+                sql += "nvl(a.qnty,0) - nvl(b.qnty,0) - nvl(c.qnty,0) <> 0 ";
+            }
+            
             sql += "order by styleno, print_seq, sizenm";
             return sql;
         }
-        public DataTable GetPendOrder(string slcd = "", string ordupto = "", string ordautono = "", string orderslno = "", string txnupto = "", string skipautono = "", string menupara = "SB", string brandcd = "", bool OnlyBal = true, string ordfromdt = "", string itcd = "", string agslcd = "", string slmslcd = "", string itgrpcd = "", string curschema = "", string finschema = "")
+        public DataTable GetPendOrder(string slcd = "", string ordupto = "", string ordautono = "", string orderslno = "", string txnupto = "", string skipautono = "", string menupara = "SB", string brandcd = "", bool OnlyBal = true, string ordfromdt = "", string itcd = "", string agslcd = "", string slmslcd = "", string itgrpcd = "", string curschema = "", string finschema = "", bool Skipngtv = false)
         {
-            string sql = GetPendOrderSql(slcd, ordupto, ordautono, orderslno, txnupto, skipautono, menupara, brandcd, OnlyBal, ordfromdt, itcd, agslcd, slmslcd, itgrpcd, curschema, finschema);
+            string sql = GetPendOrderSql(slcd, ordupto, ordautono, orderslno, txnupto, skipautono, menupara, brandcd, OnlyBal, ordfromdt, itcd, agslcd, slmslcd, itgrpcd, curschema, finschema, Skipngtv);
             DataTable tbl = new DataTable();
             tbl = SQLquery(sql);
             return tbl;

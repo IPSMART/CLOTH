@@ -45,5 +45,7 @@ namespace Improvar.Models
          public double? RECDAMT { get; set; }
 
          public double? DUEAMT { get; set; }
+        [StringLength(60)]
+        public string NM { get; set; }
     }
 }
