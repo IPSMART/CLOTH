@@ -1252,7 +1252,18 @@ namespace Improvar.Controllers
                                          where (q.COMPCD == COM)
                                          select p).ToList();
 
+                        var vTSORD = (from p in DBOLD.T_SORD
+                                         join q in DBOLD.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
+                                         where (q.COMPCD == COM)
+                                         select p).ToList();
+
+                        var vTCNTRLHDR = (from p in DBOLD.T_CNTRL_HDR
+                                      where (p.COMPCD == COM)
+                                      select p).ToList();
+
                         bool recoexist = false;
+                        bool SORDrecoexist = false;
+                        bool TCHrecoexist = false;
 
                         i = 0; maxR = 0;
                         maxR = PendingJobDT.Rows.Count - 1;
@@ -1329,11 +1340,46 @@ namespace Improvar.Controllers
 
                                     sql = "select autono from " + newschema + ".T_PROGMAST where autono='" + progautono + "' and slno=" + progslno + " and itcd='" + itcd + "' ";
                                     OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
-                                    if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
+                                    if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();                                                                       
 
                                     var TPROGMAST = vTPROGMAST.Where(x => x.AUTONO == progautono && x.SLNO == progslno && x.ITCD == itcd).ToList();
                                     if (TPROGMAST.Count != 0)
                                     {
+                                        #region order data save
+                                        string sql1 = "select autono from " + newschema + ".T_SORD where autono='" + TPROGMAST[0].ORDAUTONO + "'";
+                                        OraCmd.CommandText = sql1; OraReco = OraCmd.ExecuteReader();
+                                        if (OraReco.HasRows == false) SORDrecoexist = false; else SORDrecoexist = true; OraReco.Dispose();
+
+                                        string sql2 = "select autono from " + newschema + ".T_CNTRL_HDR where autono='" + TPROGMAST[0].ORDAUTONO + "'";
+                                        OraCmd.CommandText = sql2; OraReco = OraCmd.ExecuteReader();
+                                        if (OraReco.HasRows == false) TCHrecoexist = false; else TCHrecoexist = true; OraReco.Dispose();
+                                        
+
+                                        if (TCHrecoexist == false)
+                                        {
+                                            var TCH = vTCNTRLHDR.Where(x => x.AUTONO == TPROGMAST[0].ORDAUTONO).ToList();
+                                            if (TCH.Count != 0)
+                                            {
+                                                dbsql = MasterHelpFa.RetModeltoSql(TCH[0]);
+                                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                            }
+                                        }
+
+                                        var TSORD = vTSORD.Where(x => x.AUTONO == TPROGMAST[0].ORDAUTONO).ToList();
+                                        if (SORDrecoexist == false)
+                                        {
+                                            if (TSORD.Count != 0)
+                                            {
+                                                dbsql = MasterHelpFa.RetModeltoSql(TSORD[0]);
+                                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                            }
+                                        }
+                                        else
+                                        {
+                                            dbsql = MasterHelpFa.RetModeltoSql(TSORD[0], "E");
+                                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                        }
+                                        #endregion
                                         TPROGMAST[0].QNTY = PendingJobDT.Rows[i]["balqnty"].retDbl();
                                         TPROGMAST[0].ITCD = PendingJobDT.Rows[i]["itcd"].ToString();
                                         TPROGMAST[0].NOS = PendingJobDT.Rows[i]["balnos"].retInt();
