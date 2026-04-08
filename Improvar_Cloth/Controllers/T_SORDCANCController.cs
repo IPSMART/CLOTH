@@ -54,6 +54,8 @@ namespace Improvar.Controllers
                     VE.DropDown_list4 = DDL4;
                     VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
                     String YR1 = CommVar.YearCode(UNQSNO);
+                    var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
+                    VE.M_SYSCNFG = MSYSCNFG;
                     if (op.Length != 0)
                     {
                         string[] XYZ = VE.DocumentType.Select(i => i.value).ToArray();
@@ -212,97 +214,51 @@ namespace Improvar.Controllers
                     VE.DOC_ID = sl.DOCCD;
                     var Party = DBF.M_SUBLEG.Find(sl.SLCD); if (Party != null) { VE.PartyName = Party.SLNM; }
                 }
+                string SCM = CommVar.CurSchema(UNQSNO);
 
-                VE.TSORDDTL_CANC = (from i in DB.T_SORDDTL
-                                    join j in DB.M_SITEM on i.ITCD equals j.ITCD into x
-                                    from j in x.DefaultIfEmpty()
-                                    join k in DB.M_SIZE on i.SIZECD equals k.SIZECD into y
-                                    from k in y.DefaultIfEmpty()
-                                    join l in DB.M_COLOR on i.COLRCD equals l.COLRCD into z
-                                    from l in z.DefaultIfEmpty()
-                                    where i.AUTONO == AUTO_NO
+                string str1 = "";
+                str1 += "select a.SLNO,a.AUTONO, a.STKDRCR, a.STKTYPE, a.FREESTK, a.ITCD, c.ITNM, c.STYLENO, c.PCSPERSET, c.UOMCD, ";
+                str1 += "a.sizecd, a.rate, a.scmdiscamt, a.discamt, a.qnty,A.DELVDT,a.ITREM,a.PDESIGN,c.itgrpcd, d.itgrpnm,c.fabitcd, ";
+                str1 += "e.itnm fabitnm,a.colrcd,a.partcd,f.colrnm,g.sizenm,h.partnm,a.rate,a.frghtamt,a.ORDAUTONO,a.ORDSLNO,i.qnty ordqnty,j.docno orddocno,j.docdt orddocdt from ";
+                str1 += SCM + ".T_SORDDTL a, " + SCM + ".T_CNTRL_HDR b, ";
+                str1 += SCM + ".m_sitem c, " + SCM + ".m_group d, " + SCM + ".m_sitem e, " + SCM + ".m_color f, " + SCM + ".m_size g, " + SCM + ".m_parts h, " + SCM + ".T_SORDDTL i, " + SCM + ".T_CNTRL_HDR j ";
+                str1 += "where a.autono = b.autono(+) and a.itcd = c.itcd(+) and c.itgrpcd=d.itgrpcd and c.fabitcd=e.itcd(+) ";
+                str1 += "and a.colrcd=f.colrcd(+) and a.sizecd=g.sizecd(+) and a.partcd=h.partcd(+) and a.ORDAUTONO=i.autono(+) and a.ORDSLNO=i.slno(+) and i.autono=j.autono(+) and a.autono='" + sl.AUTONO + "' ";
+                str1 += "order by styleno ";
+
+                DataTable tbl = Master_Help.SQLquery(str1);
+                VE.TSORDDTL_CANC = (from DataRow dr in tbl.Rows
                                     select new TSORDDTL_CANC()
                                     {
-                                        AUTONO = i.AUTONO,
-                                        SLNO = i.SLNO,
-                                        EMD_NO = i.EMD_NO,
-                                        CLCD = i.CLCD,
-                                        DTAG = i.DTAG,
-                                        TTAG = i.TTAG,
-                                        STKDRCR = i.STKDRCR,
-                                        STKTYPE = i.STKTYPE,
-                                        STKTYP_HIDDEN = i.STKTYPE,
-                                        FREESTK = i.FREESTK,
-                                        FREESTK_HIDDEN = i.FREESTK,
-                                        ITCD = i.ITCD,
-                                        ITNM = j.ITNM,
-                                        ARTNO = j.STYLENO,
-                                        //TOTAL_PCS = j.PCSPERBOX,
-                                        UOM = j.UOMCD,
-                                        SIZECD = i.SIZECD,
-                                        ALL_SIZE = i.SIZECD,
-                                        SIZENM = k.SIZENM,
-                                        COLRCD = i.COLRCD,
-                                        COLRNM = l.COLRNM,
-                                        CANCQNTY = i.QNTY,
-                                        DISCAMT = i.DISCAMT,
-                                        ORDAUTONO = i.ORDAUTONO
+                                        AUTONO = dr["AUTONO"].retStr(),
+                                        SLNO = dr["SLNO"].retShort(),
+                                        STKDRCR = dr["STKDRCR"].retStr(),
+                                        ITCD = dr["ITCD"].retStr(),
+                                        ITNM = dr["ITNM"].retStr(),
+                                        ARTNO = dr["STYLENO"].retStr(),
+                                        UOM = dr["UOMCD"].retStr(),
+                                        CANCQNTY = dr["QNTY"].retDbl(),
+                                        QNTY = dr["ordqnty"].retDbl(),
+                                        COLRCD = dr["COLRCD"].ToString(),
+                                        COLRNM = dr["COLRNM"].ToString(),
+                                        SIZECD = dr["SIZECD"].ToString(),
+                                        SIZENM = dr["SIZENM"].ToString(),
+                                        PARTCD = dr["PARTCD"].ToString(),
+                                        PARTNM = dr["PARTNM"].ToString(),
+                                        RATE = dr["RATE"].retDbl(),
+                                        ORDAUTONO = dr["ORDAUTONO"].ToString(),
+                                        ORDSLNO = dr["ORDSLNO"].retShort(),
                                     }).OrderBy(s => s.SLNO).ToList();
 
 
-                foreach (var z in VE.TSORDDTL_CANC)
-                {
-                    string ITEM = z.ITCD; string STK_TYPE = z.STKTYPE; string FREE_STK = z.FREESTK;
-                    VE.TSORDDTL_CANC_SIZE = (from i in VE.TSORDDTL_CANC
-                                             join j in DB.M_SIZE on i.SIZECD equals j.SIZECD into x
-                                             from j in x.DefaultIfEmpty()
-                                             where i.ITCD == ITEM && i.STKTYPE == STK_TYPE && i.FREESTK == FREE_STK
-                                             select new TSORDDTL_CANC_SIZE()
-                                             {
-                                                 PRINT_SEQ = j.PRINT_SEQ,
-                                                 SIZECD = i.SIZECD,
-                                                 SIZENM = j.SIZENM,
-                                                 COLRCD = i.COLRCD,
-                                                 COLRNM = i.COLRNM,
-                                                 RATE = i.RATE,
-                                                 QNTY = i.QNTY,
-                                                 CANCQNTY = i.CANCQNTY,
-                                                 AUTONO = i.AUTONO,
-                                                 ITCD = i.ITCD,
-                                                 SLNO = i.SLNO,
-                                                 ITCOLSIZE = i.ITCD + i.COLRCD + i.SIZECD,
-                                                 PCS_HIDDEN = z.TOTAL_PCS.Value
-                                             }).OrderBy(s => s.PRINT_SEQ).ToList();
-                    var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-                    string JR = javaScriptSerializer.Serialize(VE.TSORDDTL_CANC_SIZE);
-                    z.ChildData = JR;
-                }
-                VE.TSORDDTL_CANC = (from p in VE.TSORDDTL_CANC
-                                    group p by new { p.ORDAUTONO, p.ITCD, p.ITNM, p.ARTNO, p.TOTAL_PCS, p.NOOFSETS, p.UOM, p.STKTYPE, p.FREESTK, p.ChildData } into z
-                                    select new TSORDDTL_CANC
-                                    {
-                                        ORDAUTONO = z.Key.ORDAUTONO,
-                                        ITCD = z.Key.ITCD,
-                                        ITNM = z.Key.ITNM,
-                                        ARTNO = z.Key.ARTNO,
-                                        TOTAL_PCS = z.Key.TOTAL_PCS,
-                                        NOOFSETS = z.Key.NOOFSETS,
-                                        UOM = z.Key.UOM,
-                                        STKTYPE = z.Key.STKTYPE,
-                                        STKTYP_HIDDEN = z.Key.STKTYPE,
-                                        FREESTK = z.Key.FREESTK,
-                                        FREESTK_HIDDEN = z.Key.FREESTK,
-                                        ChildData = z.Key.ChildData,
-                                        CANCQNTY = z.Sum(x => x.CANCQNTY),
-                                        ALL_SIZE = string.Join(",", z.Select(i => i.SIZECD))
-                                    }).ToList();
-                VE.TSORDDTL_CANC = (from X in VE.TSORDDTL_CANC orderby X.ARTNO + X.CANCQNTY select X).ToList();
+                VE.ORDNO = tbl.Rows[0]["orddocno"].retStr();
+                VE.ORDDT = Convert.ToDateTime(tbl.Rows[0]["orddocdt"].retDateStr());
                 for (int z = 0; z <= VE.TSORDDTL_CANC.Count - 1; z++)
                 {
-                    VE.TSORDDTL_CANC[z].DropDown_list2 = Master_Help.STOCK_TYPE();
-                    VE.TSORDDTL_CANC[z].DropDown_list3 = Master_Help.FREE_STOCK();
                     VE.TSORDDTL_CANC[z].SLNO = Convert.ToInt16(z + 1);
                 }
+                VE.TOTAL_QNTY = VE.TSORDDTL_CANC.Sum(a => a.QNTY).retDbl();
+                VE.TOTAL_CANCQNTY = VE.TSORDDTL_CANC.Sum(a => a.CANCQNTY).retDbl();
                 VE.T_CNTRL_HDR = sll;
                 if (VE.T_CNTRL_HDR.CANCEL == "Y") { VE.CancelRecord = true; } else { VE.CancelRecord = false; }
             }
@@ -429,11 +385,12 @@ namespace Improvar.Controllers
                     ORD_AUTO = (from X in DB.T_CNTRL_HDR where X.DOCNO == ORDERNO select X.AUTONO).ToList();
                 }
 
-                DataTable PENDING_ORDER = SALES_FUNC.GetPendOrder(PARTY, ORDERASONDATE, ORD_AUTO == null || ORD_AUTO.Count == 0 ? "" : "'" + ORD_AUTO[0] + "'" != null && ORD_AUTO.Count > 0 ? "'" + ORD_AUTO[0] + "'" : "", "", DOC_DT, "", VE.MENU_PARA, "");
+                DataTable PENDING_ORDER = SALES_FUNC.GetPendOrder(PARTY, ORDERASONDATE, ORD_AUTO == null || ORD_AUTO.Count == 0 ? "" : "'" + ORD_AUTO[0] + "'" != null && ORD_AUTO.Count > 0 ? "'" + ORD_AUTO[0] + "'" : "", "", DOC_DT, VE.T_SORD_CANC.AUTONO.retStr(), VE.MENU_PARA, "");
                 VE.TSORDDTL_CANC = (from DataRow dr in PENDING_ORDER.Rows
                                     select new TSORDDTL_CANC
                                     {
                                         ORDAUTONO = dr["AUTONO"].ToString(),
+                                        ORDSLNO = dr["slno"].retShort(),
                                         ARTNO = dr["STYLENO"].ToString(),
                                         ITCD = dr["ITCD"].ToString(),
                                         ITNM = dr["ITNM"].ToString(),
@@ -441,59 +398,18 @@ namespace Improvar.Controllers
                                         SIZENM = dr["SIZENM"].ToString(),
                                         COLRCD = dr["COLRCD"].ToString(),
                                         COLRNM = dr["COLRNM"].ToString(),
+                                        PARTCD = dr["PARTCD"].ToString(),
+                                        PARTNM = dr["PARTNM"].ToString(),
                                         ALL_SIZE = dr["SIZECD"].ToString(),
-                                        //TOTAL_PCS = dr["PCSPERBOX"] == null ? 0 : Convert.ToDouble(dr["PCSPERBOX"].ToString()),
                                         UOM = dr["UOMCD"].ToString(),
-                                        STKTYPE = dr["STKTYPE"].ToString(),
-                                        STKTYP_HIDDEN = dr["STKTYPE"].ToString(),
-                                        FREESTK = dr["FREESTK"].ToString(),
-                                        FREESTK_HIDDEN = dr["FREESTK"].ToString(),
                                         QNTY = dr["BALQNTY"] == null ? 0 : Convert.ToDouble(dr["BALQNTY"].ToString()),
                                     }).ToList();
 
-                //VE.TSORDDTL_CANC = (from p in VE.TSORDDTL_CANC group p by new { p.ORDAUTONO, p.ITCD, p.ITNM, p.ARTNO, p.TOTAL_PCS, p.UOM, p.STKTYPE, p.FREESTK, p.ChildData, p.QNTY } into z select new TSORDDTL_CANC { ORDAUTONO = z.Key.ORDAUTONO, ITCD = z.Key.ITCD, ITNM = z.Key.ITNM, ARTNO = z.Key.ARTNO, TOTAL_PCS = z.Key.TOTAL_PCS, UOM = z.Key.UOM, STKTYPE = z.Key.STKTYPE, FREESTK = z.Key.FREESTK, ChildData = z.Key.ChildData, QNTY = z.Sum(x => x.QNTY), ALL_SIZE = string.Join(",", z.Select(i => i.SIZECD)) }).ToList();
-                VE.TSORDDTL_CANC = (from p in VE.TSORDDTL_CANC group p by new { p.ORDAUTONO, p.ITCD, p.ITNM, p.ARTNO, p.UOM, p.STKTYPE, p.FREESTK, p.ChildData, p.QNTY } into z select new TSORDDTL_CANC { ORDAUTONO = z.Key.ORDAUTONO, ITCD = z.Key.ITCD, ITNM = z.Key.ITNM, ARTNO = z.Key.ARTNO, UOM = z.Key.UOM, STKTYPE = z.Key.STKTYPE, FREESTK = z.Key.FREESTK, ChildData = z.Key.ChildData, QNTY = z.Sum(x => x.QNTY), ALL_SIZE = string.Join(",", z.Select(i => i.SIZECD)) }).ToList();
 
-                for (int i = 0; i <= VE.TSORDDTL_CANC.Count - 1; i++)
-                {
-                    string ITEM = VE.TSORDDTL_CANC[i].ITCD; string AUTO_NO = VE.TSORDDTL_CANC[i].ORDAUTONO; string FREE_STK = VE.TSORDDTL_CANC[i].FREESTK; string STK_TYP = VE.TSORDDTL_CANC[i].STKTYPE;
-                    VE.TSORDDTL_CANC_SIZE = (from DataRow dr in PENDING_ORDER.Rows
-                                             where dr["ITCD"].ToString() == ITEM && dr["AUTONO"].ToString() == AUTO_NO && dr["FREESTK"].ToString() == FREE_STK && dr["STKTYPE"].ToString() == STK_TYP
-                                             select new TSORDDTL_CANC_SIZE()
-                                             {
-                                                 PRINT_SEQ = dr["PRINT_SEQ"].ToString(),
-                                                 SIZECD = dr["SIZECD"].ToString(),
-                                                 SIZENM = dr["SIZENM"].ToString(),
-                                                 COLRCD = dr["COLRCD"].ToString(),
-                                                 COLRNM = dr["COLRNM"].ToString(),
-                                                 QNTY = dr["BALQNTY"] == null ? 0 : Convert.ToDouble(dr["BALQNTY"].ToString()),
-                                                 AUTONO = dr["AUTONO"].ToString(),
-                                                 ITCD = dr["ITCD"].ToString(),
-                                                 STKTYPE_HIDDEN = dr["STKTYPE"].ToString(),
-                                                 FREESTK_HIDDEN = dr["FREESTK"].ToString(),
-                                                 ITCOLSIZE = dr["ITCD"].ToString() + dr["COLRCD"].ToString() + dr["SIZECD"].ToString(),
-                                                 //PCS_HIDDEN = dr["PCSPERBOX"] == null ? 0 : Convert.ToDouble(dr["PCSPERBOX"].ToString())
-                                             }).OrderBy(s => s.PRINT_SEQ).ToList();
-                    var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-                    string JR = javaScriptSerializer.Serialize(VE.TSORDDTL_CANC_SIZE);
-                    VE.TSORDDTL_CANC[i].ChildData = JR;
-
-                    //var TOTAL_QNTY = (from p in VE.TSORDDTL_CANC_SIZE
-                    //                  group p by new { p.AUTONO } into z
-                    //                  select new TSORDDTL_CANC
-                    //                  {
-                    //                      QNTY = z.Sum(x => x.QNTY),
-                    //                      ALL_SIZE = string.Join(",", z.Select(A => A.SIZECD))
-                    //                  }).ToList();
-
-                    //if (TOTAL_QNTY != null && TOTAL_QNTY.Count > 0)
-                    //{
-                    //    VE.TSORDDTL_CANC[i].QNTY = TOTAL_QNTY[0].QNTY;
-                    //    VE.TSORDDTL_CANC[i].ALL_SIZE = TOTAL_QNTY[0].ALL_SIZE;
-                    //}
-                }
-                VE.TSORDDTL_CANC.ToList().ForEach(a => { a.DropDown_list2 = Master_Help.STOCK_TYPE(); a.DropDown_list3 = Master_Help.FREE_STOCK(); });
                 for (int i = 0; i <= VE.TSORDDTL_CANC.Count - 1; i++) { VE.TSORDDTL_CANC[i].SLNO = Convert.ToInt16(i + 1); }
+                VE.TOTAL_QNTY = VE.TSORDDTL_CANC.Sum(a => a.QNTY).retDbl();
+                VE.TOTAL_CANCQNTY = VE.TSORDDTL_CANC.Sum(a => a.CANCQNTY).retDbl();
+
                 VE.DefaultView = true;
                 ModelState.Clear();
                 return PartialView("_T_SORDCANC_MAIN", VE);
@@ -504,167 +420,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult OPENSIZE(OrderCancelEntry VE, short SerialNo, string ITEM, string ITEM_NM, string ART_NO, string UOM, double? QNTY, string STK_TYPE, string FREE_STK, string AUTO_NO)
-        {
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-            string COM = CommVar.Compcd(UNQSNO); string LOC = CommVar.Loccd(UNQSNO); string scm1 = DB.CacheKey.ToString();
-            Cn.getQueryString(VE);
-            try
-            {
-                ART_NO = ART_NO.Replace('μ', '+'); ART_NO = ART_NO.Replace('‡', '&');
-                string Header = "";
-                if (VE.DOC_CODE == "POCAN") { Header = "Purchase Order Cancel"; } else { Header = "Sales Order Cancel"; }
-                ViewBag.Header = Header; ViewBag.Article = ART_NO; short POSRL = Convert.ToInt16(SerialNo);
-                if (VE.DefaultAction == "V")
-                {
-                    if (VE.TSORDDTL_CANC != null && VE.TSORDDTL_CANC.Count > 0)
-                    {
-                        for (int i = 0; i <= VE.TSORDDTL_CANC.Count - 1; i++)
-                        {
-                            VE.TSORDDTL_CANC[i].STKTYPE = VE.TSORDDTL_CANC[i].STKTYP_HIDDEN;
-                            VE.TSORDDTL_CANC[i].FREESTK = VE.TSORDDTL_CANC[i].FREESTK_HIDDEN;
-                        }
-                    }
-                }
-                var query = (from c in VE.TSORDDTL_CANC where (c.ITCD == ITEM) select c).ToList();
-                if (query != null)
-                {
-                    VE.TSORDDTL_CANC = (from x in VE.TSORDDTL_CANC where x.ITCD == ITEM && x.STKTYPE == STK_TYPE && x.FREESTK == FREE_STK && x.ORDAUTONO == AUTO_NO select x).ToList();
-                    if (VE.TSORDDTL_CANC != null && VE.TSORDDTL_CANC.Count > 0)
-                    {
-                        for (int i = 0; i <= VE.TSORDDTL_CANC.Count - 1; i++)
-                        {
-                            var helpMT = new List<Improvar.Models.TSORDDTL_CANC_SIZE>();
-                            var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-                            helpMT = javaScriptSerializer.Deserialize<List<Improvar.Models.TSORDDTL_CANC_SIZE>>(VE.TSORDDTL_CANC[i].ChildData);
 
-                            helpMT.ForEach(a =>
-                            {
-                                a.ParentSerialNo = SerialNo; a.ITCD_HIDDEN = ITEM;
-                                a.ITNM_HIDDEN = ITEM_NM; a.ARTNO_HIDDEN = ART_NO; a.UOM_HIDDEN = UOM;/* a.PCS_HIDDEN = PCS.Value;*/
-                                a.QNTY_HIDDEN = QNTY;
-                                //a.STKTYPE_HIDDEN = STK_TYPE; a.FREESTK_HIDDEN = FREE_STK;
-                            });
-                            if (helpMT != null && helpMT.Count > 0)
-                            {
-                                VE.TSORDDTL_CANC_SIZE = helpMT;
-                            }
-                        }
-                    }
-                    VE.TSORDDTL_CANC_SIZE = VE.TSORDDTL_CANC_SIZE.OrderBy(a => a.PRINT_SEQ).ToList();
-                    for (int Z = 0; Z <= VE.TSORDDTL_CANC_SIZE.Count - 1; Z++)
-                    {
-                        VE.TSORDDTL_CANC_SIZE[Z].SLNO = Convert.ToInt16(Z + 1);
-                    }
-                    var javaScriptSerializer_FINAL = new System.Web.Script.Serialization.JavaScriptSerializer();
-                    VE.TSORDDTL_CANC_SIZE.ForEach(a => a.ITCOLSIZE = a.ITCD_HIDDEN + a.COLRCD + a.SIZECD);
-                    string JR_FINAL = javaScriptSerializer_FINAL.Serialize(VE.TSORDDTL_CANC_SIZE);
-                    query.ForEach(a => a.ChildData = JR_FINAL);
-                    VE.SERIAL = SerialNo;
-                    VE.DefaultView = true;
-                    ModelState.Clear();
-                    return PartialView("_T_SORDCANC_SIZE", VE);
-                }
-                else
-                {
-                    VE.SERIAL = SerialNo;
-                    VE.DefaultView = true;
-                    ModelState.Clear();
-                    return PartialView("_T_SORDCANC_SIZE", VE);
-                }
-            }
-            catch (Exception ex)
-            {
-                VE.DefaultView = false;
-                VE.DefaultDay = 0;
-                ViewBag.ErrorMessage = ex.Message + ex.InnerException;
-                Cn.SaveException(ex, "");
-                return View(VE);
-            }
-        }
-        public ActionResult CLOSESIZE(OrderCancelEntry VE, FormCollection FC)
-        {
-            Cn.getQueryString(VE);
-            List<TSORDDTL_CANC_SIZE> DTL_SIZE = new List<TSORDDTL_CANC_SIZE>();
-            DTL_SIZE = VE.TSORDDTL_CANC_SIZE.Where(a => a.CANCQNTY != null).Where(a => a.CANCQNTY > 0).ToList();
-            if (DTL_SIZE != null)
-            {
-                var FILTER_DATA = (from p in DTL_SIZE
-                                   group p by new
-                                   { p.AUTONO, p.ITCD_HIDDEN, p.ITNM_HIDDEN, p.ARTNO_HIDDEN, p.UOM_HIDDEN, p.STKTYPE_HIDDEN, p.FREESTK_HIDDEN } into g
-                                   select new
-                                   {
-                                       AUTONO = g.Key.AUTONO,
-                                       ITCD_HIDDEN = g.Key.ITCD_HIDDEN,
-                                       ITNM_HIDDEN = g.Key.ITNM_HIDDEN,
-                                       ARTNO_HIDDEN = g.Key.ARTNO_HIDDEN,
-                                       //PCS_HIDDEN = g.Key.PCS_HIDDEN,
-                                       UOM_HIDDEN = g.Key.UOM_HIDDEN,
-                                       STKTYPE_HIDDEN = g.Key.STKTYPE_HIDDEN,
-                                       FREESTK_HIDDEN = g.Key.FREESTK_HIDDEN,
-                                       QNTY = g.Sum(x => x.QNTY),
-                                       CANCQNTY = g.Sum(x => x.CANCQNTY),
-                                       ALL_SIZE = string.Join(",", g.Select(i => i.SIZECD))
-                                   }).ToList();
-
-                var TSORDDTL_CANC_FINALDATA = (from a in FILTER_DATA
-                                               select new TSORDDTL_CANC
-                                               {
-                                                   ORDAUTONO = a.AUTONO,
-                                                   ITCD = a.ITCD_HIDDEN,
-                                                   ITNM = a.ITNM_HIDDEN,
-                                                   ARTNO = a.ARTNO_HIDDEN,
-                                                   //TOTAL_PCS = a.PCS_HIDDEN,
-                                                   UOM = a.UOM_HIDDEN,
-                                                   STKTYPE = a.STKTYPE_HIDDEN,
-                                                   FREESTK = a.FREESTK_HIDDEN,
-                                                   QNTY = a.QNTY,
-                                                   CANCQNTY = a.CANCQNTY,
-                                                   ALL_SIZE = a.ALL_SIZE
-                                               }).OrderBy(a => a.ARTNO).ToList();
-
-                if (TSORDDTL_CANC_FINALDATA != null && TSORDDTL_CANC_FINALDATA.Count > 0)
-                {
-                    VE.TSORDDTL_CANC.RemoveAll(x => x.ITCD == TSORDDTL_CANC_FINALDATA[0].ITCD && x.ORDAUTONO == TSORDDTL_CANC_FINALDATA[0].ORDAUTONO && x.FREESTK == TSORDDTL_CANC_FINALDATA[0].FREESTK && x.STKTYPE == TSORDDTL_CANC_FINALDATA[0].STKTYPE);
-
-                    VE.TSORDDTL_CANC.InsertRange(0, TSORDDTL_CANC_FINALDATA);
-                }
-                string ITEM = ""; string AUTO_NO = ""; string FREE_STK = ""; string STK_TYPE = "";
-                if (DTL_SIZE != null && DTL_SIZE.Count > 0)
-                {
-                    ITEM = DTL_SIZE[0].ITCD_HIDDEN;
-                    AUTO_NO = DTL_SIZE[0].AUTONO;
-                    FREE_STK = DTL_SIZE[0].FREESTK_HIDDEN;
-                    STK_TYPE = DTL_SIZE[0].STKTYPE_HIDDEN;
-                }
-                var query = (from c in VE.TSORDDTL_CANC where (c.ITCD == ITEM && c.ORDAUTONO == AUTO_NO && c.FREESTK == FREE_STK && c.STKTYPE == STK_TYPE) select c).ToList();
-                if (query != null && query.Count > 0)
-                {
-                    var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-                    string JR = javaScriptSerializer.Serialize(DTL_SIZE);
-                    query.ForEach(a => a.ChildData = JR);
-                }
-            }
-            else
-            {
-                string ITEM = FC["hiddenITEM"].ToString();
-                TSORDDTL_CANC query = (from c in VE.TSORDDTL_CANC where (c.ITCD == ITEM) select c).SingleOrDefault();
-                if (query != null)
-                {
-                    query.ChildData = null;
-                }
-            }
-
-            VE.TSORDDTL_CANC.ToList().ForEach(a => { a.DropDown_list2 = Master_Help.STOCK_TYPE(); a.DropDown_list3 = Master_Help.FREE_STOCK(); });
-
-            VE.TSORDDTL_CANC = VE.TSORDDTL_CANC.Where(m => m.ARTNO != null).OrderBy(m => m.ARTNO + m.QNTY).Concat(VE.TSORDDTL_CANC.Where(m => m.ARTNO == null)).ToList();
-
-            for (int i = 0; i <= VE.TSORDDTL_CANC.Count - 1; i++) { VE.TSORDDTL_CANC[i].SLNO = Convert.ToInt16(i + 1); }
-
-            VE.DefaultView = true;
-            ModelState.Clear();
-            return PartialView("_T_SORDCANC_MAIN", VE);
-        }
         public ActionResult AddDOCRow(OrderCancelEntry VE)
         {
             string SCHEMA = Cn.Getschema;
@@ -756,7 +512,7 @@ namespace Improvar.Controllers
 
             VE.TSORDDTL_CANC.ToList().ForEach(a => { a.DropDown_list2 = Master_Help.STOCK_TYPE(); a.DropDown_list3 = Master_Help.FREE_STOCK(); });
             VE.DefaultView = true;
-            return PartialView("_T_SORD_MAIN", VE);
+            return PartialView("_T_SORDCANC_MAIN", VE);
         }
         public ActionResult DeleteRow(OrderCancelEntry VE)
         {
@@ -778,7 +534,7 @@ namespace Improvar.Controllers
             VE.TSORDDTL_CANC.ToList().ForEach(a => { a.DropDown_list2 = Master_Help.STOCK_TYPE(); a.DropDown_list3 = Master_Help.FREE_STOCK(); });
             ModelState.Clear();
             VE.DefaultView = true;
-            return PartialView("_T_SORD_MAIN", VE);
+            return PartialView("_T_SORDCANC_MAIN", VE);
 
         }
         public ActionResult SAVE(FormCollection FC, OrderCancelEntry VE)
@@ -842,8 +598,7 @@ namespace Improvar.Controllers
                                 DB.SaveChanges();
                             }
 
-                            //TCH = Cn.T_CONTROL_HDR(TSORDCANC.DOCCD, TSORDCANC.DOCDT, TSORDCANC.DOCNO, TSORDCANC.AUTONO, Month, DOCPATTERN, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), null, TSORDCANC.SLCD,0, null);
-                            TCH = Cn.T_CONTROL_HDR(TSORDCANC.DOCCD, TSORDCANC.DOCDT, TSORDCANC.DOCNO, TSORDCANC.AUTONO, Month, DOCPATTERN, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), null, TSORDCANC.SLCD, 0, null,VE.Audit_REM);
+                            TCH = Cn.T_CONTROL_HDR(TSORDCANC.DOCCD, TSORDCANC.DOCDT, TSORDCANC.DOCNO, TSORDCANC.AUTONO, Month, DOCPATTERN, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), null, TSORDCANC.SLCD, 0, null, VE.Audit_REM);
 
 
                             if (VE.DefaultAction == "A")
@@ -865,44 +620,40 @@ namespace Improvar.Controllers
                             int COUNTER = 0;
                             for (int i = 0; i <= VE.TSORDDTL_CANC.Count - 1; i++)
                             {
-                                if (VE.TSORDDTL_CANC[i].SLNO != 0 && VE.TSORDDTL_CANC[i].ITCD != null)
+                                if (VE.TSORDDTL_CANC[i].CANCQNTY.retDbl() != 0)
                                 {
-                                    var SIZE_CODE = VE.TSORDDTL_CANC[i].ALL_SIZE.Split(',');
-                                    if (VE.TSORDDTL_CANC[i].ChildData != null)
+                                    T_SORDDTL TSORDDTL = new T_SORDDTL();
+                                    TSORDDTL.EMD_NO = TSORDCANC.EMD_NO;
+                                    TSORDDTL.CLCD = TSORDCANC.CLCD;
+                                    TSORDDTL.DTAG = TSORDCANC.DTAG;
+                                    TSORDDTL.TTAG = TSORDCANC.TTAG;
+                                    TSORDDTL.AUTONO = TSORDCANC.AUTONO;
+                                    TSORDDTL.SLNO = Convert.ToInt16(COUNTER);
+                                    TSORDDTL.BLSLNO = Convert.ToInt16(COUNTER);
+                                    if (VE.MENU_PARA == "SB")
                                     {
-                                        string data = VE.TSORDDTL_CANC[i].ChildData;
-                                        var helpM = new List<Improvar.Models.TSORDDTL_CANC_SIZE>();
-                                        var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-                                        helpM = javaScriptSerializer.Deserialize<List<Improvar.Models.TSORDDTL_CANC_SIZE>>(data);
-                                        helpM = helpM.Where(a => SIZE_CODE.Contains(a.SIZECD)).ToList();
-                                        for (int j = 0; j <= helpM.Count - 1; j++)
-                                        {
-                                            if (helpM[j].SLNO != 0 && helpM[j].CANCQNTY != null && helpM[j].CANCQNTY != 0)
-                                            {
-                                                COUNTER = COUNTER + 1;
-
-                                                T_SORDDTL TSORDDTL_CANC = new T_SORDDTL();
-                                                TSORDDTL_CANC.EMD_NO = TSORDCANC.EMD_NO;
-                                                TSORDDTL_CANC.CLCD = TSORDCANC.CLCD;
-                                                TSORDDTL_CANC.DTAG = TSORDCANC.DTAG;
-                                                TSORDDTL_CANC.TTAG = TSORDCANC.TTAG;
-                                                TSORDDTL_CANC.AUTONO = TSORDCANC.AUTONO;
-                                                TSORDDTL_CANC.ORDAUTONO = VE.TSORDDTL_CANC[i].ORDAUTONO;
-                                                TSORDDTL_CANC.SLNO = Convert.ToInt16(COUNTER);
-                                                if (VE.MENU_PARA == "SB") { TSORDDTL_CANC.STKDRCR = "C"; } else { TSORDDTL_CANC.STKDRCR = "D"; }
-                                                TSORDDTL_CANC.STKTYPE = VE.TSORDDTL_CANC[i].STKTYPE;
-                                                TSORDDTL_CANC.FREESTK = VE.TSORDDTL_CANC[i].FREESTK;
-                                                TSORDDTL_CANC.ITCD = VE.TSORDDTL_CANC[i].ITCD;
-                                                TSORDDTL_CANC.SIZECD = helpM[j].SIZECD;
-                                                TSORDDTL_CANC.COLRCD = helpM[j].COLRCD;
-                                                TSORDDTL_CANC.QNTY = helpM[j].CANCQNTY;
-                                                TSORDDTL_CANC.TAXAMT = 0;
-                                                DB.T_SORDDTL.Add(TSORDDTL_CANC);
-
-
-                                            }
-                                        }
+                                        TSORDDTL.STKDRCR = "C";
                                     }
+                                    else
+                                    {
+                                        TSORDDTL.STKDRCR = "D";
+                                    }
+                                    TSORDDTL.STKTYPE = "F";
+                                    TSORDDTL.ITCD = VE.TSORDDTL_CANC[i].ITCD;
+                                    TSORDDTL.SIZECD = VE.TSORDDTL_CANC[i].SIZECD;
+                                    TSORDDTL.COLRCD = VE.TSORDDTL_CANC[i].COLRCD;
+                                    TSORDDTL.PARTCD = VE.TSORDDTL_CANC[i].PARTCD;
+                                    TSORDDTL.QNTY = VE.TSORDDTL_CANC[i].CANCQNTY;
+                                    TSORDDTL.RATE = VE.TSORDDTL_CANC[i].RATE;
+                                    TSORDDTL.SCMDISCAMT = VE.TSORDDTL_CANC[i].SCMDISCAMT;
+                                    TSORDDTL.DISCAMT = VE.TSORDDTL_CANC[i].DISCAMT;
+                                    TSORDDTL.TAXAMT = 0;
+                                    TSORDDTL.ORDAUTONO = VE.TSORDDTL_CANC[i].ORDAUTONO;
+                                    TSORDDTL.ORDSLNO = VE.TSORDDTL_CANC[i].ORDSLNO;
+                                    TSORDDTL.PRCCD = "WP";
+                                    DB.T_SORDDTL.Add(TSORDDTL);
+                                    COUNTER++;
+
                                 }
                             }
                             if (VE.UploadDOC != null)// add DOCUMENT
@@ -938,7 +689,7 @@ namespace Improvar.Controllers
                         }
                         else if (VE.DefaultAction == "V")
                         {
-                           T_CNTRL_HDR TCH = Cn.T_CONTROL_HDR(VE.T_SORD_CANC.DOCCD, VE.T_SORD_CANC.DOCDT, VE.T_SORD_CANC.DOCNO, VE.T_SORD_CANC.AUTONO, VE.T_CNTRL_HDR.MNTHCD, "", VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), null, VE.T_SORD_CANC.SLCD, 0, null, VE.Audit_REM);
+                            T_CNTRL_HDR TCH = Cn.T_CONTROL_HDR(VE.T_SORD_CANC.DOCCD, VE.T_SORD_CANC.DOCDT, VE.T_SORD_CANC.DOCNO, VE.T_SORD_CANC.AUTONO, VE.T_CNTRL_HDR.MNTHCD, "", VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), null, VE.T_SORD_CANC.SLCD, 0, null, VE.Audit_REM);
                             DB.Entry(TCH).State = System.Data.Entity.EntityState.Modified;
                             DB.SaveChanges();
 

@@ -33,6 +33,7 @@ namespace Improvar.Models
         [StringLength(6)]
         public string DOCNO { get; set; }
 
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? DOCDT { get; set; }
 
         [Required]

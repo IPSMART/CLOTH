@@ -35,15 +35,6 @@ namespace Improvar.Models
         [StringLength(1)]
         public string STKDRCR { get; set; }
 
-        [Required]
-        [StringLength(1)]
-        public string STKTYPE { get; set; }
-
-        public string STKTYP_HIDDEN { get; set; }
-
-        [StringLength(1)]
-        public string FREESTK { get; set; }
-        public string FREESTK_HIDDEN { get; set; }
 
         [Required]
         [StringLength(10)]
@@ -55,6 +46,7 @@ namespace Improvar.Models
         [StringLength(4)]
         public string COLRCD { get; set; }
 
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? QNTY { get; set; }
 
         public double? RATE { get; set; }
@@ -66,8 +58,9 @@ namespace Improvar.Models
         public double? TAXAMT { get; set; }
 
         [StringLength(30)]
-        public string ORDAUTONO { get; set; }       
-        public double? CANCQNTY { get; set; }      
+        public string ORDAUTONO { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double? CANCQNTY { get; set; }
 
         [StringLength(12)]
         public string ARTNO { get; set; }
@@ -88,5 +81,12 @@ namespace Improvar.Models
         [StringLength(20)]
         public string COLRNM { get; set; }
         public double? NOOFSETS { get; set; }
+        public string STYLENO { get; set; }
+        [StringLength(4)]
+        public string PARTCD { get; set; }
+        public string PARTNM { get; set; }
+        public short ORDSLNO { get; set; }
+
+
     }
 }

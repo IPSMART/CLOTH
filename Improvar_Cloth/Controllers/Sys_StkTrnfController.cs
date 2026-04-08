@@ -959,7 +959,7 @@ namespace Improvar.Controllers
                     #region Pendorder Order Transfer
                     if (VE.Checkbox1 == true)
                     {
-                        tbl = Salesfunc.GetPendOrder("", lastdayofprvyear, "", "", "","", "SB","",true,"", "","","","", oldschema,"",true);
+                        tbl = Salesfunc.GetPendOrder("", lastdayofprvyear, "", "", "", "", "SB", "", true, "", "", "", "", "", oldschema, "", true);
                         DataView dv = tbl.DefaultView;
                         dv.Sort = "autono,slno";
                         tbl = dv.ToTable();
@@ -973,14 +973,14 @@ namespace Improvar.Controllers
                         DataTable tbldel = masterHelp.SQLquery(sqlc);
 
                         query = "delete from " + newschema + ".t_sorddtl where autono in (" + sqlc + ") ";
-                        OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();                      
-                        query = "delete from " + newschema + ".t_sord where autono in (" + sqlc + ") ";
                         OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
-                        for (Int32 q = 0; q <= tbldel.Rows.Count - 1; q++)
-                        {
-                            query = "delete from " + newschema + ".t_cntrl_hdr where autono='" + tbldel.Rows[q]["autono"].ToString() + "' ";
-                            OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
-                        }
+                        //query = "delete from " + newschema + ".t_sord where autono in (" + sqlc + ") ";
+                        //OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
+                        //for (Int32 q = 0; q <= tbldel.Rows.Count - 1; q++)
+                        //{
+                        //    query = "delete from " + newschema + ".t_cntrl_hdr where autono='" + tbldel.Rows[q]["autono"].ToString() + "' ";
+                        //    OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
+                        //}
                         if (dberrmsg != "") goto dbnotsave;
 
                         //string defdoccd = "", docno = ""; int mxdocno = 0;
@@ -1031,23 +1031,48 @@ namespace Improvar.Controllers
                         maxR = tbl.Rows.Count - 1;
                         string orgdocdt = "", orgautono = "";
                         bool insTxn = true;
+                        bool recoexist = false;
+
                         while (i <= maxR)
                         {
                             orgautono = tbl.Rows[i]["autono"].retStr();
                             orgdocdt = tbl.Rows[i]["docdt"].retDateStr() == "" ? lastdayofprvyear : tbl.Rows[i]["docdt"].retDateStr();
 
                             T_CNTRL_HDR TCHOLD = new T_CNTRL_HDR();
-
                             TCHOLD = DBOLD.T_CNTRL_HDR.Find(orgautono);
-                            dbsql = MasterHelpFa.RetModeltoSql(TCHOLD);
-                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
+                            sql = "select autono from " + newschema + ".t_cntrl_hdr where autono='" + orgautono + "'";
+                            OraCmd.CommandText = sql; var OraReco = OraCmd.ExecuteReader();
+                            if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
+                            if (recoexist == false)
+                            {
+                                dbsql = MasterHelpFa.RetModeltoSql(TCHOLD);
+                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                            }
+                            else
+                            {
+                                dbsql = MasterHelpFa.RetModeltoSql(TCHOLD, "E");
+                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                            }
+
 
                             var TSORD = vTSORD.Where(x => x.AUTONO == orgautono).ToList();
                             insTxn = true;
                             if (TSORD.Count != 0)
                             {
-                                dbsql = MasterHelpFa.RetModeltoSql(TSORD[0]);
-                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                sql = "select autono from " + newschema + ".T_SORD where autono='" + orgautono + "'";
+                                OraCmd.CommandText = sql; var OraReco1 = OraCmd.ExecuteReader();
+                                if (OraReco1.HasRows == false) recoexist = false; else recoexist = true; OraReco1.Dispose();
+                                if (recoexist == false)
+                                {
+                                    dbsql = MasterHelpFa.RetModeltoSql(TSORD[0]);
+                                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                }
+                                else
+                                {
+                                    dbsql = MasterHelpFa.RetModeltoSql(TSORD[0], "E");
+                                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                }
                             }
                             while (tbl.Rows[i]["autono"].retStr() == orgautono)
                             {
@@ -1174,6 +1199,9 @@ namespace Improvar.Controllers
                         sql = "alter table " + newschema + ".t_progdtl disable constraint fkey_t_progdtl_progautono";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
+                        sql = "alter table " + newschema + ".T_TXN_LINKNO disable constraint FKEY_T_TXN_LINKNO_ISSAUTONO";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+
                         sqlc = "select b.autono from " + newschema + ".t_cntrl_hdr b, " + newschema + ".m_doctype c ";
                         sqlc += "where b.doccd=c.doccd and ";
                         sqlc += "b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "'  and c.doctype in (" + issdoctype + ") and ";
@@ -1253,13 +1281,13 @@ namespace Improvar.Controllers
                                          select p).ToList();
 
                         var vTSORD = (from p in DBOLD.T_SORD
-                                         join q in DBOLD.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
-                                         where (q.COMPCD == COM)
-                                         select p).ToList();
+                                      join q in DBOLD.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
+                                      where (q.COMPCD == COM)
+                                      select p).ToList();
 
                         var vTCNTRLHDR = (from p in DBOLD.T_CNTRL_HDR
-                                      where (p.COMPCD == COM)
-                                      select p).ToList();
+                                          where (p.COMPCD == COM)
+                                          select p).ToList();
 
                         bool recoexist = false;
                         bool SORDrecoexist = false;
@@ -1270,6 +1298,11 @@ namespace Improvar.Controllers
                         while (i <= maxR)
                         {
                             string progautono = PendingJobDT.Rows[i]["progautono"].ToString();
+                            errorAutono = progautono;
+                            if (errorAutono == "2025ANKNKOLKSSOEMI0000000786")
+                            {
+                                var aa = "";
+                            }
                             //  string progautoslno = PendingJobDT.Rows[i]["progautoslno"].ToString();
                             T_CNTRL_HDR TCHOLD = new T_CNTRL_HDR();
 
@@ -1328,7 +1361,7 @@ namespace Improvar.Controllers
                             while (PendingJobDT.Rows[i]["progautono"].retStr() == progautono)
                             {
                                 errorAutono = progautono;
-                                if (errorAutono == "2023DIWHKOLKSSOEMI0000000469")
+                                if (errorAutono == "2025ANKNKOLKSSOEMI0000000786")
                                 {
                                     var aa = "";
                                 }
@@ -1340,7 +1373,7 @@ namespace Improvar.Controllers
 
                                     sql = "select autono from " + newschema + ".T_PROGMAST where autono='" + progautono + "' and slno=" + progslno + " and itcd='" + itcd + "' ";
                                     OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
-                                    if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();                                                                       
+                                    if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
 
                                     var TPROGMAST = vTPROGMAST.Where(x => x.AUTONO == progautono && x.SLNO == progslno && x.ITCD == itcd).ToList();
                                     if (TPROGMAST.Count != 0)
@@ -1353,7 +1386,7 @@ namespace Improvar.Controllers
                                         string sql2 = "select autono from " + newschema + ".T_CNTRL_HDR where autono='" + TPROGMAST[0].ORDAUTONO + "'";
                                         OraCmd.CommandText = sql2; OraReco = OraCmd.ExecuteReader();
                                         if (OraReco.HasRows == false) TCHrecoexist = false; else TCHrecoexist = true; OraReco.Dispose();
-                                        
+
 
                                         if (TCHrecoexist == false)
                                         {
@@ -1455,6 +1488,9 @@ namespace Improvar.Controllers
                             if (i > maxR) break;
                         }//PendingJobDT.Rows.Count
                         sql = "alter table " + newschema + ".t_progdtl enable constraint fkey_t_progdtl_progautono";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+
+                        sql = "alter table " + newschema + ".T_TXN_LINKNO enable constraint FKEY_T_TXN_LINKNO_ISSAUTONO";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
                     }//checkbox5
                     #endregion
@@ -1888,7 +1924,7 @@ namespace Improvar.Controllers
                     //    }
 
                     //}
-                        #endregion
+                    #endregion
 
 
                     ModelState.Clear();

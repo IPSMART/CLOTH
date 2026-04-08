@@ -151,8 +151,8 @@
             var UOM = document.getElementById(UOM).value;
             //var PCS = document.getElementById(TOTAL_PCS).value;
             //if (PCS == "") { PCS = parseFloat(0) } else { PCS = parseFloat(PCS) }
-            var STK_TYPE = document.getElementById(STKTYPE).value;
-            var FREE_STK = document.getElementById(FREESTK).value;
+            var STK_TYPE = "";//document.getElementById(STKTYPE).value;
+            var FREE_STK = "";// document.getElementById(FREESTK).value;
             var AUTO_NO = document.getElementById(AUTO).value;
             $("#hiddenITEM").val(ITEM);
             if (ITEM.toString() != "")
@@ -227,31 +227,23 @@
         if (CAN_QUANTITY == "") { CAN_QUANTITY = parseFloat(0) } else { CAN_QUANTITY = parseFloat(CAN_QUANTITY) }
         var BAL_QUANTITY = document.getElementById(BAL_QNTY).value;
         if (BAL_QUANTITY == "") { BAL_QUANTITY = parseFloat(0) } else { BAL_QUANTITY = parseFloat(BAL_QUANTITY) }
-        if (CAN_QUANTITY <= BAL_QUANTITY) {
-            var CHECK_TAG = document.getElementById("SAME_QTY").checked;
-            if (CHECK_TAG == true) {
-                var GridRow = $("#_T_SORDCANC_SIZE_GRID > tbody > tr").length;
-                for (var i = 0; i <= GridRow - 1; i++) {
-                    var QUANTITY = document.getElementById("SIZE_CANCQNTY_" + i).value;
-                    if (QUANTITY == "") { QUANTITY = parseFloat(0) } else { QUANTITY = parseFloat(QUANTITY) }
-                    if (QUANTITY == 0) {
-                        document.getElementById("SIZE_CANCQNTY_" + i).value = CAN_QUANTITY;
-                    }
-                }
-            }
-        }
-        else {
+        if (CAN_QUANTITY > BAL_QUANTITY) {
+           
             $("#Msgdiv1").show();
             $("#info").show();
             $("#btnok").focus();
             $("#msgbody_info").html("Cancel Quantity is not More than Balance Quantity ! Please Maintain the Ratio !!");
             message_value = CAN_QNTY.id;
         }
+        else {
+            CalculateTotal();
+        }
     }
 </script>
 <script>
     function GetPendingData()
     {
+        if (!emptyFieldCheck("Please Select / Enter Order No", "ORDNO")) { return false; }
         var PARTY = document.getElementById("SLCD").value;
         if (PARTY != "")
         {
@@ -400,6 +392,24 @@
         }
     }
 </script>
+<script>
+    function CalculateTotal() {
+        var TOTAL_QNTY = 0; var TOTAL_CANCQNTY = 0;
+        var GridRowMain = $("#_T_SORDCANC_MAIN_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRowMain - 1; i++) {
+            var ITEM = document.getElementById("ITCD_" + i).value;
+            if (ITEM != "") {
+                var QUANTITY = document.getElementById("QNTY_" + i).value; if (QUANTITY == "") { QUANTITY = parseFloat(0); } else { QUANTITY = parseFloat(QUANTITY); }
+                TOTAL_QNTY = parseFloat(TOTAL_QNTY) + parseFloat(QUANTITY);
+
+                var CANCQNTY = document.getElementById("CANCQNTY_" + i).value; if (CANCQNTY == "") { CANCQNTY = parseFloat(0); } else { CANCQNTY = parseFloat(CANCQNTY); }
+                TOTAL_CANCQNTY = parseFloat(TOTAL_CANCQNTY) + parseFloat(CANCQNTY);
+            }
+        }
+        document.getElementById("TOTAL_QNTY").value = parseFloat(TOTAL_QNTY).toFixed(3);
+        document.getElementById("TOTAL_CANCQNTY").value = parseFloat(TOTAL_CANCQNTY).toFixed(3);
+    }
+</script>
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -428,6 +438,9 @@
             @Html.HiddenFor(a => a.T_DO_CANC.DOCNO)
         }
         @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNSIZE, new { id = "MNTNSIZE" })
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNCOLOR, new { id = "MNTNCOLOR" })
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNPART, new { id = "MNTNPART" })
         @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
  <div class="form-horizontal" style="padding-left:5px;padding-right:5px;">
             <div class="row">
@@ -559,10 +572,12 @@
                                 @Html.EditorFor(model => model.ORDASONDT, new { htmlAttributes = new { @class = "form-control", id = "ORDASONDT", maxlength = 10, @placeholder = "dd/MM/yyyy" } })
                             </div>
                         </div>
-
+                        @if (Model.DefaultAction != "V")
+                        {
                         <div class="col-md-4" style="margin-top: 2px;">
                             <input type="button" class="btn btn-info" onclick="GetPendingData();" name="PendingData" style="padding:2px;" value="Get Balance Order Details" title="Click to Get Balance Order Details" />
                         </div>
+                        }
                     </div>
                 @*}*@
             </div>

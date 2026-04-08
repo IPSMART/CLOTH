@@ -33,5 +33,13 @@ namespace Improvar.ViewModels
 
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? ORDASONDT { get; set; }
+        public M_SYSCNFG M_SYSCNFG { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double? TOTAL_QNTY { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double? TOTAL_CANCQNTY { get; set; }
+
+
     }
 }
