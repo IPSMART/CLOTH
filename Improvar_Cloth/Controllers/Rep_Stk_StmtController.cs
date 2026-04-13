@@ -753,49 +753,49 @@ namespace Improvar.Controllers
                 string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
                 string fdt = CommVar.FinStartDate(UNQSNO);
 
-                string query = "select a.barno, e.itcd, e.fabitcd, a.doctag, a.qnty, a.txblval, a.othramt, f.itgrpcd, h.itgrpnm, f.itnm, ";
-                query += "nvl(e.pdesign, f.styleno) styleno, e.othrate, nvl(b.rate, 0) oprate, nvl(c.rate, 0) clrate, ";
-                query += "f.uomcd, i.uomnm, i.decimals, g.itnm fabitnm,e.hsncode,f.styleno||' '||f.itnm itstyle   from ";
+                string query = "select a.barno, e.itcd, e.fabitcd, a.doctag, a.qnty, a.txblval, a.othramt, f.itgrpcd, h.itgrpnm, f.itnm, "+Environment.NewLine;
+                query += "nvl(e.pdesign, f.styleno) styleno, e.othrate, nvl(b.rate, 0) oprate, nvl(c.rate, 0) clrate, " + Environment.NewLine;
+                query += "f.uomcd, i.uomnm, i.decimals, g.itnm fabitnm,e.hsncode,f.styleno||' '||f.itnm itstyle   from " + Environment.NewLine;
 
-                query += "(select a.barno, 'OP' doctag, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, ";
-                query += "sum(case a.stkdrcr when 'D' then nvl(a.txblval, 0) else nvl(a.txblval, 0) * -1 end) txblval, ";
-                query += "sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt ";
-                query += "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e ";
-                query += "where a.barno = b.barno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and ";
-                query += "d.compcd = '" + COM + "' and d.loccd in (" + LOC + ") and nvl(d.cancel, 'N') = 'N' and e.doctype not in ('KHSR') and a.stkdrcr in ('D', 'C') and ";
-                query += "d.docdt < to_date('" + fdt + "', 'dd/mm/yyyy') ";
-                if (GOCD.retStr() != "") query += "and a.gocd in (" + GOCD + ") ";
-                if (mtrljobcd.retStr() != "") query += "and a.mtrljobcd in (" + mtrljobcd + ") ";
-                query += "group by a.barno, 'OP' ";
-                query += "union all ";
-                query += "select a.barno, c.doctag, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, ";
-                query += "sum(case a.stkdrcr when 'D' then nvl(a.txblval, 0) else nvl(a.txblval, 0) * -1 end) txblval, ";
-                query += "sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt ";
-                query += "    from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e ";
-                query += "where a.barno = b.barno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and ";
-                query += "d.compcd = '" + COM + "' and d.loccd in (" + LOC + ") and nvl(d.cancel, 'N')= 'N' and e.doctype not in ('KHSR') and a.stkdrcr in ('D','C') and ";
-                query += "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and d.docdt <= to_date('" + ASDT + "', 'dd/mm/yyyy') ";
-                if (GOCD.retStr() != "") query += "and a.gocd in (" + GOCD + ") ";
-                if (mtrljobcd.retStr() != "") query += "and a.mtrljobcd in (" + mtrljobcd + ") ";
-                query += "group by a.barno, c.doctag ) a, ";
+                query += "(select a.barno, 'OP' doctag, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, " + Environment.NewLine;
+                query += "sum(case a.stkdrcr when 'D' then nvl(a.txblval, 0) else nvl(a.txblval, 0) * -1 end) txblval, " + Environment.NewLine;
+                query += "sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt " + Environment.NewLine;
+                query += "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e " + Environment.NewLine;
+                query += "where a.barno = b.barno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and " + Environment.NewLine;
+                query += "d.compcd = '" + COM + "' and d.loccd in (" + LOC + ") and nvl(d.cancel, 'N') = 'N' and e.doctype not in ('KHSR') and a.stkdrcr in ('D', 'C') and " + Environment.NewLine;
+                query += "d.docdt < to_date('" + fdt + "', 'dd/mm/yyyy') " + Environment.NewLine;
+                if (GOCD.retStr() != "") query += "and a.gocd in (" + GOCD + ") " + Environment.NewLine;
+                if (mtrljobcd.retStr() != "") query += "and a.mtrljobcd in (" + mtrljobcd + ") " + Environment.NewLine;
+                query += "group by a.barno, 'OP' " + Environment.NewLine;
+                query += "union all " + Environment.NewLine;
+                query += "select a.barno, c.doctag, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, " + Environment.NewLine;
+                query += "sum(case a.stkdrcr when 'D' then nvl(a.txblval, 0) else nvl(a.txblval, 0) * -1 end) txblval, " + Environment.NewLine;
+                query += "sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt " + Environment.NewLine;
+                query += "    from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e " + Environment.NewLine;
+                query += "where a.barno = b.barno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and " + Environment.NewLine;
+                query += "d.compcd = '" + COM + "' and d.loccd in (" + LOC + ") and nvl(d.cancel, 'N')= 'N' and e.doctype not in ('KHSR') and a.stkdrcr in ('D','C') and " + Environment.NewLine;
+                query += "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and d.docdt <= to_date('" + ASDT + "', 'dd/mm/yyyy') " + Environment.NewLine;
+                if (GOCD.retStr() != "") query += "and a.gocd in (" + GOCD + ") " + Environment.NewLine;
+                if (mtrljobcd.retStr() != "") query += "and a.mtrljobcd in (" + mtrljobcd + ") " + Environment.NewLine;
+                query += "group by a.barno, c.doctag ) a, " + Environment.NewLine;
 
-                query += "(select barno, effdt, prccd, rate from ( ";
-                query += "select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn ";
-                query += "from " + scm + ".t_batchmst_price a ";
-                query += "where a.effdt < to_date('" + fdt + "', 'dd/mm/yyyy') and a.prccd = '" + PRCCD + "' ) where rn = 1) b, ";
+                query += "(select barno, effdt, prccd, rate from ( " + Environment.NewLine;
+                query += "select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn " + Environment.NewLine;
+                query += "from " + scm + ".t_batchmst_price a " + Environment.NewLine;
+                query += "where a.effdt < to_date('" + fdt + "', 'dd/mm/yyyy') and a.prccd = '" + PRCCD + "' ) where rn = 1) b, " + Environment.NewLine;
 
-                query += "(select barno, effdt, prccd, rate from ( ";
-                query += "select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn ";
-                query += "from " + scm + ".t_batchmst_price a ";
-                query += "where a.effdt <= to_date('" + ASDT + "', 'dd/mm/yyyy') and a.prccd = '" + PRCCD + "' ) where rn = 1) c, ";
+                query += "(select barno, effdt, prccd, rate from ( " + Environment.NewLine;
+                query += "select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn " + Environment.NewLine;
+                query += "from " + scm + ".t_batchmst_price a " + Environment.NewLine;
+                query += "where a.effdt <= to_date('" + ASDT + "', 'dd/mm/yyyy') and a.prccd = '" + PRCCD + "' ) where rn = 1) c, " + Environment.NewLine;
 
-                query += "" + scm + ".t_batchmst e, " + scm + ".m_sitem f, " + scm + ".m_sitem g, " + scm + ".m_group h, " + scmf + ".m_uom i ";
-                query += "where a.barno = e.barno(+) and e.itcd = f.itcd(+) and e.fabitcd = g.fabitcd(+) and ";
-                query += "a.barno = b.barno(+) and a.barno = c.barno(+) and ";
-                query += "f.itgrpcd = h.itgrpcd(+) and f.uomcd = i.uomcd(+) ";
-                if (ITGRPCD.retStr() != "") query += "and f.itgrpcd in (" + ITGRPCD + ") ";
-                if (ITCD.retStr() != "") query += "and e.itcd in (" + ITCD + ") ";
-                query += "order by itgrpnm, itgrpcd, fabitnm, fabitcd, itnm, itcd, styleno, barno ";
+                query += "" + scm + ".t_batchmst e, " + scm + ".m_sitem f, " + scm + ".m_sitem g, " + scm + ".m_group h, " + scmf + ".m_uom i " + Environment.NewLine;
+                query += "where a.barno = e.barno(+) and e.itcd = f.itcd(+) and e.fabitcd = g.itcd(+) and " + Environment.NewLine;
+                query += "a.barno = b.barno(+) and a.barno = c.barno(+) and " + Environment.NewLine;
+                query += "f.itgrpcd = h.itgrpcd(+) and f.uomcd = i.uomcd(+) " + Environment.NewLine;
+                if (ITGRPCD.retStr() != "") query += "and f.itgrpcd in (" + ITGRPCD + ") " + Environment.NewLine;
+                if (ITCD.retStr() != "") query += "and e.itcd in (" + ITCD + ") " + Environment.NewLine;
+                query += "order by itgrpnm, itgrpcd, fabitnm, fabitcd, itnm, itcd, styleno, barno " + Environment.NewLine;
                 DataTable tbl1 = MasterHelp.SQLquery(query);
                 if (tbl1.Rows.Count == 0) return Content("no records..");
 
@@ -976,18 +976,33 @@ namespace Improvar.Controllers
                 if (VE.Checkbox3 == true) HC.GetPrintHeader(IR, "styleno", "string", "c,40", "Style No.");
                 HC.GetPrintHeader(IR, "uomnm", "string", "c,5", "uom");
                 HC.GetPrintHeader(IR, "opqty", "double", "n,16,3", "OP.Qnty");
-                HC.GetPrintHeader(IR, "opval", "double", "n,10,2", "OP.Value");
+                if (VE.Checkbox12 == false)
+                {
+                    HC.GetPrintHeader(IR, "opval", "double", "n,10,2", "OP.Value");
+                }
                 HC.GetPrintHeader(IR, "netpur", "double", "n,14,2", "Net Pur");
-                HC.GetPrintHeader(IR, "purval", "double", "n,14,2", "Purch Value");
+                if (VE.Checkbox12 == false)
+                {
+                    HC.GetPrintHeader(IR, "purval", "double", "n,14,2", "Purch Value");
+                }
                 HC.GetPrintHeader(IR, "karqty", "double", "n,14,2", "Kar Qnty");
-                HC.GetPrintHeader(IR, "karval", "double", "n,14,2", "Kar Value");
+                if (VE.Checkbox12 == false)
+                {
+                    HC.GetPrintHeader(IR, "karval", "double", "n,14,2", "Kar Value");
+                }
                 HC.GetPrintHeader(IR, "netsale", "double", "n,14,2", "Net Sale");
-                HC.GetPrintHeader(IR, "salevalue", "double", "n,14,2", "Sale Value");
+                if (VE.Checkbox12 == false)
+                {
+                    HC.GetPrintHeader(IR, "salevalue", "double", "n,14,2", "Sale Value");
+                }
                 HC.GetPrintHeader(IR, "approval", "double", "n,14,2", "Approval");
                 HC.GetPrintHeader(IR, "netstktrans", "double", "n,14,2", "Net Stk.Trnf");
                 HC.GetPrintHeader(IR, "netadj", "double", "n,14,2", "Net Adj");
                 HC.GetPrintHeader(IR, "balqty", "double", "n,14,2", "Bal Qnty");
-                HC.GetPrintHeader(IR, "balval", "double", "n,14,2", "Bal Value");
+                if (VE.Checkbox12 == false)
+                {
+                    HC.GetPrintHeader(IR, "balval", "double", "n,14,2", "Bal Value");
+                }
                 IR.Columns.Add("itgrpcd", typeof(string), "");
 
                 maxB = summarybarcode.Rows.Count - 1;
@@ -1051,18 +1066,21 @@ namespace Improvar.Controllers
                                     if (VE.Checkbox3 == true) IR.Rows[rNo]["styleno"] = summarybarcode.Rows[i - 1]["styleno"].ToString();
                                     IR.Rows[rNo]["uomnm"] = summarybarcode.Rows[i - 1]["uomcd"].ToString();
                                     IR.Rows[rNo]["opqty"] = opqty;
-                                    IR.Rows[rNo]["opval"] = opval;
                                     IR.Rows[rNo]["netpur"] = netpur;
-                                    IR.Rows[rNo]["purval"] = purval;
                                     IR.Rows[rNo]["karqty"] = karqty;
-                                    IR.Rows[rNo]["karval"] = karval;
                                     IR.Rows[rNo]["netsale"] = netsale;
-                                    IR.Rows[rNo]["salevalue"] = salevalue;
                                     IR.Rows[rNo]["approval"] = approval;
                                     IR.Rows[rNo]["netstktrans"] = netstktrans;
                                     IR.Rows[rNo]["netadj"] = netadj;
                                     IR.Rows[rNo]["balqty"] = balqty;
-                                    IR.Rows[rNo]["balval"] = balval;
+                                    if (VE.Checkbox12 == false)
+                                    {
+                                        IR.Rows[rNo]["opval"] = opval;
+                                        IR.Rows[rNo]["purval"] = purval;
+                                        IR.Rows[rNo]["karval"] = karval;
+                                        IR.Rows[rNo]["salevalue"] = salevalue;
+                                        IR.Rows[rNo]["balval"] = balval;
+                                    }
                                     if (i > maxB) break;
                                 }
                                 //IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
@@ -1106,18 +1124,21 @@ namespace Improvar.Controllers
                                     var row = IR.NewRow();
                                     row["uomnm"] = g.Key;
                                     row["opqty"] = g.Sum(r => r.Field<double?>("opqty") == null ? 0 : r.Field<double>("opqty"));
-                                    row["opval"] = g.Sum(r => r.Field<double?>("opval") == null ? 0 : r.Field<double>("opval"));
                                     row["netpur"] = g.Sum(r => r.Field<double?>("netpur").retDbl());
-                                    row["purval"] = g.Sum(r => r.Field<double?>("purval").retDbl());
                                     row["karqty"] = g.Sum(r => r.Field<double?>("karqty").retDbl());
-                                    row["karval"] = g.Sum(r => r.Field<double?>("karval").retDbl());
                                     row["approval"] = g.Sum(r => r.Field<double?>("approval").retDbl());
                                     row["netstktrans"] = g.Sum(r => r.Field<double?>("netstktrans").retDbl());
                                     row["netadj"] = g.Sum(r => r.Field<double?>("netadj").retDbl());
                                     row["netsale"] = g.Sum(r => r.Field<double?>("netsale").retDbl());
-                                    row["salevalue"] = g.Sum(r => r.Field<double?>("salevalue").retDbl());
                                     row["balqty"] = g.Sum(r => r.Field<double?>("balqty").retDbl());
-                                    row["balval"] = g.Sum(r => r.Field<double?>("balval").retDbl());
+                                    if (VE.Checkbox12 == false)
+                                    {
+                                        row["balval"] = g.Sum(r => r.Field<double?>("balval").retDbl());
+                                        row["opval"] = g.Sum(r => r.Field<double?>("opval") == null ? 0 : r.Field<double>("opval"));
+                                        row["purval"] = g.Sum(r => r.Field<double?>("purval").retDbl());
+                                        row["karval"] = g.Sum(r => r.Field<double?>("karval").retDbl());
+                                        row["salevalue"] = g.Sum(r => r.Field<double?>("salevalue").retDbl());
+                                    }
                                     return row;
                                 }).CopyToDataTable();
                     int cnt = 0;
@@ -1130,18 +1151,21 @@ namespace Improvar.Controllers
                             else { IR.Rows.Add(""); rNo = IR.Rows.Count - 1; }
                             IR.Rows[rNo]["uomnm"] = unitwisegrptotal.Rows[k]["uomnm"];
                             IR.Rows[rNo]["opqty"] = unitwisegrptotal.Rows[k]["opqty"];
-                            IR.Rows[rNo]["opval"] = unitwisegrptotal.Rows[k]["opval"];
                             IR.Rows[rNo]["netpur"] = unitwisegrptotal.Rows[k]["netpur"];
-                            IR.Rows[rNo]["purval"] = unitwisegrptotal.Rows[k]["purval"];
                             IR.Rows[rNo]["karqty"] = unitwisegrptotal.Rows[k]["karqty"];
-                            IR.Rows[rNo]["karval"] = unitwisegrptotal.Rows[k]["karval"];
                             IR.Rows[rNo]["approval"] = unitwisegrptotal.Rows[k]["approval"];
                             IR.Rows[rNo]["netstktrans"] = unitwisegrptotal.Rows[k]["netstktrans"];
                             IR.Rows[rNo]["netadj"] = unitwisegrptotal.Rows[k]["netadj"];
                             IR.Rows[rNo]["netsale"] = unitwisegrptotal.Rows[k]["netsale"];
-                            IR.Rows[rNo]["salevalue"] = unitwisegrptotal.Rows[k]["salevalue"];
                             IR.Rows[rNo]["balqty"] = unitwisegrptotal.Rows[k]["balqty"];
-                            IR.Rows[rNo]["balval"] = unitwisegrptotal.Rows[k]["balval"];
+                            if (VE.Checkbox12 == false)
+                            {
+                                IR.Rows[rNo]["balval"] = unitwisegrptotal.Rows[k]["balval"];
+                                IR.Rows[rNo]["opval"] = unitwisegrptotal.Rows[k]["opval"];
+                                IR.Rows[rNo]["purval"] = unitwisegrptotal.Rows[k]["purval"];
+                                IR.Rows[rNo]["karval"] = unitwisegrptotal.Rows[k]["karval"];
+                                IR.Rows[rNo]["salevalue"] = unitwisegrptotal.Rows[k]["salevalue"];
+                            }
 
                         }
                     }
@@ -1171,18 +1195,21 @@ namespace Improvar.Controllers
                                     var row = IR.NewRow();
                                     row["uomnm"] = g.Key;
                                     row["opqty"] = g.Sum(r => r.Field<double?>("opqty") == null ? 0 : r.Field<double>("opqty"));
-                                    row["opval"] = g.Sum(r => r.Field<double?>("opval") == null ? 0 : r.Field<double>("opval"));
                                     row["netpur"] = g.Sum(r => r.Field<double?>("netpur").retDbl());
-                                    row["purval"] = g.Sum(r => r.Field<double?>("purval").retDbl());
                                     row["karqty"] = g.Sum(r => r.Field<double?>("karqty").retDbl());
-                                    row["karval"] = g.Sum(r => r.Field<double?>("karval").retDbl());
                                     row["approval"] = g.Sum(r => r.Field<double?>("approval").retDbl());
                                     row["netstktrans"] = g.Sum(r => r.Field<double?>("netstktrans").retDbl());
                                     row["netadj"] = g.Sum(r => r.Field<double?>("netadj").retDbl());
                                     row["netsale"] = g.Sum(r => r.Field<double?>("netsale").retDbl());
-                                    row["salevalue"] = g.Sum(r => r.Field<double?>("salevalue").retDbl());
                                     row["balqty"] = g.Sum(r => r.Field<double?>("balqty").retDbl());
-                                    row["balval"] = g.Sum(r => r.Field<double?>("balval").retDbl());
+                                    if (VE.Checkbox12 == false)
+                                    {
+                                        row["balval"] = g.Sum(r => r.Field<double?>("balval").retDbl());
+                                        row["opval"] = g.Sum(r => r.Field<double?>("opval") == null ? 0 : r.Field<double>("opval"));
+                                        row["purval"] = g.Sum(r => r.Field<double?>("purval").retDbl());
+                                        row["karval"] = g.Sum(r => r.Field<double?>("karval").retDbl());
+                                        row["salevalue"] = g.Sum(r => r.Field<double?>("salevalue").retDbl());
+                                    }
                                     return row;
                                 }).CopyToDataTable();
                 int cnt1 = 0;
@@ -1201,24 +1228,27 @@ namespace Improvar.Controllers
                         IR.Rows[rNo]["itgrpcd"] = "grandtotal";
                         IR.Rows[rNo]["uomnm"] = grptbl.Rows[k]["uomnm"];
                         IR.Rows[rNo]["opqty"] = grptbl.Rows[k]["opqty"];
-                        IR.Rows[rNo]["opval"] = grptbl.Rows[k]["opval"];
                         IR.Rows[rNo]["netpur"] = grptbl.Rows[k]["netpur"];
-                        IR.Rows[rNo]["purval"] = grptbl.Rows[k]["purval"];
                         IR.Rows[rNo]["karqty"] = grptbl.Rows[k]["karqty"];
-                        IR.Rows[rNo]["karval"] = grptbl.Rows[k]["karval"];
                         IR.Rows[rNo]["approval"] = grptbl.Rows[k]["approval"];
                         IR.Rows[rNo]["netstktrans"] = grptbl.Rows[k]["netstktrans"];
                         IR.Rows[rNo]["netadj"] = grptbl.Rows[k]["netadj"];
                         IR.Rows[rNo]["netsale"] = grptbl.Rows[k]["netsale"];
-                        IR.Rows[rNo]["salevalue"] = grptbl.Rows[k]["salevalue"];
                         IR.Rows[rNo]["balqty"] = grptbl.Rows[k]["balqty"];
-                        IR.Rows[rNo]["balval"] = grptbl.Rows[k]["balval"];
+                        if (VE.Checkbox12 == false)
+                        {
+                            IR.Rows[rNo]["balval"] = grptbl.Rows[k]["balval"];
+                            IR.Rows[rNo]["opval"] = grptbl.Rows[k]["opval"];
+                            IR.Rows[rNo]["purval"] = grptbl.Rows[k]["purval"];
+                            IR.Rows[rNo]["karval"] = grptbl.Rows[k]["karval"];
+                            IR.Rows[rNo]["salevalue"] = grptbl.Rows[k]["salevalue"];
+                        }
 
                     }
                 }
 
 
-                if (cnt1 > 1)
+                if (cnt1 > 1 && VE.Checkbox12 == false)
                 {
                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                     IR.Rows[rNo]["itnm"] = "Total Value";

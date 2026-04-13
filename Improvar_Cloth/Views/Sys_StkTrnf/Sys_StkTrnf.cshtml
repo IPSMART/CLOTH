@@ -38,6 +38,21 @@
             if (!emptyFieldCheck("Enter From Date", "FDT")) { return false; }
             if (!emptyFieldCheck("Enter To Date", "TDT")) { return false; }
         }
+        if ("@CommVar.ClientCode(Model.UNQSNO)" == "SACH" || "@CommVar.ClientCode(Model.UNQSNO)" == "LALF" || "@CommVar.ClientCode(Model.UNQSNO)" == "TRES"  || "@CommVar.ClientCode(Model.UNQSNO)" == "ROPS" || "@CommVar.ClientCode(Model.UNQSNO)" == "KNYA" || "@CommVar.ClientCode(Model.UNQSNO)" == "DDYA" || "@CommVar.ClientCode(Model.UNQSNO)" == "ANKN") {
+            if (document.getElementById("Checkbox2").checked == true) {
+                if (!emptyFieldCheck("Enter Material Job", "MTRLJOBCD")) { return false; }
+            }
+        }
+        if ("@CommVar.ClientCode(Model.UNQSNO)" == "SNFP" || "@CommVar.ClientCode(Model.UNQSNO)" == "BNBH") {
+            if (document.getElementById("Checkbox7").checked == true) {
+                if (!emptyFieldCheck("Enter Material Job", "MTRLJOBCD")) { return false; }
+            }
+        }
+        @*if ("@CommVar.ClientCode(Model.UNQSNO)" == "DIWH" || "@CommVar.ClientCode(Model.UNQSNO)" == "DDYA" || "@CommVar.ClientCode(Model.UNQSNO)" == "ANKN") {
+            if (document.getElementById("Checkbox10").checked == true) {
+                if (!emptyFieldCheck("Enter Material Job", "MTRLJOBCD")) { return false; }
+            }
+        }*@
         $.ajax({
             type: 'POST',
             url: "@Url.Action("Sys_StkTrnf1", PageControllerName)",
@@ -56,11 +71,11 @@
 </script>
 <script>
     function FinStockChecked(id, id1, id2) {
-        var chk = document.getElementById(id).checked;
-        if (chk == true) {
-            document.getElementById(id1).checked = false;
-            if (id2 != '') {
-                document.getElementById(id2).checked = false;
+        if ($('#' + id).is(':checked')) {
+            $('#' + id1).prop('checked', false);
+
+            if (id2 !== '') {
+                $('#' + id2).prop('checked', false);
             }
         }
     }
@@ -151,7 +166,29 @@
                         </div>
                     </div>
                 }
-                @if (CommVar.ClientCode(Model.UNQSNO) == "SACH" || CommVar.ClientCode(Model.UNQSNO) == "LALF" || CommVar.ClientCode(Model.UNQSNO) == "TRES" || CommVar.ClientCode(Model.UNQSNO) == "DIWH" || CommVar.ClientCode(Model.UNQSNO) == "ROPS" || CommVar.ClientCode(Model.UNQSNO) == "KNYA" || CommVar.ClientCode(Model.UNQSNO) == "DDYA" || CommVar.ClientCode(Model.UNQSNO) == "ANKN")
+                @if (CommVar.ClientCode(Model.UNQSNO) != "DIWH")
+                {
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Material Job")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.MTRLJOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MTRLJOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/Mtrljobnm=Mtrljobnm=0')", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/Mtrljobnm=Mtrljobnm=0');", @placeholder = "Material Job Code", maxlength = 2 } })
+                                <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetMaterialDetails", PageControllerName)','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/Mtrljobnm=Mtrljobnm=0')" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.Mtrljobnm, new { htmlAttributes = new { @class = "form-control", id = "Mtrljobnm", maxlength = 45, @title = "Only for View", @placeholder = "Material Job Name", @readonly = "readonly", tabindex = "-1" } })
+                            </div>
+                        </div>
+                    </div>
+                }
+                @if (CommVar.ClientCode(Model.UNQSNO) == "SACH" || CommVar.ClientCode(Model.UNQSNO) == "LALF" || CommVar.ClientCode(Model.UNQSNO) == "TRES" || CommVar.ClientCode(Model.UNQSNO) == "ROPS" || CommVar.ClientCode(Model.UNQSNO) == "KNYA" || CommVar.ClientCode(Model.UNQSNO) == "DDYA" || CommVar.ClientCode(Model.UNQSNO) == "ANKN")
                 {
                     <div class="row">
                         <div class="col-lg-2">
@@ -159,7 +196,7 @@
                                 @Html.Label("", "Finish Stock from Prev.Year")
                             </div>
                         </div>
-                        <div class="col-md-9">
+                        <div class="col-md-9" style="width:auto;">
                             <div class="editor-field" style="margin-top: 1px;">
                                 @Html.CheckBoxFor(model => model.Checkbox2, new { id = "Checkbox2", onclick = "FinStockChecked(this.id,'Checkbox7','Checkbox10');" })
                             </div>
@@ -191,7 +228,7 @@
                         </div>
                     </div>
                 }
-                @if (CommVar.ClientCode(Model.UNQSNO) == "DIWH" || CommVar.ClientCode(Model.UNQSNO) == "DDYA" || CommVar.ClientCode(Model.UNQSNO) == "ANKN")
+                @if (CommVar.ClientCode(Model.UNQSNO) == "DIWH")
                 {
                     <div class="row">
                         <div class="col-lg-2">

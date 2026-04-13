@@ -1443,9 +1443,10 @@ namespace Improvar.Controllers
                 VE.SHOWBLTYPE = dropDownHelp.DropDownBLTYPE().Count > 0 ? "Y" : "N";
                 string sql = "";
 
-                sql = "select distinct a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.slcd, c.slnm, c.district, nvl(a.blamt,0) blamt,a.PREFDT,a.PREFno,e.bltype,e.DOCREM,nvl(b.cancel,'N')cancel,b.doconlyno,b.docdt dt,g.docno issdocno,to_char(g.docdt,'dd/mm/yyyy') issdocdt ";
-                sql += "from " + scm + ".t_txn a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_subleg c, " + scm + ".t_txndtl d, " + scm + ".t_txnoth e, " + scm + ".T_STKTRNF f, " + scm + ".t_cntrl_hdr g ";
-                sql += "where a.autono=b.autono and a.slcd=c.slcd(+) and b.doccd in (" + doccd + ") and a.autono=d.autono(+) and a.autono=e.autono(+) and a.autono=f.autono(+) and f.othautono=g.autono(+) and ";
+                sql = "select distinct a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.slcd, c.slnm, c.district, nvl(a.blamt,0) blamt,a.PREFDT,a.PREFno,e.bltype,e.DOCREM,nvl(b.cancel,'N')cancel,b.doconlyno,b.docdt dt,g.docno issdocno,to_char(g.docdt,'dd/mm/yyyy') issdocdt, ";
+                sql += "e.agslcd,h.slnm agslnm ";
+                sql += "from " + scm + ".t_txn a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_subleg c, " + scm + ".t_txndtl d, " + scm + ".t_txnoth e, " + scm + ".T_STKTRNF f, " + scm + ".t_cntrl_hdr g ," + scmf + ".m_subleg h ";
+                sql += "where a.autono=b.autono and a.slcd=c.slcd(+) and b.doccd in (" + doccd + ") and a.autono=d.autono(+) and a.autono=e.autono(+) and a.autono=f.autono(+) and f.othautono=g.autono(+) and e.agslcd=h.slcd(+) and ";
                 if (SRC_FDT.retStr() != "") sql += "b.docdt >= to_date('" + SRC_FDT.retDateStr() + "','dd/mm/yyyy') and ";
                 if (SRC_TDT.retStr() != "") sql += "b.docdt <= to_date('" + SRC_TDT.retDateStr() + "','dd/mm/yyyy') and ";
                 if (SRC_DOCNO.retStr() != "") sql += "(b.vchrno like '%" + SRC_DOCNO.retStr() + "%' or b.docno like '%" + SRC_DOCNO.retStr() + "%' or a.prefno like '%" + SRC_DOCNO.retStr() + "%') and  ";
@@ -1489,7 +1490,7 @@ namespace Improvar.Controllers
                 else
                 {
                     var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Party Name" + Cn.GCS() + "Bill Amt"
-                        + (VE.SHOWBLTYPE.retStr() == "Y" ? (Cn.GCS() + "Bill Type") : "") + Cn.GCS() + "Doc.Remarks" + Cn.GCS() + "AUTO NO";
+                        + (VE.SHOWBLTYPE.retStr() == "Y" ? (Cn.GCS() + "Bill Type") : "") + Cn.GCS() + "Doc.Remarks" + Cn.GCS() + "AUTO NO" + Cn.GCS() + "Agent Name";
                     for (int j = 0; j <= tbl.Rows.Count - 1; j++)
                     {
                         string cancel = tbl.Rows[j]["cancel"].retStr() == "Y" ? "<b> (Cancelled)</b>" : "";
@@ -1497,7 +1498,7 @@ namespace Improvar.Controllers
                             + " </td><td><b>" + tbl.Rows[j]["slnm"] + "</b> [" + tbl.Rows[j]["district"] + "] (" + tbl.Rows[j]["slcd"] + ") </td><td class='text-right'>"
                             + Convert.ToDouble(tbl.Rows[j]["blamt"]) + " </td>"
                             + (VE.SHOWBLTYPE.retStr() == "Y" ? "<td>" + tbl.Rows[j]["bltype"] + " </td>" : "")
-                            + "<td>" + tbl.Rows[j]["DOCREM"] + " </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
+                            + "<td>" + tbl.Rows[j]["DOCREM"] + " </td><td>" + tbl.Rows[j]["autono"] + " </td><td><b>" + tbl.Rows[j]["agslnm"] + "</b> (" + tbl.Rows[j]["agslcd"] + ") </td></tr>");
                     }
                     return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), (VE.SHOWBLTYPE.retStr() == "Y" ? "6" : "5"), (VE.SHOWBLTYPE.retStr() == "Y" ? "6" : "5")));
                 }
@@ -4504,7 +4505,8 @@ namespace Improvar.Controllers
                 str1 += "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and i.STKTYPE=q.STKTYPE(+) and i.ORDAUTONO=r.AUTONO(+) and j.fabitcd=t.itcd(+) " + Environment.NewLine;
                 str1 += "and i.autono=s.autono and i.txnslno=s.slno and i.autono=u.autono(+) and i.txnslno=u.slno(+) and i.baleno=u.baleno(+) and i.autono=v.autono and s.autono=w.autono " + Environment.NewLine;
                 str1 += "and i.AUTONO in ('" + AUTONO + "') and i.BALENO='" + VE.BALENO_HELP + "' and i.GOCD='" + VE.T_TXN.GOCD + "' " + Environment.NewLine;
-                str1 += "and i.SLNO <= 1000 and nvl(v.cancel, 'N') = 'N' and w.doctag not in ('SB','SR') " + Environment.NewLine;
+                //str1 += "and i.SLNO <= 1000 and nvl(v.cancel, 'N') = 'N' and w.doctag not in ('SB','SR') " + Environment.NewLine;
+                str1 += "and i.SLNO <= 1000 and nvl(v.cancel, 'N') = 'N' and w.doctag not in ('SB') " + Environment.NewLine;//2010758 in snc2026 bale not coming
                 str1 += "group by i.AUTONO,i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM, " + Environment.NewLine;
                 str1 += "p.PRTBARCODE,i.STKTYPE,q.STKNAME,i.BARNO,j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.RATE,i.DISCRATE, " + Environment.NewLine;
                 str1 += "i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.LOCABIN,i.BALEYR " + Environment.NewLine;
@@ -6719,7 +6721,7 @@ namespace Improvar.Controllers
                             if (blconslcd1 == sslcd) blconslcd1 = "";
                             dbsql = masterHelp.InsVch_Bl(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, cr,
                                     tbl.Rows[0]["parglcd"].ToString(), sslcd, blconslcd1, TTXNOTH.AGSLCD, tbl.Rows[0]["class1cd"].ToString(), Convert.ToInt16(2),
-                                    dbamt, strblno, strbldt, strrefno, strduedt, "TD", TTXN.DUEDAYS.Value, 0, TTXN.PREFNO,
+                                    dbamt, strblno, strbldt, strrefno, strduedt, "TD", TTXN.DUEDAYS.retDbl(), 0, TTXN.PREFNO,
                                     TTXN.PREFDT == null ? "" : TTXN.PREFDT.ToString().retDateStr(), 0,
                                     //VE.T_TXNTRANS.LRNO, VE.T_TXNTRANS.LRDT == null ? "" : VE.T_TXNTRANS.LRDT.ToString().retDateStr(), VE.TransporterName);
                                     VE.T_TXNTRANS.LRNO, VE.T_TXNTRANS.LRDT == null ? "" : VE.T_TXNTRANS.LRDT.ToString().retDateStr(), VE.TRANSLNM);

@@ -101,7 +101,7 @@ namespace Improvar.ViewModels
         public string Locnm { get; set; }
         public string Gonm { get; set; }
         public string Mtrljobnm { get; set; }
-        
+        public string MTRLJOBCD { get; set; }
         public string PRCCD { get; set; }
         public string PRCNM { get; set; }
         public string JOBCD { get; set; }
@@ -119,7 +119,7 @@ namespace Improvar.ViewModels
         public string GLTBGrp { get; set; }
         public string CompanyLocationName { get; set; }
         public bool SkipClosingVoucher { get; set; }
-        public string RTDEBCD { get; set;}
+        public string RTDEBCD { get; set; }
         public string AUTONO { get; set; }
     }
 }

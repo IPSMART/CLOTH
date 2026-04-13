@@ -39,6 +39,8 @@ namespace Improvar.Controllers
 
                     VE.DropDown_list_ITGRP = (from i in DB.M_GROUP select new DropDown_list_ITGRP() { value = i.ITGRPCD, text = i.ITGRPNM }).OrderBy(s => s.text).ToList();
                     VE.Itgrpnm = masterHelp.ComboFill("itgrpcd", VE.DropDown_list_ITGRP, 0, 1);
+                    VE.MTRLJOBCD = "FS";
+                    VE.Mtrljobnm = (from i in DB.M_MTRLJOBMST where i.MTRLJOBCD == VE.MTRLJOBCD select i.MTRLJOBNM).FirstOrDefault();
 
                     VE.DefaultView = true;
                     return View(VE);
@@ -124,6 +126,7 @@ namespace Improvar.Controllers
                     bool batchwise = true;
                     if (VE.Checkbox2 == true || VE.Checkbox7 == true || VE.Checkbox10 == true)
                     {
+                        string MTRLJOBCD = VE.MTRLJOBCD.retSqlformat();
                         sql = "select distinct a.gocd from " + oldschema + ".t_txn a, " + oldschema + ".t_cntrl_hdr b, " + oldschema + ".t_txndtl c , " + oldschema + ".m_sitem d ";
                         sql += "where a.autono = b.autono and a.autono=c.autono and c.itcd=d.itcd and b.compcd = '" + CommVar.Compcd(UNQSNO) + "' and b.loccd = '" + CommVar.Loccd(UNQSNO) + "'  ";
                         tbltmp = masterHelp.SQLquery(sql);
@@ -134,15 +137,15 @@ namespace Improvar.Controllers
                         if (VE.Checkbox7 == true)
                         {
                             //tbl = Salesfunc.GetStockFifo("FIFO", lastdayofprvyear, "", "", "", "", gocd, false, "", false, "", scm1, scmf1, "", "CP");
-                            tbl = Salesfunc.GenStocktblwithVal("FIFO", lastdayofprvyear, "", "", selitgrpcd, "", gocd, false, "", false, "", scm1, "", scmf1, false, SkipNegetivStock);
+                            tbl = Salesfunc.GenStocktblwithVal("FIFO", lastdayofprvyear, "", MTRLJOBCD, selitgrpcd, "", gocd, false, "", false, "", scm1, "", scmf1, false, SkipNegetivStock);
                         }
                         else if (VE.Checkbox10 == true)
                         {
-                            tbl = Salesfunc.GetStock(lastdayofprvyear, gocd, "", "", "FS".retSqlformat(), "", "", "", "CP", "C001", "", "", true, false, scm1, scmf1, false, false, true, "", false, "", "", false, false, VE.Checkbox10, SkipNegetivStock);
+                            tbl = Salesfunc.GetStock(lastdayofprvyear, gocd, "", "", "", "", "", "", "CP", "C001", "", "", true, false, scm1, scmf1, false, false, true, "", false, "", "", false, false, VE.Checkbox10, SkipNegetivStock);
                         }
                         else
                         {
-                            tbl = Salesfunc.GetStock(lastdayofprvyear, gocd, "", "", "FS".retSqlformat(), "", "", "", "CP", "C001", "", "", true, false, scm1, scmf1, false, false, true, "", false, "", "", false, false, false, SkipNegetivStock);
+                            tbl = Salesfunc.GetStock(lastdayofprvyear, gocd, "", "", MTRLJOBCD, "", "", "", "CP", "C001", "", "", true, false, scm1, scmf1, false, false, true, "", false, "", "", false, false, false, SkipNegetivStock);
                         }
 
                         DataView dv = tbl.DefaultView;
@@ -158,7 +161,8 @@ namespace Improvar.Controllers
                         //sqlc += "(b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "' or c.doctype in ('FOSTK')) and ";
                         sqlc += "e.itgrpcd=g.itgrpcd(+) and f.millnm in ('OPSTOCK') and ";
                         sqlc += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' ";
-                        if (selitgrpcd.retStr() != "") sql += "and g.itgrpcd in (" + selitgrpcd + ") " + Environment.NewLine;
+                        if (VE.Checkbox10 == false) sqlc += " and f.MTRLJOBCD = " + MTRLJOBCD + "";
+                        if (selitgrpcd.retStr() != "") sqlc += "and g.itgrpcd in (" + selitgrpcd + ") " + Environment.NewLine;
 
                         DataTable tbldel = masterHelp.SQLquery(sqlc);
 
@@ -1468,6 +1472,7 @@ namespace Improvar.Controllers
                                         {
                                             TBATCHDTL.QNTY = PendingJobDT.Rows[i]["balqnty"].retDbl();
                                             TBATCHDTL.NOS = PendingJobDT.Rows[i]["balnos"].retInt();
+                                            TBATCHDTL.STKDRCR = "N";
                                             dbsql = MasterHelpFa.RetModeltoSql(TBATCHDTL);
                                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
@@ -2026,6 +2031,18 @@ namespace Improvar.Controllers
                     dbsql += "where barno || prccd || effdt not in (select barno || prccd || effdt from " + newschema + ".t_batchmst_price) ";
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
+                    dbsql = "";
+                    dbsql += "insert into " + newschema + ".T_BATCH_IMG_HDR ";
+                    dbsql += "select * from " + oldschema + ".T_BATCH_IMG_HDR ";
+                    dbsql += "where barno not in (select barno from " + newschema + ".T_BATCH_IMG_HDR) ";
+                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
+                    dbsql = "";
+                    dbsql += "insert into " + newschema + ".T_BATCH_IMG_HDR_LINK ";
+                    dbsql += "select * from " + oldschema + ".T_BATCH_IMG_HDR_LINK ";
+                    dbsql += "where barno not in (select barno from " + newschema + ".T_BATCH_IMG_HDR_LINK) ";
+                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
                     #endregion
 
                     ModelState.Clear();
@@ -2099,6 +2116,26 @@ namespace Improvar.Controllers
                     {
                         return Content("Invalid Document Code ! Please Select / Enter a Valid Document Code !!");
                     }
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public ActionResult GetMaterialDetails(string val)
+        {
+            try
+            {
+                var str = masterHelp.MTRLJOBCD_help(val);
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    return Content(str);
                 }
             }
             catch (Exception ex)
