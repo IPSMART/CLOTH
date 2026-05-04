@@ -307,7 +307,7 @@ namespace Improvar.Controllers
 
                     //sql = "select distinct a.slcd, nvl(a.fullname,a.slnm) slnm, a.add1, a.add2, a.add3, a.add4, ";
                     sql = "select distinct a.slcd, a.slnm, a.add1, a.add2, a.add3, a.add4,a.slphno,a.gstno, ";
-                    sql += "a.add5, a.add6, a.add7, nvl(a.regmobile,a.slphno)regmobile, a.regemailid ";
+                    sql += "a.add5, a.add6, a.add7, NVL(TO_CHAR(a.regmobile), TO_CHAR(a.slphno))regmobile, a.regemailid ";
                     sql += "from " + scmf + ".m_subleg a," + scmf + ".m_subleg_link b where a.slcd=b.slcd(+) ";
                     if (slcd == "")
                     {
