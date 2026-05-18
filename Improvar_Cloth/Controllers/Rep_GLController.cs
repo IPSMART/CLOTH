@@ -7,6 +7,8 @@ using CrystalDecisions.CrystalReports.Engine;
 using System.Web.Mvc;
 using Improvar.Models;
 using Improvar.ViewModels;
+using System.Text.RegularExpressions;
+using System.IO.Compression;
 
 namespace Improvar.Controllers
 {
@@ -42,7 +44,7 @@ namespace Improvar.Controllers
                 }
                 else if (VE.MENU_PARA == "SUBLEG")
                 {
-                    ViewBag.formname = "Sub Ledger Printing";
+                    ViewBag.formname = "Agent Wise Party Ledger";
                     Para1 = "D,C,O"; slcdmust = "N,Y";
                     Para1 = "D,C,O"; slcdmust = "N,Y";
                 }
@@ -80,6 +82,9 @@ namespace Improvar.Controllers
 
                 VE.DropDown_list_CompanyLocationName = DropDownHelp.GetCompanyLocationName(VE.MenuID, Convert.ToDouble(VE.MenuIndex));
                 VE.CompanyLocationName = MasterHelp.ComboFill("comploccd", VE.DropDown_list_CompanyLocationName, 0, 1);
+
+                VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("A");
+                VE.Agslnm = MasterHelp.ComboFill("agslcd", VE.DropDown_list_SLCD, 0, 1);
 
                 if (VE.MENU_PARA == "SUBLEG") VE.Checkbox1 = false; else VE.Checkbox1 = true; // Show Sub Ledger details
                 VE.Checkbox2 = CommVar.ClientCode(UNQSNO) == "MKJ" ? false : true;// Running Balance
@@ -122,7 +127,7 @@ namespace Improvar.Controllers
 
                 string COMLOC = "";
                 if (FC.AllKeys.Contains("comploccdvalue")) COMLOC = FC["comploccdvalue"].ToString().retSqlformat();
-                string total = VE.TEXTBOX1;
+                string total = "G";// VE.TEXTBOX1;
                 switch (Command)
                 {
                     case "Crystal":
@@ -135,6 +140,8 @@ namespace Improvar.Controllers
                         reptype = "V"; break;
                     case "EXPEXCL":
                         reptype = "G"; break;
+                    case "Pdf":
+                        reptype = "P"; break;
                 }
 
                 if (VE.MENU_PARA == "BANK")
@@ -156,7 +163,7 @@ namespace Improvar.Controllers
                 {
                     Para1 = " and c.slcdmust = 'Y' ";
                     Para1 = " and nvl(c.slcdmust,'N') in ('N','Y') ";
-                    Para2 = "Sub Ledger Book From " + FD + " upto " + TD;
+                    Para2 = "Agent Wise Party Ledger From " + FD + " upto " + TD;
                     srt2 = "glcd,slnm,slcd,";
                     fld1 = "b.glcd,b.slcd,";
                     fld2 = "a.glcd,a.slcd,";
@@ -169,13 +176,13 @@ namespace Improvar.Controllers
                     fld5 = "c.add1,c.add2,c.add3,c.add4,c.add5,c.add6,c.phno1std sltel1,c.phno1 sltel2,c.panno slpan,c.gstno slgstno, c.state slstate, c.statecd slstatecd";
                 }
 
-                string RunnBal1 = VE.Checkbox2.ToString();
+                string RunnBal1 = "True";// VE.Checkbox2.ToString();
                 if (RunnBal1 == "False") RunnBal1 = "N"; else RunnBal1 = "Y";
                 if (reptype == "E" || reptype == "V") RunnBal1 = "Y";
 
-                string drcrhead = VE.Checkbox3.ToString();
+                string drcrhead = "True";// VE.Checkbox3.ToString();
                 string class1 = VE.Checkbox4.ToString();
-                string chq1 = VE.Checkbox5.ToString();
+                string chq1 = "True";// VE.Checkbox5.ToString();
                 string bill1 = VE.Checkbox6.ToString();
                 bool ShowOpinTotal = VE.Checkbox7;
                 bool sublegshow = VE.Checkbox1;
@@ -188,7 +195,7 @@ namespace Improvar.Controllers
                 {
                     drcrhead = "Y";
                 }
-
+                VE.Checkbox9 = true;
                 string selGlTbGrp = "";
                 if (FC.AllKeys.Contains("gltbgrpcdvalue")) selGlTbGrp = FC["gltbgrpcdvalue"].ToString().retSqlformat();
                 string selSlPartyGrp = "";
@@ -216,8 +223,9 @@ namespace Improvar.Controllers
                 }
                 string selclass1cd = "";
                 if (FC.AllKeys.Contains("class1cdvalue")) selclass1cd = FC["class1cdvalue"].ToString().retSqlformat();
-                string selclass2cd = "";
+                string selclass2cd = "", selagslcd = "";
                 if (FC.AllKeys.Contains("class2cdvalue")) selclass2cd = FC["class2cdvalue"].ToString().retSqlformat();
+                if (FC.AllKeys.Contains("agslcdvalue")) selagslcd = CommFunc.retSqlformat(FC["agslcdvalue"].ToString());
 
                 string FScm1 = CommVar.FinSchema(UNQSNO);
                 CS = Cn.GetConnectionString();
@@ -258,64 +266,89 @@ namespace Improvar.Controllers
                     string FinSchm = rsFinYr.Rows[fi]["schema_name"].retStr();
                     if (fi > 0) sql1 += " union all ";
 
-                    sql1 += "select b.compcd,h.compnm,b.loccd,g.locnm,a.autono, a.agslcd, e.slnm agslnm, c.glnm, a.glcd, d.slnm,RTRIM(d.district|| '-' ||d.slarea,'-') slcity, a.slcd, a.docdt, a.docno,  " + Environment.NewLine;
-                    sql1 += "y.trcd, x.t_rem, x.chqno, x.chqdt, y.pay_by, y.bank_code,y.paid_to,x.rtgsno, f.glnm bankglnm, f.shortnm, a.amt,a.dramt,a.cramt,a.drcr, " + Environment.NewLine;
-                    sql1 += "d.add1,d.add2,d.add3,d.add4,d.add5,d.add6,d.phno1std sltel1,d.phno1 sltel2,d.panno slpan,d.gstno slgstno, d.state slstate, d.statecd slstatecd, " + Environment.NewLine;
-                    sql1 += "i.slnm dslnm, i.district dslcity,x.bank_name,j.glnm dglnm,j.shortnm dshortnm,'" + rsFinYr.Rows[fi]["from_date"].retStr() + "' from_date,'" + rsFinYr.Rows[fi]["to_date"].retStr() + "' to_date, " + Environment.NewLine;
-                    sql1 += "x.inttds,x.bank_dt,x.qnty " + Environment.NewLine;
-                    sql1 += "from ( " + Environment.NewLine;
+                    #region Old query
+                    //sql1 += "select b.compcd,h.compnm,b.loccd,g.locnm,a.autono, a.agslcd, e.slnm agslnm, c.glnm, a.glcd, d.slnm,RTRIM(d.district|| '-' ||d.slarea,'-') slcity, a.slcd, a.docdt, a.docno,  " + Environment.NewLine;
+                    //sql1 += "y.trcd, x.t_rem, x.chqno, x.chqdt, y.pay_by, y.bank_code,y.paid_to,x.rtgsno, f.glnm bankglnm, f.shortnm, a.amt,a.dramt,a.cramt,a.drcr, " + Environment.NewLine;
+                    //sql1 += "d.add1,d.add2,d.add3,d.add4,d.add5,d.add6,d.phno1std sltel1,d.phno1 sltel2,d.panno slpan,d.gstno slgstno, d.state slstate, d.statecd slstatecd, " + Environment.NewLine;
+                    //sql1 += "i.slnm dslnm, i.district dslcity,x.bank_name,j.glnm dglnm,j.shortnm dshortnm,'" + rsFinYr.Rows[fi]["from_date"].retStr() + "' from_date,'" + rsFinYr.Rows[fi]["to_date"].retStr() + "' to_date, " + Environment.NewLine;
+                    //sql1 += "x.inttds,x.bank_dt,x.qnty " + Environment.NewLine;
+                    //sql1 += "from ( " + Environment.NewLine;
 
-                    sql1 += "select a.autono, a.glcd || a.slcd glslcd, a.agslcd, a.glcd, a.slcd, a.docdt, a.docno, " + Environment.NewLine;
-                    sql1 += "sum(case a.drcr when 'D' then a.amt else a.amt * -1 end) amt, " + Environment.NewLine;
-                    sql1 += "sum(case a.drcr when 'D' then a.amt else 0 end) dramt, " + Environment.NewLine;
-                    sql1 += "sum(case a.drcr when 'C' then a.amt else 0 end) cramt,a.drcr  " + Environment.NewLine;
-                    sql1 += "from( " + Environment.NewLine;
+                    //sql1 += "select a.autono, a.glcd || a.slcd glslcd, a.agslcd, a.glcd, a.slcd, a.docdt, a.docno, " + Environment.NewLine;
+                    //sql1 += "sum(case a.drcr when 'D' then a.amt else a.amt * -1 end) amt, " + Environment.NewLine;
+                    //sql1 += "sum(case a.drcr when 'D' then a.amt else 0 end) dramt, " + Environment.NewLine;
+                    //sql1 += "sum(case a.drcr when 'C' then a.amt else 0 end) cramt,a.drcr  " + Environment.NewLine;
+                    //sql1 += "from( " + Environment.NewLine;
 
-                    sql1 += "select a.autono, a.slno, a.glcd, a.slcd, a.agslcd, b.docno, b.docdt, a.blno, a.bldt, a.drcr, a.amt " + Environment.NewLine;
-                    sql1 += "from " + FScm1 + ".t_vch_bl a, " + FScm1 + ".t_cntrl_hdr b " + Environment.NewLine;
-                    sql1 += "where a.autono = b.autono(+)  " + Environment.NewLine;
-                    if (VE.Checkbox9 == true && COMLOC == "") sql1 += " and b.loccd = '" + loc + "' " + Environment.NewLine;
-                    if (COMLOC != "") sql1 += " and b.compcd||b.loccd in (" + COMLOC + ") " + Environment.NewLine; else sql1 += " and b.compcd='" + com + "' " + Environment.NewLine;
-                    sql1 += "and nvl(b.cancel, 'N') = 'N'  " + Environment.NewLine;
+                    //sql1 += "select a.autono, a.slno, a.glcd, a.slcd, a.agslcd, b.docno, b.docdt, a.blno, a.bldt, a.drcr, a.amt " + Environment.NewLine;
+                    //sql1 += "from " + FScm1 + ".t_vch_bl a, " + FScm1 + ".t_cntrl_hdr b " + Environment.NewLine;
+                    //sql1 += "where a.autono = b.autono(+)  " + Environment.NewLine;
+                    //if (VE.Checkbox9 == true && COMLOC == "") sql1 += " and b.loccd = '" + loc + "' " + Environment.NewLine;
+                    //if (COMLOC != "") sql1 += " and b.compcd||b.loccd in (" + COMLOC + ") " + Environment.NewLine; else sql1 += " and b.compcd='" + com + "' " + Environment.NewLine;
+                    //sql1 += "and nvl(b.cancel, 'N') = 'N'  " + Environment.NewLine;
+                    //if (acsel1.retStr() != "") sql1 += "and a.glcd in (" + acsel1 + ") " + Environment.NewLine;
+                    //if (slsel1.retStr() != "") sql1 += "and a.slcd in (" + slsel1 + ") " + Environment.NewLine;
+                    //sql1 += "union all " + Environment.NewLine;
+                    //sql1 += "select a.autono, a.slno, c.glcd, c.slcd, c.agslcd, b.docno, b.docdt, c.blno, c.bldt, decode(c.drcr, 'D', 'C', 'D') drcr, a.adj_amt amt " + Environment.NewLine;
+                    //sql1 += "from " + FScm1 + ".t_vch_bl_adj a, " + FScm1 + ".t_cntrl_hdr b, " + FScm1 + ".t_vch_bl c " + Environment.NewLine;
+                    //sql1 += "where a.autono = b.autono(+) and a.i_autono || a.i_slno = c.autono || c.slno  " + Environment.NewLine;
+                    //if (VE.Checkbox9 == true && COMLOC == "") sql1 += " and b.loccd = '" + loc + "' " + Environment.NewLine;
+                    //if (COMLOC != "") sql1 += " and b.compcd||b.loccd in (" + COMLOC + ") " + Environment.NewLine; else sql1 += " and b.compcd='" + com + "' " + Environment.NewLine;
+                    //sql1 += "and nvl(b.cancel, 'N') = 'N'  " + Environment.NewLine;
+                    //if (acsel1.retStr() != "") sql1 += "and c.glcd in (" + acsel1 + ") " + Environment.NewLine;
+                    //if (slsel1.retStr() != "") sql1 += "and c.slcd in (" + slsel1 + ") " + Environment.NewLine;
+                    //sql1 += "union all " + Environment.NewLine;
+                    //sql1 += "select a.autono, a.slno, c.glcd, c.slcd, c.agslcd, b.docno, b.docdt, c.blno, c.bldt, decode(c.drcr, 'C', 'D', 'C') drcr, a.adj_amt amt " + Environment.NewLine;
+                    //sql1 += "from " + FScm1 + ".t_vch_bl_adj a, " + FScm1 + ".t_cntrl_hdr b, " + FScm1 + ".t_vch_bl c " + Environment.NewLine;
+                    //sql1 += "where a.autono = b.autono(+) and a.r_autono || a.r_slno = c.autono || c.slno " + Environment.NewLine;
+                    //if (VE.Checkbox9 == true && COMLOC == "") sql1 += " and b.loccd = '" + loc + "' " + Environment.NewLine;
+                    //if (COMLOC != "") sql1 += " and b.compcd||b.loccd in (" + COMLOC + ") " + Environment.NewLine; else sql1 += " and b.compcd='" + com + "' " + Environment.NewLine;
+                    //sql1 += "and nvl(b.cancel, 'N') = 'N'  " + Environment.NewLine;
+                    //if (acsel1.retStr() != "") sql1 += "and c.glcd in (" + acsel1 + ") " + Environment.NewLine;
+                    //if (slsel1.retStr() != "") sql1 += "and c.slcd in (" + slsel1 + ") " + Environment.NewLine;
+                    //sql1 += ") a group by autono, a.glcd || a.slcd, agslcd, glcd, slcd, docdt, docno,drcr ) a, " + Environment.NewLine;
+                    //sql1 += " " + Environment.NewLine;
+                    //sql1 += "(select a.autono, a.glcd || a.slcd glslcd, max(a.t_rem) t_rem,  " + Environment.NewLine;
+                    //sql1 += "max(a.chqno) chqno, max(a.chqdt) chqdt,max(r_slcd)r_slcd,max(rtgsno)rtgsno,max(bank_name)bank_name,max(r_glcd)r_glcd,max(inttds)inttds,max(bank_dt)bank_dt,sum(qty)qnty " + Environment.NewLine;
+                    //sql1 += "from " + FScm1 + ".t_vch_det a " + Environment.NewLine;
+                    //sql1 += "group by a.autono, a.glcd || a.slcd ) x, " + Environment.NewLine;
+                    //sql1 += " " + Environment.NewLine;
+                    //sql1 += "" + FScm1 + ".t_cntrl_hdr b, " + FScm1 + ".t_vch_hdr y, " + Environment.NewLine;
+                    //sql1 += "" + FScm1 + ".m_genleg c, " + FScm1 + ".m_subleg d, " + FScm1 + ".m_subleg e, " + FScm1 + ".m_genleg f, " + FScm1 + ".m_loca g, " + FScm1 + ".m_comp h, " + Environment.NewLine;
+                    //sql1 += "" + FScm1 + ".m_subleg i," + FScm1 + ".m_genleg j " + Environment.NewLine;
+                    //sql1 += "where a.autono = b.autono(+) and a.autono = x.autono(+) and " + Environment.NewLine;
+                    //sql1 += "a.glslcd = x.glslcd(+) and a.autono = y.autono(+) and y.bank_code = f.glcd(+) and " + Environment.NewLine;
+                    //sql1 += "a.glcd = c.glcd(+) and a.slcd = d.slcd(+) and a.agslcd = e.slcd(+) and b.compcd=g.compcd(+) and b.loccd=g.loccd(+) and b.compcd=h.compcd(+)  " + Environment.NewLine;
+                    //sql1 += "and x.r_slcd=i.slcd(+) and x.r_glcd=j.glcd(+) " + Environment.NewLine;
+                    //if (VE.Checkbox9 == true && COMLOC == "") sql1 += " and b.loccd = '" + loc + "' " + Environment.NewLine;
+                    //if (COMLOC != "") sql1 += " and b.compcd||b.loccd in (" + COMLOC + ") " + Environment.NewLine; else sql1 += " and b.compcd='" + com + "' " + Environment.NewLine;
+                    //sql1 += "and nvl(b.cancel, 'N')= 'N' and " + Environment.NewLine;
+                    //sql1 += "b.docdt <= to_date('" + TD + "', 'dd/mm/yyyy') " + Environment.NewLine;
+                    //sql1 += "order by h.compnm,h.compcd,g.locnm,g.loccd,agslnm, agslcd, glnm, glcd, slnm, slcd, docdt, docno " + Environment.NewLine;
+                    #endregion
+
+                    sql1 += "select c.compcd,j.compnm,c.loccd,i.locnm,a.autono, a.agslcd, g.slnm agslnm,RTRIM(g.district|| '-' ||g.slarea,'-') agslcity, e.glnm, a.glcd, f.slnm,RTRIM(f.district|| '-' ||f.slarea,'-') slcity,f.subdistrict sldistrict, a.slcd, a.docdt, c.docno,  " + Environment.NewLine;
+                    sql1 += "d.trcd, b.t_rem, b.chqno, b.chqdt, d.pay_by, d.bank_code,d.paid_to,b.rtgsno, h.glnm bankglnm, h.shortnm,  " + Environment.NewLine;
+                    sql1 += "(case a.drcr when 'D' then nvl(a.amt, b.amt) else nvl(a.amt, b.amt) * -1 end) amt, " + Environment.NewLine;
+                    sql1 += "(case a.drcr when 'D' then nvl(a.amt, b.amt) else 0 end) dramt, " + Environment.NewLine;
+                    sql1 += "(case a.drcr when 'C' then nvl(a.amt, b.amt) else 0 end) cramt,a.drcr,  " + Environment.NewLine;
+                    sql1 += "f.add1 sladd1,f.add2 sladd2,f.add3 sladd3,f.add4 sladd4,f.add5 sladd5,f.add6 sladd6,f.phno1std sltel1,f.phno1 sltel2,trim(f.regmobile || decode(f.regmobile, null, '', ',') || f.slphno || decode(f.phno1, null, '', ',' || f.phno1)) slphno,f.REGEMAILID slREGEMAILID,f.actnameof slactnameof,f.panno slpan,f.gstno slgstno,f.panno slpanno,f.MSMENO slMSMENO, f.state slstate, f.statecd slstatecd, " + Environment.NewLine;
+                    sql1 += "k.slnm dslnm, k.district dslcity,b.bank_name,l.glnm dglnm,l.shortnm dshortnm,'" + rsFinYr.Rows[fi]["from_date"].retStr() + "' from_date,'" + rsFinYr.Rows[fi]["to_date"].retStr() + "' to_date, " + Environment.NewLine;
+                    sql1 += "b.inttds,b.bank_dt,b.qty qnty,b.r_glcd,b.r_slcd " + Environment.NewLine;
+                    sql1 += "from " + FScm1 + ".t_vch_bl a, " + FScm1 + ".t_vch_det b, " + FScm1 + ".t_cntrl_hdr c, " + FScm1 + ".t_vch_hdr d, " + Environment.NewLine;
+                    sql1 += "" + FScm1 + ".m_genleg e, " + FScm1 + ".m_subleg f, " + FScm1 + ".m_subleg g, " + FScm1 + ".m_genleg h, " + Environment.NewLine;
+                    sql1 += "" + FScm1 + ".m_loca i, " + FScm1 + ".m_comp j, " + FScm1 + ".m_subleg k, " + FScm1 + ".m_genleg l, " + FScm1 + ".m_doctype m " + Environment.NewLine;
+                    sql1 += "where a.autono = b.autono(+) and a.slno = b.slno(+) and a.autono = c.autono and a.autono = d.autono(+) and " + Environment.NewLine;
+                    sql1 += "a.glcd = e.glcd(+) and a.slcd = f.slcd(+) and a.agslcd = g.slcd(+) and d.bank_code = h.glcd(+) " + Environment.NewLine;
+                    sql1 += "and nvl(c.cancel, 'N')= 'N' and c.compcd=i.compcd(+) and c.loccd=i.loccd(+) and c.compcd=j.compcd(+) " + Environment.NewLine;
+                    sql1 += "and b.r_slcd=k.slcd(+) and b.r_glcd=l.glcd(+) and c.doccd=m.doccd(+) and m.doctype not in ('BLADJ') " + Environment.NewLine;
+                    if (VE.Checkbox9 == true && COMLOC == "") sql1 += " and c.loccd = '" + loc + "' " + Environment.NewLine;
+                    if (COMLOC != "") sql1 += " and c.compcd||c.loccd in (" + COMLOC + ") " + Environment.NewLine; else sql1 += " and c.compcd='" + com + "' " + Environment.NewLine;
                     if (acsel1.retStr() != "") sql1 += "and a.glcd in (" + acsel1 + ") " + Environment.NewLine;
                     if (slsel1.retStr() != "") sql1 += "and a.slcd in (" + slsel1 + ") " + Environment.NewLine;
-                    sql1 += "union all " + Environment.NewLine;
-                    sql1 += "select a.autono, a.slno, c.glcd, c.slcd, c.agslcd, b.docno, b.docdt, c.blno, c.bldt, decode(c.drcr, 'D', 'C', 'D') drcr, a.adj_amt amt " + Environment.NewLine;
-                    sql1 += "from " + FScm1 + ".t_vch_bl_adj a, " + FScm1 + ".t_cntrl_hdr b, " + FScm1 + ".t_vch_bl c " + Environment.NewLine;
-                    sql1 += "where a.autono = b.autono(+) and a.i_autono || a.i_slno = c.autono || c.slno  " + Environment.NewLine;
-                    if (VE.Checkbox9 == true && COMLOC == "") sql1 += " and b.loccd = '" + loc + "' " + Environment.NewLine;
-                    if (COMLOC != "") sql1 += " and b.compcd||b.loccd in (" + COMLOC + ") " + Environment.NewLine; else sql1 += " and b.compcd='" + com + "' " + Environment.NewLine;
-                    sql1 += "and nvl(b.cancel, 'N') = 'N'  " + Environment.NewLine;
-                    if (acsel1.retStr() != "") sql1 += "and c.glcd in (" + acsel1 + ") " + Environment.NewLine;
-                    if (slsel1.retStr() != "") sql1 += "and c.slcd in (" + slsel1 + ") " + Environment.NewLine;
-                    sql1 += "union all " + Environment.NewLine;
-                    sql1 += "select a.autono, a.slno, c.glcd, c.slcd, c.agslcd, b.docno, b.docdt, c.blno, c.bldt, decode(c.drcr, 'C', 'D', 'C') drcr, a.adj_amt amt " + Environment.NewLine;
-                    sql1 += "from " + FScm1 + ".t_vch_bl_adj a, " + FScm1 + ".t_cntrl_hdr b, " + FScm1 + ".t_vch_bl c " + Environment.NewLine;
-                    sql1 += "where a.autono = b.autono(+) and a.r_autono || a.r_slno = c.autono || c.slno " + Environment.NewLine;
-                    if (VE.Checkbox9 == true && COMLOC == "") sql1 += " and b.loccd = '" + loc + "' " + Environment.NewLine;
-                    if (COMLOC != "") sql1 += " and b.compcd||b.loccd in (" + COMLOC + ") " + Environment.NewLine; else sql1 += " and b.compcd='" + com + "' " + Environment.NewLine;
-                    sql1 += "and nvl(b.cancel, 'N') = 'N'  " + Environment.NewLine;
-                    if (acsel1.retStr() != "") sql1 += "and c.glcd in (" + acsel1 + ") " + Environment.NewLine;
-                    if (slsel1.retStr() != "") sql1 += "and c.slcd in (" + slsel1 + ") " + Environment.NewLine;
-                    sql1 += ") a group by autono, a.glcd || a.slcd, agslcd, glcd, slcd, docdt, docno,drcr ) a, " + Environment.NewLine;
-                    sql1 += " " + Environment.NewLine;
-                    sql1 += "(select a.autono, a.glcd || a.slcd glslcd, max(a.t_rem) t_rem,  " + Environment.NewLine;
-                    sql1 += "max(a.chqno) chqno, max(a.chqdt) chqdt,max(r_slcd)r_slcd,max(rtgsno)rtgsno,max(bank_name)bank_name,max(r_glcd)r_glcd,max(inttds)inttds,max(bank_dt)bank_dt,sum(qty)qnty " + Environment.NewLine;
-                    sql1 += "from " + FScm1 + ".t_vch_det a " + Environment.NewLine;
-                    sql1 += "group by a.autono, a.glcd || a.slcd ) x, " + Environment.NewLine;
-                    sql1 += " " + Environment.NewLine;
-                    sql1 += "" + FScm1 + ".t_cntrl_hdr b, " + FScm1 + ".t_vch_hdr y, " + Environment.NewLine;
-                    sql1 += "" + FScm1 + ".m_genleg c, " + FScm1 + ".m_subleg d, " + FScm1 + ".m_subleg e, " + FScm1 + ".m_genleg f, " + FScm1 + ".m_loca g, " + FScm1 + ".m_comp h, " + Environment.NewLine;
-                    sql1 += "" + FScm1 + ".m_subleg i," + FScm1 + ".m_genleg j " + Environment.NewLine;
-                    sql1 += "where a.autono = b.autono(+) and a.autono = x.autono(+) and " + Environment.NewLine;
-                    sql1 += "a.glslcd = x.glslcd(+) and a.autono = y.autono(+) and y.bank_code = f.glcd(+) and " + Environment.NewLine;
-                    sql1 += "a.glcd = c.glcd(+) and a.slcd = d.slcd(+) and a.agslcd = e.slcd(+) and b.compcd=g.compcd(+) and b.loccd=g.loccd(+) and b.compcd=h.compcd(+)  " + Environment.NewLine;
-                    sql1 += "and x.r_slcd=i.slcd(+) and x.r_glcd=j.glcd(+) " + Environment.NewLine;
-                    if (VE.Checkbox9 == true && COMLOC == "") sql1 += " and b.loccd = '" + loc + "' " + Environment.NewLine;
-                    if (COMLOC != "") sql1 += " and b.compcd||b.loccd in (" + COMLOC + ") " + Environment.NewLine; else sql1 += " and b.compcd='" + com + "' " + Environment.NewLine;
-                    sql1 += "and nvl(b.cancel, 'N')= 'N' and " + Environment.NewLine;
-                    sql1 += "b.docdt <= to_date('" + TD + "', 'dd/mm/yyyy') " + Environment.NewLine;
-                    sql1 += "order by h.compnm,h.compcd,g.locnm,g.loccd,agslnm, agslcd, glnm, glcd, slnm, slcd, docdt, docno " + Environment.NewLine;
+                    if (selagslcd.retStr() != "") sql1 += "and a.agslcd in (" + selagslcd + ") " + Environment.NewLine;
+                    sql1 += "order by j.compnm,c.compcd,i.locnm,c.loccd,g.slnm, a.agslcd, e.glnm, a.glcd, f.slnm, a.slcd, a.docdt, c.docno " + Environment.NewLine;
+
                 }
                 DataTable tbl = MasterHelp.SQLquery(sql1);
 
@@ -355,25 +388,71 @@ namespace Improvar.Controllers
                 string balnat = "", dcfld = "";
                 int currentmonth = 0, nextmonth = 0, currentyr = 0, nextyr = 0;
                 DataTable IR = new DataTable("");
-
-                HC.RepStart(IR);
-                HC.GetPrintHeader(IR, "docdt", "string", "c,10", "Date");
-                HC.GetPrintHeader(IR, "docno", "string", "c,17", "Doc No");
-                HC.GetPrintHeader(IR, "trem", "string", "c,38", "Remarks");
-                HC.GetPrintHeader(IR, "chqno", "string", "c,8", "Chq.No");
-                HC.GetPrintHeader(IR, "type", "string", "c,10", "Type");
-                if (VE.Checkbox12 == true) HC.GetPrintHeader(IR, "txntype", "string", "c,6", "Txn.Ty");
-                HC.GetPrintHeader(IR, "bank_dt", "string", "c,8", "Clr.Dt");
-                if (VE.Checkbox11 == true) HC.GetPrintHeader(IR, "qnty", "double", "n,16,4:#####,##,##0.000", "Qnty");
-                HC.GetPrintHeader(IR, "dramt", "double", "n,19,2:###,##,##,##,##0.00", "Dr. Amt");
-                HC.GetPrintHeader(IR, "cramt", "double", "n,19,2:###,##,##,##,##0.00", "Cr. Amt");
-                if (RunnBal1 == "Y")
+                if (reptype == "R")
                 {
-                    HC.GetPrintHeader(IR, "runbal", "double", "n,20,2:####,##,##,##,##0.00", "Bal Amt");
-                    HC.GetPrintHeader(IR, "drcr", "string", "C,5", "D/C");
+                    HC.RepStart(IR);
+                    HC.GetPrintHeader(IR, "docdt", "string", "c,10", "Date");
+                    HC.GetPrintHeader(IR, "docno", "string", "c,17", "Doc No");
+                    HC.GetPrintHeader(IR, "trem", "string", "c,38", "Remarks");
+                    HC.GetPrintHeader(IR, "chqno", "string", "c,8", "Chq.No");
+                    HC.GetPrintHeader(IR, "type", "string", "c,10", "Type");
+                    if (VE.Checkbox12 == true) HC.GetPrintHeader(IR, "txntype", "string", "c,6", "Txn.Ty");
+                    HC.GetPrintHeader(IR, "bank_dt", "string", "c,8", "Clr.Dt");
+                    if (VE.Checkbox11 == true) HC.GetPrintHeader(IR, "qnty", "double", "n,16,4:#####,##,##0.000", "Qnty");
+                    HC.GetPrintHeader(IR, "dramt", "double", "n,19,2:###,##,##,##,##0.00", "Dr. Amt");
+                    HC.GetPrintHeader(IR, "cramt", "double", "n,19,2:###,##,##,##,##0.00", "Cr. Amt");
+                    if (RunnBal1 == "Y")
+                    {
+                        HC.GetPrintHeader(IR, "runbal", "double", "n,20,2:####,##,##,##,##0.00", "Bal Amt");
+                        HC.GetPrintHeader(IR, "drcr", "string", "C,5", "D/C");
+                    }
                 }
+                else
+                {
+                    IR.Columns.Add("docdt", typeof(string));
+                    IR.Columns.Add("docno", typeof(string));
+
+                    IR.Columns.Add("dramt", typeof(double));
+                    IR.Columns.Add("cramt", typeof(double));
+                    IR.Columns.Add("runbal", typeof(double));
+                    IR.Columns.Add("drcr", typeof(string));
+                    IR.Columns.Add("glcd", typeof(string));
+                    IR.Columns.Add("glnm", typeof(string));
+                    IR.Columns.Add("slcd", typeof(string));
+                    IR.Columns.Add("slnm", typeof(string));
+                    IR.Columns.Add("complocnm", typeof(string));
+                    IR.Columns.Add("Tdramt", typeof(double));
+                    IR.Columns.Add("Tcramt", typeof(double));
+
+                    IR.Columns.Add("sladd1", typeof(string));
+                    IR.Columns.Add("sladd2", typeof(string));
+                    IR.Columns.Add("sladd3", typeof(string));
+                    IR.Columns.Add("sladd4", typeof(string));
+                    IR.Columns.Add("sladd5", typeof(string));
+                    IR.Columns.Add("sladd6", typeof(string));
+                    IR.Columns.Add("sladd7", typeof(string));
+                    IR.Columns.Add("sladd8", typeof(string));
+                    IR.Columns.Add("sladd9", typeof(string));
+                    IR.Columns.Add("sladd10", typeof(string));
 
 
+                    IR.Columns.Add("PCD1A", typeof(string));
+                    IR.Columns.Add("M_ACCHEAD", typeof(string));
+                    IR.Columns.Add("M_NARRATION", typeof(string));
+                    IR.Columns.Add("m_pcdname", typeof(string));
+
+                    IR.Columns.Add("trem", typeof(string));
+                    IR.Columns.Add("qnty", typeof(double));
+                    IR.Columns.Add("chqno", typeof(string));
+                    IR.Columns.Add("type", typeof(string));
+                    IR.Columns.Add("txntype", typeof(string));
+                    IR.Columns.Add("bank_dt", typeof(string));
+
+                    IR.Columns.Add("agslcd", typeof(string));
+                    IR.Columns.Add("agslnm", typeof(string));
+                    IR.Columns.Add("partynm", typeof(string));
+                    IR.Columns.Add("agentnm", typeof(string));
+                }
 
                 if (tbl.Rows.Count == 0)
                 {
@@ -394,31 +473,39 @@ namespace Improvar.Controllers
                 while (i <= maxR)
                 {
                     string comploccd = tbl.Rows[i]["compcd"].retStr() + tbl.Rows[i]["loccd"].retStr();
-                    if (COMLOC != "")
+                    if (COMLOC != "" && reptype == "R")
                     {
                         IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                         IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " </span>" + tbl.Rows[i]["compnm"].ToString() + (VE.Checkbox9 == true ? ", " + tbl.Rows[i]["locnm"].ToString() : "");
                         IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
                     }
+                    string complocnm = "";
+                    if (COMLOC != "")
+                    {
+                        complocnm = tbl.Rows[i]["compnm"].ToString() + (VE.Checkbox9 == true ? ", " + tbl.Rows[i]["locnm"].ToString() : "") + " " + ((char)13);
+                    }
                     while (tbl.Rows[i]["compcd"].retStr() + tbl.Rows[i]["loccd"].retStr() == comploccd)
                     {
                         string agslcd = tbl.Rows[i]["agslcd"].retStr();
-
-                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                        IR.Rows[rNo]["Dammy"] = "Agent-" + "<span style='font-weight:100;font-size:9px;'>" + " " + tbl.Rows[i]["agslcd"].ToString() + "  " + " </span>" + tbl.Rows[i]["agslnm"].ToString();
-                        IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
+                        if (reptype == "R")
+                        {
+                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                            IR.Rows[rNo]["Dammy"] = "Agent-" + "<span style='font-weight:100;font-size:9px;'>" + " " + tbl.Rows[i]["agslcd"].ToString() + "  " + " </span>" + tbl.Rows[i]["agslnm"].ToString();
+                            IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
+                        }
                         double a_runbal = 0;
                         double a_dramt = 0, a_cramt = 0;
 
                         while (tbl.Rows[i]["compcd"].retStr() + tbl.Rows[i]["loccd"].retStr() == comploccd && tbl.Rows[i]["agslcd"].retStr() == agslcd)
                         {
                             string slglcd = tbl.Rows[i]["slcd"].retStr() + tbl.Rows[i]["glcd"].retStr();
-
-                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                            IR.Rows[rNo]["Dammy"] = "Party-<span style='font-weight:100;font-size:9px;'>" + " " + tbl.Rows[i]["slcd"].ToString() + "  " + " </span>" + tbl.Rows[i]["slnm"].ToString() + " [" + tbl.Rows[i]["slcity"].ToString() + "]";
-                            IR.Rows[rNo]["Dammy"] = IR.Rows[rNo]["Dammy"] + "<span style='font-weight:100;font-size:9px;'>" + " [" + tbl.Rows[i]["glcd"].ToString() + "] " + " </span>" + tbl.Rows[i]["glnm"].ToString();
-                            IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
-
+                            if (reptype == "R")
+                            {
+                                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                IR.Rows[rNo]["Dammy"] = "Party-<span style='font-weight:100;font-size:9px;'>" + " " + tbl.Rows[i]["slcd"].ToString() + "  " + " </span>" + tbl.Rows[i]["slnm"].ToString() + " [" + tbl.Rows[i]["slcity"].ToString() + "]";
+                                IR.Rows[rNo]["Dammy"] = IR.Rows[rNo]["Dammy"] + "<span style='font-weight:100;font-size:9px;'>" + " [" + tbl.Rows[i]["glcd"].ToString() + "] " + " </span>" + tbl.Rows[i]["glnm"].ToString();
+                                IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
+                            }
                             double op = 0;
                             while (tbl.Rows[i]["compcd"].retStr() + tbl.Rows[i]["loccd"].retStr() == comploccd && tbl.Rows[i]["agslcd"].retStr() == agslcd && tbl.Rows[i]["slcd"].retStr() + tbl.Rows[i]["glcd"].retStr() == slglcd && Convert.ToDateTime(tbl.Rows[i]["docdt"]) < Convert.ToDateTime(FD))
                             {
@@ -445,10 +532,128 @@ namespace Improvar.Controllers
                                     tcramt += op;
                                     totalcramt += op;
                                 }
-                                IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px";
+                                if (reptype == "R")
+                                {
+                                    IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px";
+                                }
                                 IR.Rows[rNo]["runbal"] = Math.Abs(op).retDbl();
                                 IR.Rows[rNo]["drcr"] = op > 0 ? "Dr." : "Cr.";
 
+                                if (reptype != "R")
+                                {
+                                    IR.Rows[rNo]["pcd1a"] = "";
+                                    IR.Rows[rNo]["m_acchead"] = "Opening Balance";
+
+                                    IR.Rows[rNo]["complocnm"] = complocnm;
+                                    IR.Rows[rNo]["glcd"] = tbl.Rows[i]["glcd"].ToString();
+                                    IR.Rows[rNo]["glnm"] = tbl.Rows[i]["glnm"].ToString() + " [" + tbl.Rows[i]["glcd"].ToString() + "] ";
+                                    IR.Rows[rNo]["slcd"] = tbl.Rows[i]["slcd"].ToString();
+                                    IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].ToString() + " (" + tbl.Rows[i]["slcity"] + ")  " + " [" + tbl.Rows[i]["slcd"].ToString() + "] ";
+                                    IR.Rows[rNo]["agslcd"] = tbl.Rows[i]["agslcd"].ToString();
+                                    IR.Rows[rNo]["agslnm"] = tbl.Rows[i]["agslnm"].ToString() + " (" + tbl.Rows[i]["agslcity"] + ")  " + " [" + tbl.Rows[i]["agslcd"].ToString() + "] ";
+                                    if (COMLOC != "")
+                                    {
+                                        IR.Rows[rNo]["m_pcdname"] = tbl.Rows[i]["compnm"].ToString() + (VE.Checkbox9 == true ? ", " + tbl.Rows[i]["locnm"].ToString() : "") + "\r\n"; // "^^";
+                                    }
+                                    IR.Rows[rNo]["m_pcdname"] = IR.Rows[rNo]["m_pcdname"].ToString() + tbl.Rows[i]["slnm"] + " (" + tbl.Rows[i]["slcity"] + ")  " + " [" + tbl.Rows[i]["glnm"] + "]";
+                                    #region Party Address
+                                    string cfld = "", rfld = ""; int rf = 0;
+                                    for (int f = 1; f <= 6; f++)
+                                    {
+                                        cfld = "sladd" + Convert.ToString(f).ToString();
+                                        if (tbl.Rows[i][cfld].ToString() != "")
+                                        {
+                                            if(IR.Rows[rNo]["sladd1"].retStr() != "")
+                                            {
+                                                IR.Rows[rNo]["sladd1"] += " ";
+                                            }
+                                            rf = rf + 1;
+                                            rfld = "sladd" + Convert.ToString(rf);
+                                            IR.Rows[rNo]["sladd1"] += tbl.Rows[i][cfld].ToString();
+                                        }
+                                    }
+                                    if (tbl.Rows[i]["sldistrict"].ToString() != "")
+                                    {
+                                        if (IR.Rows[rNo]["sladd1"].retStr() != "")
+                                        {
+                                            IR.Rows[rNo]["sladd1"] += " ";
+                                        }
+                                        rf = rf + 1;
+                                        rfld = "sladd" + Convert.ToString(rf);
+                                        IR.Rows[rNo]["sladd1"] += tbl.Rows[i]["sldistrict"].ToString();
+                                    }
+                                    if (IR.Rows[rNo]["sladd1"].retStr() != "")
+                                    {
+                                        IR.Rows[rNo]["sladd1"] += " ";
+                                    }
+                                    rf = rf + 1;
+                                    rfld = "sladd" + Convert.ToString(rf);
+                                    IR.Rows[rNo]["sladd1"] += tbl.Rows[i]["slstate"].ToString() + " [ Code - " + tbl.Rows[i]["slstatecd"].ToString() + " ]";
+                                    if (tbl.Rows[i]["slgstno"].ToString() != "")
+                                    {
+                                        if (IR.Rows[rNo]["sladd2"].retStr() != "")
+                                        {
+                                            IR.Rows[rNo]["sladd2"] += " ";
+                                        }
+                                        rf = rf + 1;
+                                        rfld = "sladd" + Convert.ToString(rf);
+                                        IR.Rows[rNo]["sladd2"] += "GST # " + tbl.Rows[i]["slgstno"].ToString();
+                                    }
+                                    if (tbl.Rows[i]["slpanno"].ToString() != "")
+                                    {
+                                        if (IR.Rows[rNo]["sladd2"].retStr() != "")
+                                        {
+                                            IR.Rows[rNo]["sladd2"] += " ";
+                                        }
+                                        rf = rf + 1;
+                                        rfld = "sladd" + Convert.ToString(rf);
+                                        IR.Rows[rNo]["sladd2"] += "PAN # " + tbl.Rows[i]["slpanno"].ToString();
+                                    }
+                                    if (tbl.Rows[i]["slMSMENO"].ToString() != "")
+                                    {
+                                        if (IR.Rows[rNo]["sladd2"].retStr() != "")
+                                        {
+                                            IR.Rows[rNo]["sladd2"] += " ";
+                                        }
+                                        rf = rf + 1;
+                                        rfld = "sladd" + Convert.ToString(rf);
+                                        IR.Rows[rNo]["sladd2"] += "MSME # " + tbl.Rows[i]["slMSMENO"].ToString();
+                                    }
+                                    if (tbl.Rows[i]["slphno"].ToString() != "")
+                                    {
+                                        if (IR.Rows[rNo]["sladd2"].retStr() != "")
+                                        {
+                                            IR.Rows[rNo]["sladd2"] += " ";
+                                        }
+                                        rf = rf + 1;
+                                        rfld = "sladd" + Convert.ToString(rf);
+                                        IR.Rows[rNo]["sladd2"] += "Ph. # " + tbl.Rows[i]["slphno"].ToString();
+                                    }
+                                    if (tbl.Rows[i]["slREGEMAILID"].ToString() != "")
+                                    {
+                                        if (IR.Rows[rNo]["sladd2"].retStr() != "")
+                                        {
+                                            IR.Rows[rNo]["sladd2"] += " ";
+                                        }
+                                        rf = rf + 1;
+                                        rfld = "sladd" + Convert.ToString(rf);
+                                        IR.Rows[rNo]["sladd2"] += "Email # " + tbl.Rows[i]["slREGEMAILID"].ToString();
+                                    }
+                                    if (tbl.Rows[i]["slactnameof"].ToString() != "")
+                                    {
+                                        if (IR.Rows[rNo]["sladd2"].retStr() != "")
+                                        {
+                                            IR.Rows[rNo]["sladd2"] += " ";
+                                        }
+                                        rf = rf + 1;
+                                        rfld = "sladd" + Convert.ToString(rf);
+                                        IR.Rows[rNo]["sladd2"] += tbl.Rows[i]["slactnameof"].ToString();
+                                    }
+                                    #endregion
+
+                                    IR.Rows[rNo]["partynm"] = tbl.Rows[i]["slnm"].ToString();
+                                    IR.Rows[rNo]["agentnm"] = tbl.Rows[i]["agslnm"].ToString();
+                                }
                                 a_runbal += op;
                                 trunbal += op;
                                 totalrunbal += op;
@@ -467,6 +672,7 @@ namespace Improvar.Controllers
                             {
                                 #region remarks
                                 string nar1 = "", rplchar = "<br />";
+                                if (reptype == "C" || reptype == "P") rplchar = "" + ((char)13);
                                 if (sublegshow == true && (VE.MENU_PARA != "CASH" && VE.MENU_PARA != "BANK"))
                                 {
                                     if (tbl.Rows[i]["slnm"].ToString() != "") nar1 = tbl.Rows[i]["slnm"].ToString();
@@ -506,7 +712,7 @@ namespace Improvar.Controllers
                                     if (tbl.Rows[i]["chqno"].ToString() != "" || tbl.Rows[i]["chqdt"].ToString() != "" || tbl.Rows[i]["bank_name"].ToString() != "")
                                     {
                                         nar1 += (nar1 == "" ? "" : rplchar);
-                                        if (tbl.Rows[i]["chqno"].ToString() != "" && reptype == "C")
+                                        if (tbl.Rows[i]["chqno"].ToString() != "" && (reptype == "C" || reptype == "P"))
                                         {
                                             nar1 += "Chq No. " + tbl.Rows[i]["chqno"] + " ";
                                         }
@@ -559,6 +765,7 @@ namespace Improvar.Controllers
                                 }
                                 IR.Rows[rNo]["dramt"] = tbl.Rows[i]["dramt"].retDbl();
                                 IR.Rows[rNo]["cramt"] = tbl.Rows[i]["cramt"].retDbl();
+
 
 
                                 a_runbal += tbl.Rows[i]["amt"].retDbl();
@@ -679,10 +886,142 @@ namespace Improvar.Controllers
                                 }
                                 #endregion
 
+                                if (reptype != "R")
+                                {
+                                    if (COMLOC != "")
+                                    {
+                                        IR.Rows[rNo]["m_pcdname"] = tbl.Rows[i]["compnm"].ToString() + (VE.Checkbox9 == true ? ", " + tbl.Rows[i]["locnm"].ToString() : "") + "\r\n"; // "^^";
+                                    }
+                                    IR.Rows[rNo]["m_pcdname"] = IR.Rows[rNo]["m_pcdname"].ToString() + tbl.Rows[i]["slnm"] + " (" + tbl.Rows[i]["slcity"] + ")  " + " [" + tbl.Rows[i]["glnm"] + "]";
+
+                                    IR.Rows[rNo]["complocnm"] = complocnm;
+                                    IR.Rows[rNo]["glcd"] = tbl.Rows[i]["glcd"].ToString();
+                                    IR.Rows[rNo]["glnm"] = tbl.Rows[i]["glnm"].ToString() + " [" + tbl.Rows[i]["glcd"].ToString() + "] ";
+                                    IR.Rows[rNo]["slcd"] = tbl.Rows[i]["slcd"].ToString();
+                                    IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].ToString() + " (" + tbl.Rows[i]["slcity"] + ")  " + " [" + tbl.Rows[i]["slcd"].ToString() + "] ";
+                                    IR.Rows[rNo]["agslcd"] = tbl.Rows[i]["agslcd"].ToString();
+                                    IR.Rows[rNo]["agslnm"] = tbl.Rows[i]["agslnm"].ToString() + " (" + tbl.Rows[i]["agslcity"] + ")  " + " [" + tbl.Rows[i]["agslcd"].ToString() + "] ";
+
+                                    #region Party Address
+                                    string cfld = "", rfld = ""; int rf = 0;
+                                    for (int f = 1; f <= 6; f++)
+                                    {
+                                        cfld = "sladd" + Convert.ToString(f).ToString();
+                                        if (tbl.Rows[i][cfld].ToString() != "")
+                                        {
+                                            if (IR.Rows[rNo]["sladd1"].retStr() != "")
+                                            {
+                                                IR.Rows[rNo]["sladd1"] += " ";
+                                            }
+                                            rf = rf + 1;
+                                            rfld = "sladd" + Convert.ToString(rf);
+                                            IR.Rows[rNo]["sladd1"] += tbl.Rows[i][cfld].ToString();
+                                        }
+                                    }
+                                    if (tbl.Rows[i]["sldistrict"].ToString() != "")
+                                    {
+                                        if (IR.Rows[rNo]["sladd1"].retStr() != "")
+                                        {
+                                            IR.Rows[rNo]["sladd1"] += " ";
+                                        }
+                                        rf = rf + 1;
+                                        rfld = "sladd" + Convert.ToString(rf);
+                                        IR.Rows[rNo]["sladd1"] += tbl.Rows[i]["sldistrict"].ToString();
+                                    }
+                                    if (IR.Rows[rNo]["sladd1"].retStr() != "")
+                                    {
+                                        IR.Rows[rNo]["sladd1"] += " ";
+                                    }
+                                    rf = rf + 1;
+                                    rfld = "sladd" + Convert.ToString(rf);
+                                    IR.Rows[rNo]["sladd1"] += tbl.Rows[i]["slstate"].ToString() + " [ Code - " + tbl.Rows[i]["slstatecd"].ToString() + " ]";
+                                    if (tbl.Rows[i]["slgstno"].ToString() != "")
+                                    {
+                                        if (IR.Rows[rNo]["sladd2"].retStr() != "")
+                                        {
+                                            IR.Rows[rNo]["sladd2"] += " ";
+                                        }
+                                        rf = rf + 1;
+                                        rfld = "sladd" + Convert.ToString(rf);
+                                        IR.Rows[rNo]["sladd2"] += "GST # " + tbl.Rows[i]["slgstno"].ToString();
+                                    }
+                                    if (tbl.Rows[i]["slpanno"].ToString() != "")
+                                    {
+                                        if (IR.Rows[rNo]["sladd2"].retStr() != "")
+                                        {
+                                            IR.Rows[rNo]["sladd2"] += " ";
+                                        }
+                                        rf = rf + 1;
+                                        rfld = "sladd" + Convert.ToString(rf);
+                                        IR.Rows[rNo]["sladd2"] += "PAN # " + tbl.Rows[i]["slpanno"].ToString();
+                                    }
+                                    if (tbl.Rows[i]["slMSMENO"].ToString() != "")
+                                    {
+                                        if (IR.Rows[rNo]["sladd2"].retStr() != "")
+                                        {
+                                            IR.Rows[rNo]["sladd2"] += " ";
+                                        }
+                                        rf = rf + 1;
+                                        rfld = "sladd" + Convert.ToString(rf);
+                                        IR.Rows[rNo]["sladd2"] += "MSME # " + tbl.Rows[i]["slMSMENO"].ToString();
+                                    }
+                                    if (tbl.Rows[i]["slphno"].ToString() != "")
+                                    {
+                                        if (IR.Rows[rNo]["sladd2"].retStr() != "")
+                                        {
+                                            IR.Rows[rNo]["sladd2"] += " ";
+                                        }
+                                        rf = rf + 1;
+                                        rfld = "sladd" + Convert.ToString(rf);
+                                        IR.Rows[rNo]["sladd2"] += "Ph. # " + tbl.Rows[i]["slphno"].ToString();
+                                    }
+                                    if (tbl.Rows[i]["slREGEMAILID"].ToString() != "")
+                                    {
+                                        if (IR.Rows[rNo]["sladd2"].retStr() != "")
+                                        {
+                                            IR.Rows[rNo]["sladd2"] += " ";
+                                        }
+                                        rf = rf + 1;
+                                        rfld = "sladd" + Convert.ToString(rf);
+                                        IR.Rows[rNo]["sladd2"] += "Email # " + tbl.Rows[i]["slREGEMAILID"].ToString();
+                                    }
+                                    if (tbl.Rows[i]["slactnameof"].ToString() != "")
+                                    {
+                                        if (IR.Rows[rNo]["sladd2"].retStr() != "")
+                                        {
+                                            IR.Rows[rNo]["sladd2"] += " ";
+                                        }
+                                        rf = rf + 1;
+                                        rfld = "sladd" + Convert.ToString(rf);
+                                        IR.Rows[rNo]["sladd2"] += tbl.Rows[i]["slactnameof"].ToString();
+                                    }
+                                    #endregion
+
+                                    IR.Rows[rNo]["partynm"] = tbl.Rows[i]["slnm"].ToString();
+                                    IR.Rows[rNo]["agentnm"] = tbl.Rows[i]["agslnm"].ToString();
+                                    IR.Rows[rNo]["tdramt"] = tdramt;
+                                    IR.Rows[rNo]["tcramt"] = tcramt;
+
+                                    if (drcrhead == "Y")
+                                    {
+                                        IR.Rows[rNo]["m_narration"] = nar1;
+                                        IR.Rows[rNo]["M_ACCHEAD"] = tbl.Rows[i]["dglnm"].ToString();
+                                        if (tbl.Rows[i]["dslnm"].ToString() != "")
+                                        {
+                                            IR.Rows[rNo]["M_ACCHEAD"] = IR.Rows[rNo]["M_ACCHEAD"].ToString() + rplchar + tbl.Rows[i]["dslnm"].ToString();
+                                        }
+                                        IR.Rows[rNo]["pcd1a"] = tbl.Rows[i]["r_glcd"].ToString() + " " + tbl.Rows[i]["r_slcd"].ToString();
+                                    }
+                                    else
+                                    {
+                                        IR.Rows[rNo]["M_ACCHEAD"] = nar1;
+                                        IR.Rows[rNo]["pcd1a"] = tbl.Rows[i]["t_rem"];
+                                    }
+                                }
                                 i++;
                                 if (i > maxR) break;
                             }
-                            if (total == "G")
+                            if (total == "G" && reptype == "R")
                             {
                                 IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                                 IR.Rows[rNo]["dammy"] = "";
@@ -696,7 +1035,7 @@ namespace Improvar.Controllers
 
                             if (i > maxR) break;
                         }
-                        if (total == "G")
+                        if (total == "G" && reptype == "R")
                         {
                             IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                             IR.Rows[rNo]["dammy"] = "";
@@ -711,7 +1050,7 @@ namespace Improvar.Controllers
                     }
                     if (i > maxR) break;
                 }
-                if (total == "G")
+                if (total == "G" && reptype == "R")
                 {
                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                     IR.Rows[rNo]["dammy"] = "";
@@ -722,27 +1061,136 @@ namespace Improvar.Controllers
                     IR.Rows[rNo]["runbal"] = Math.Abs(trunbal).retDbl();
                     IR.Rows[rNo]["drcr"] = trunbal > 0 ? "Dr." : "Cr.";
                 }
-                string PARAEXT = "";
-                if (VE.MENU_PARA == "SUBLEG" && slcd != "" && slcd.Split(',').Length == 1)
-                {
-                    PARAEXT = ShowLeginHeader;
-                }
-                string pghdr1 = Para2;
-                pghdr1 = Para2;
-                if (VE.Checkbox10 == true)
+
+                if (reptype == "C")
                 {
                     string compaddress = MasterHelp.retCompAddress();
                     DataTable comptbl = MasterHelp.retComptbl();
-                    string COMPPAN = (comptbl.Rows[0]["panno"].retStr() == "" || VE.Checkbox10 == false) ? "" : "</br>" + "PAN # " + comptbl.Rows[0]["panno"].ToString() + " ";
+                    string COMPPAN = (comptbl.Rows[0]["panno"].retStr() == "" || VE.Checkbox10 == false) ? "" : "PAN # " + comptbl.Rows[0]["panno"].ToString() + " ";
                     string COMPADD = (compaddress.retCompValue("compadd").retStr() == "" || VE.Checkbox10 == false) ? "" : compaddress.retCompValue("compadd");
-                    Para2 = COMPADD + COMPPAN + "</br>" + Para2;
-
+                    ReportDocument reportdocument = new ReportDocument();
+                    reportdocument.Load(Server.MapPath("~/Report/Rep_Ledger.rpt"));
+                    reportdocument.SetDataSource(IR);
+                    //reportdocument.SetParameterValue("head", CommVar.CompName(UNQSNO));
+                    reportdocument.SetParameterValue("head", compaddress.retCompValue("compnm"));
+                    reportdocument.SetParameterValue("formerlynm", compaddress.retCompValue("formerlynm"));
+                    reportdocument.SetParameterValue("head1", CommVar.LocName(UNQSNO).ToString());
+                    reportdocument.SetParameterValue("compadd", COMPADD);
+                    reportdocument.SetParameterValue("comppan", COMPPAN);
+                    reportdocument.SetParameterValue("head2", Para2);
+                    reportdocument.SetParameterValue("RunnBal", RunnBal1);
+                    reportdocument.SetParameterValue("DrCrHead", drcrhead);
+                    reportdocument.SetParameterValue("PrintPageNo", "Y");
+                    reportdocument.SetParameterValue("PageBreak", "N");
+                    reportdocument.SetParameterValue("PrintCode", "Y");
+                    reportdocument.SetParameterValue("RepGroup", "No Group");
+                    reportdocument.SetParameterValue("NrrOpt", "Y");
+                    reportdocument.SetParameterValue("PrintDate", System.DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss") + " User " + Session["UR_ID"]);
+                    Response.Buffer = false;
+                    Response.ClearContent();
+                    Response.ClearHeaders();
+                    Stream stream = reportdocument.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
+                    reportdocument.Close(); reportdocument.Dispose(); GC.Collect();
+                    stream.Seek(0, SeekOrigin.Begin);
+                    return new FileStreamResult(stream, "application/pdf");
                 }
-                PV = HC.ShowReport(IR, repname, Para2, PARAEXT, true, true, "P", false);
+                else if (reptype == "P")
+                {
+                    string compaddress = MasterHelp.retCompAddress();
+                    DataTable comptbl = MasterHelp.retComptbl();
+                    string COMPPAN = (comptbl.Rows[0]["panno"].retStr() == "" || VE.Checkbox10 == false) ? "" : "PAN # " + comptbl.Rows[0]["panno"].ToString() + " ";
+                    string COMPADD = (compaddress.retCompValue("compadd").retStr() == "" || VE.Checkbox10 == false) ? "" : compaddress.retCompValue("compadd");
 
-                TempData[repname] = PV;
-                return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
+                    var arrautono = (from DataRow dr in IR.Rows
+                                     select new
+                                     {
+                                         M_PCD = dr["glcd"].retStr() + dr["agslcd"].retStr() + dr["slcd"].retStr(),
+                                     }).Distinct().ToList();
+                    //for zip : Tools → NuGet Package Manager → Package Manager Console->Run these commands
+                    //Install-Package System.IO.Compression
+                    using (MemoryStream zipStream = new MemoryStream())
+                    {
+                        using (ZipArchive zip = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
+                        {
+                            for (int z = 0; z < arrautono.Count; z++)
+                            {
+                                var queryq = from row in IR.AsEnumerable()
+                                             where row.Field<string>("glcd") + row.Field<string>("agslcd") + row.Field<string>("slcd") == arrautono[z].M_PCD.ToString()
+                                             select row;
 
+                                var autonowisetbl = queryq.AsDataView().ToTable();
+                                ReportDocument reportdocument1 = new ReportDocument();
+
+                                reportdocument1.Load(Server.MapPath("~/Report/Rep_Ledger.rpt"));
+
+                                reportdocument1.SetDataSource(autonowisetbl);
+                                reportdocument1.SetParameterValue("head", compaddress.retCompValue("compnm"));
+                                reportdocument1.SetParameterValue("formerlynm", compaddress.retCompValue("formerlynm"));
+                                reportdocument1.SetParameterValue("head1", CommVar.LocName(UNQSNO).ToString());
+                                reportdocument1.SetParameterValue("compadd", COMPADD);
+                                reportdocument1.SetParameterValue("comppan", COMPPAN);
+                                reportdocument1.SetParameterValue("head2", Para2);
+                                reportdocument1.SetParameterValue("RunnBal", RunnBal1);
+                                reportdocument1.SetParameterValue("DrCrHead", drcrhead);
+                                reportdocument1.SetParameterValue("PrintPageNo", "Y");
+                                reportdocument1.SetParameterValue("PageBreak", "N");
+                                reportdocument1.SetParameterValue("PrintCode", "Y");
+                                reportdocument1.SetParameterValue("RepGroup", "No Group");
+                                reportdocument1.SetParameterValue("NrrOpt", "Y");
+                                reportdocument1.SetParameterValue("PrintDate", System.DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss") + " User " + Session["UR_ID"]);
+
+                                string filenm = Regex.Replace(autonowisetbl.Rows[0]["agentnm"].retStr(), @"[^0-9a-zA-Z_]+", "") + " " + Regex.Replace(autonowisetbl.Rows[0]["partynm"].retStr(), @"[^0-9a-zA-Z_]+", "");
+                                // Export PDF to stream
+                                Stream s = reportdocument1.ExportToStream(
+                                    CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
+
+                                // Create ZIP entry
+                                var entry = zip.CreateEntry(filenm + ".pdf");
+
+                                using (var entryStream = entry.Open())
+                                {
+                                    s.CopyTo(entryStream);
+                                }
+
+                                reportdocument1.Close();
+                                reportdocument1.Dispose();
+                            }
+                        }
+
+                        string zipflnm = "Party Ledger".retRepname();
+                        // Send ZIP to browser
+                        Response.Clear();
+                        Response.BufferOutput = false;
+                        Response.ContentType = "application/zip";
+                        Response.AddHeader("content-disposition", "attachment; filename=" + zipflnm + ".zip");
+                        Response.BinaryWrite(zipStream.ToArray());
+                        Response.Flush();
+                        System.Web.HttpContext.Current.ApplicationInstance.CompleteRequest();
+                    }
+                    return Content("Pdf exported sucessfully");
+                }
+                else {
+                    string PARAEXT = "";
+                    if (VE.MENU_PARA == "SUBLEG" && slcd != "" && slcd.Split(',').Length == 1)
+                    {
+                        PARAEXT = ShowLeginHeader;
+                    }
+                    string pghdr1 = Para2;
+                    pghdr1 = Para2;
+                    if (VE.Checkbox10 == true)
+                    {
+                        string compaddress = MasterHelp.retCompAddress();
+                        DataTable comptbl = MasterHelp.retComptbl();
+                        string COMPPAN = (comptbl.Rows[0]["panno"].retStr() == "" || VE.Checkbox10 == false) ? "" : "</br>" + "PAN # " + comptbl.Rows[0]["panno"].ToString() + " ";
+                        string COMPADD = (compaddress.retCompValue("compadd").retStr() == "" || VE.Checkbox10 == false) ? "" : compaddress.retCompValue("compadd");
+                        Para2 = COMPADD + COMPPAN + "</br>" + Para2;
+
+                    }
+                    PV = HC.ShowReport(IR, repname, Para2, PARAEXT, true, true, "P", false);
+
+                    TempData[repname] = PV;
+                    return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
+                }
             }
             catch (Exception ex)
             {

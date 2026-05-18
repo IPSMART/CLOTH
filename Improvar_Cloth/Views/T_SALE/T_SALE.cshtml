@@ -988,6 +988,64 @@
     
     }
 </script>
+<script>
+    function GetTDS(id) {
+        if ("@Model.DefaultAction" != "V") {      
+        if (id == "") {
+            ClearAllTextBoxes("TDSCODE,TDSNM1,TDSPER,TDS_LIMIT,TDS_CALCON,TDS_AMT,TDS_ROUNDCAL,TDS_APPL");
+            TDSAMTCAL();
+        }
+        else {
+            var code = $("#SLCD").val() + String.fromCharCode(181) + $("#DOCDT").val() + String.fromCharCode(181) + $("#AUTONO").val();
+            $.ajax({
+                type: 'POST',
+                beforesend: $("#WaitingMode").show(),
+                url:  "@Url.Action("GetTDSDetails", PageControllerName)",
+                data: "&Code=" + code + "&val=" + id,
+                success: function (result) {
+                    var MSG = result.indexOf('#helpDIV');
+                    if (MSG >= 0) {
+                        ClearAllTextBoxes("TDSCODE,TDSNM1,TDSPER,TDS_LIMIT,TDS_CALCON,TDS_AMT,TDS_ROUNDCAL,TDS_APPL");
+                        $('#SearchFldValue').val("TDSCODE");
+                        $('#helpDIV').html(result);
+                        $('#ReferanceFieldID').val("TDSCODE/TDSNM1/TDSPER");
+                        $('#ReferanceColumn').val("1/0/2");
+                        $('#helpDIV_Header').html("TDS Details");
+                    }
+                    else {
+                        var MSG = result.indexOf(String.fromCharCode(181));
+                        if (MSG >= 0) {
+                            $("#TDSCODE").val(returncolvalue(result, "TDSCODE"));
+                            $("#TDSNM1").val(returncolvalue(result, "TDSNM"));
+                            $("#TDSPER").val(returncolvalue(result, "TDSPER"));
+                            $("#TDS_LIMIT").val(returncolvalue(result, "TDSLIMIT"));
+                            $("#TDS_CALCON").val(returncolvalue(result, "TDSCALCON"));
+                            $("#TDS_AMT").val(returncolvalue(result, "AMT"));
+                            $("#TDS_ROUNDCAL").val(returncolvalue(result, "TDSROUNDCAL"));
+                            $("#TDS_APPL").val(returncolvalue(result, "TDS_APPL"));
+                            TDSAMTCAL();
+                        }
+                        else {
+                            $('#helpDIV').html("");
+                            msgInfo("" + result + " !");
+                            ClearAllTextBoxes("TDSCODE,TDSNM1,TDSPER,TDS_LIMIT,TDS_CALCON,TDS_AMT,TDS_ROUNDCAL,TDS_APPL");
+                            message_value = "TDSCODE";
+                            TDSAMTCAL();
+                        }
+                    }
+                    $("#WaitingMode").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+
+        }
+    }
+}
+</script>
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -1977,13 +2035,18 @@
                                 </div>
                                 <div class="col-md-1">
                                     <div class="editor-field">
-                                        @Html.EditorFor(model => model.T_TDSTXN.TDSCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TDSCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetTDSDetails", PageControllerName) + "','TDS Details','TDSCODE','TDSCODE=TDSCODE=1/TDSNM1=TDSNM=0/TDSPER=TDSPER=2','SLCD/DOCDT')", onblur = "GetHelpBlur('" + @Url.Action("GetTDSDetails", PageControllerName) + "','TDS Details','TDSCODE','TDSCODE=TDSCODE=1/TDSNM1=TDSNM=0/TDSPER=TDSPER=2','SLCD/DOCDT')", @placeholder = "TDSCODE" } })
-                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetTDSDetails", PageControllerName)','TDS Details','TDSCODE','TDSCODE=TDSCODE=1/TDSNM1=TDSNM=0/TDSPER=TDSPER=2','SLCD/DOCDT')" />
+                                        @Html.EditorFor(model => model.T_TDSTXN.TDSCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TDSCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetTDSDetails", PageControllerName) + "','TDS Details','TDSCODE','TDSCODE=TDSCODE=1/TDSNM1=TDSNM=0/TDSPER=TDSPER=2/TDS_LIMIT=TDSLIMIT/TDS_CALCON=TDSCALCON/TDS_AMT=AMT/TDS_ROUNDCAL=TDSROUNDCAL','SLCD/DOCDT/AUTONO')", onblur = "GetTDS(this.value);",  @placeholder = "TDSCODE" } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetTDSDetails", PageControllerName)','TDS Details','TDSCODE','TDSCODE=TDSCODE=1/TDSNM1=TDSNM=0/TDSPER=TDSPER=2/TDS_LIMIT=TDSLIMIT/TDS_CALCON=TDSCALCON/TDS_AMT=AMT/TDS_ROUNDCAL=TDSROUNDCAL','SLCD/DOCDT/AUTONO')" />
                                     </div>
                                 </div>
                                 <div class="col-md-5">
                                     <div class="editor-field">
                                         @Html.EditorFor(model => model.TDSNM1, new { htmlAttributes = new { @class = "form-control", id = "TDSNM1", @placeholder = "TDS Name", @TabIndex = -1, @readonly = "readonly", @title = "Only for View" } })
+                                        @Html.HiddenFor(model => model.TDS_APPL, new { id = "TDS_APPL" })
+                                        @Html.HiddenFor(model => model.TDS_LIMIT, new { id = "TDS_LIMIT" })
+                                        @Html.HiddenFor(model => model.TDS_CALCON, new { id = "TDS_CALCON" })
+                                        @Html.HiddenFor(model => model.TDS_AMT, new { id = "TDS_AMT" })
+                                        @Html.HiddenFor(model => model.TDS_ROUNDCAL, new { id = "TDS_ROUNDCAL" }) 
                                     </div>
                                 </div>
 
@@ -2005,8 +2068,9 @@
                                 </div>
                                 <div class="col-md-2">
                                     <div class="editor-field" style="margin-top:6px;">
-                                        @Html.EditorFor(model => model.T_TDSTXN.TDSON, new { htmlAttributes = new { @class = "form-control", id = "TDSON", onblur = "TDSAMTCAL();", @placeholder = "TDS On", maxlength = 15, @onkeypress = "return numericOnly(this,2);" } })
-                                    </div>
+                                        @Html.EditorFor(model => model.T_TDSTXN.TDSON, new { htmlAttributes = new { @class = "form-control", id = "TDSON", onchange = "UpdateTdsOn();", @placeholder = "TDS On", maxlength = 15, @onkeypress = "return numericOnly(this,2);" } })
+                                        <input type="hidden" id="MANUALTDSON" />
+   </div>
                                 </div>
 
                                 <div class="col-md-2">

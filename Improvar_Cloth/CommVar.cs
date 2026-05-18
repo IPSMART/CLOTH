@@ -13,11 +13,6 @@ namespace Improvar
             {
                 return System.Web.HttpContext.Current.Session["CompanyCode" + unqsno].ToString();
             }
-            catch { }
-            try
-            {
-                return System.Web.HttpContext.Current.Session["CompanyCode"].ToString();
-            }
             catch
             {
                 return "";
@@ -29,11 +24,6 @@ namespace Improvar
             {
                 return System.Web.HttpContext.Current.Session["CompanyLocationCode" + unqsno].ToString();
             }
-            catch { }
-            try
-            {
-                return System.Web.HttpContext.Current.Session["CompanyLocationCode"].ToString();
-            }
             catch
             {
                 return "";
@@ -44,11 +34,6 @@ namespace Improvar
             try
             {
                 return System.Web.HttpContext.Current.Session["CLIENT_CODE" + unqsno].ToString();
-            }
-            catch { }
-            try
-            {
-                return System.Web.HttpContext.Current.Session["CLIENT_CODE"].ToString();
             }
             catch
             {
@@ -80,11 +65,6 @@ namespace Improvar
             {
                 return System.Web.HttpContext.Current.Session["CompanyName" + unqsno].ToString();
             }
-            catch { }
-            try
-            {
-                return System.Web.HttpContext.Current.Session["CompanyName"].ToString();
-            }
             catch
             {
                 return "";
@@ -96,11 +76,6 @@ namespace Improvar
             {
                 return System.Web.HttpContext.Current.Session["CompanyLocation" + unqsno].ToString();
             }
-            catch { }
-            try
-            {
-                return System.Web.HttpContext.Current.Session["CompanyLocation"].ToString();
-            }
             catch
             {
                 return "";
@@ -111,11 +86,6 @@ namespace Improvar
             try
             {
                 return System.Web.HttpContext.Current.Session["YEAR_CODE" + unqsno].ToString();
-            }
-            catch { }
-            try
-            {
-                return System.Web.HttpContext.Current.Session["YEAR_CODE"].ToString();
             }
             catch
             {
@@ -140,11 +110,6 @@ namespace Improvar
             {
                 return System.Web.HttpContext.Current.Session["DatabaseSchemaName" + unqsno].ToString();
             }
-            catch { }
-            try
-            {
-                return System.Web.HttpContext.Current.Session["DatabaseSchemaName"].ToString();
-            }
             catch
             {
                 return "";
@@ -157,11 +122,6 @@ namespace Improvar
             {
                 return System.Web.HttpContext.Current.Session["FINSCHEMA" + unqsno].ToString();
             }
-            catch { }
-            try
-            {
-                return System.Web.HttpContext.Current.Session["FINSCHEMA"].ToString();
-            }
             catch
             {
                 return "";
@@ -172,11 +132,6 @@ namespace Improvar
             try
             {
                 return System.Web.HttpContext.Current.Session["INVSCHEMA" + unqsno].ToString();
-            }
-            catch { }
-            try
-            {
-                return System.Web.HttpContext.Current.Session["INVSCHEMA"].ToString();
             }
             catch
             {
@@ -189,11 +144,6 @@ namespace Improvar
             {
                 return System.Web.HttpContext.Current.Session["PAYSCHEMA" + unqsno].ToString();
             }
-            catch { }
-            try
-            {
-                return System.Web.HttpContext.Current.Session["PAYSCHEMA"].ToString();
-            }
             catch
             {
                 return "";
@@ -205,11 +155,6 @@ namespace Improvar
             {
                 return System.Web.HttpContext.Current.Session["SDSCHEMA" + unqsno].ToString();
             }
-            catch { }
-            try
-            {
-                return System.Web.HttpContext.Current.Session["SDSCHEMA"].ToString();
-            }
             catch
             {
                 return "";
@@ -220,11 +165,6 @@ namespace Improvar
             try
             {
                 return System.Web.HttpContext.Current.Session["LastYearSchema" + unqsno].ToString();
-            }
-            catch { }
-            try
-            {
-                return System.Web.HttpContext.Current.Session["LastYearSchema"].ToString();
             }
             catch
             {
@@ -241,11 +181,6 @@ namespace Improvar
             {
                 return System.Web.HttpContext.Current.Session["CompanyFinancial" + unqsno].ToString();
             }
-            catch { }
-            try
-            {
-                return System.Web.HttpContext.Current.Session["CompanyFinancial"].ToString();
-            }
             catch
             {
                 return "";
@@ -256,13 +191,6 @@ namespace Improvar
             try
             {
                 string str = System.Web.HttpContext.Current.Session["CompanyFinancial" + unqsno].ToString();
-                string[] dt = str.Split('-');
-                return dt[0].ToString().Trim();
-            }
-            catch { }
-            try
-            {
-                string str = System.Web.HttpContext.Current.Session["CompanyFinancial"].ToString();
                 string[] dt = str.Split('-');
                 return dt[0].ToString().Trim();
             }
@@ -280,13 +208,6 @@ namespace Improvar
                 string[] dt = str.Split('-');
                 return dt[1].ToString().Trim();
             }
-            catch { }
-            try
-            {
-                string str = System.Web.HttpContext.Current.Session["CompanyFinancial"].ToString();
-                string[] dt = str.Split('-');
-                return dt[1].ToString().Trim();
-            }
             catch
             {
                 return "";
@@ -295,18 +216,6 @@ namespace Improvar
         }
         public static string CurrDate(string unqsno)
         {
-            try
-            {
-                string str = FinPeriod(unqsno);
-                string[] dt = str.Split('-');
-                str = dt[1].ToString().Trim();
-                DateTime tdt = Convert.ToDateTime(str);
-
-                string rtval = System.DateTime.Today.ToString().retDateStr();
-                if (tdt < System.DateTime.Today) rtval = CommVar.FinEndDate(unqsno);
-                return rtval;
-            }
-            catch { }
             try
             {
                 string str = FinPeriod(unqsno);
@@ -425,11 +334,6 @@ namespace Improvar
             try
             {
                 return System.Web.HttpContext.Current.Session["NEXTSCHEMA" + unqsno].ToString();
-            }
-            catch { }
-            try
-            {
-                return System.Web.HttpContext.Current.Session["NEXTSCHEMA"].ToString();
             }
             catch
             {

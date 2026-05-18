@@ -194,6 +194,7 @@ namespace Improvar.Controllers
 
                 // Report begins
                 //  i = 0; maxR = tbl.Rows.Count - 1;
+                bool ShowShade = VE.Checkbox13;
 
                 string pghdr1 = "";
                 string repname = "Stock_Val" + System.DateTime.Now;
@@ -206,20 +207,20 @@ namespace Improvar.Controllers
                 {
                     //tbl = Salesfunc.GetStockFifo("FIFO", asdt, "", "", selitgrpcd, "", selgocd, true, "", false, "", "", "", "", "CP");
                     //tbl = Salesfunc.GenStocktblwithVal("FIFO", asdt, "", "", selitgrpcd, selitcd, selgocd, true, "", summdtl, "", "", "", "", VE.Checkbox9);
-                    tbl = Salesfunc.GenStocktblwithVal("FIFO", asdt, "", mtrljobcd, selitgrpcd, selitcd, selgocd, true, "", summdtl, "", "", loccd, "", VE.Checkbox9);
+                    tbl = Salesfunc.GenStocktblwithVal("FIFO", asdt, "", mtrljobcd, selitgrpcd, selitcd, selgocd, true, "", summdtl, "", "", loccd, "", VE.Checkbox9, false, "", ShowShade);
                 }
                 else if (summary == "P")
                 {
-                    tbl = Salesfunc.GetStock(tdt, selgocd, "", selitcd, mtrljobcd, "", selitgrpcd, "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", party, VE.Checkbox7, false, true, false, fdt, false, loccd);
+                    tbl = Salesfunc.GetStock(tdt, selgocd, "", selitcd, mtrljobcd, "", selitgrpcd, "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", party, VE.Checkbox7, false, true, false, fdt, false, loccd, "", ShowShade);
                 }
                 else
                 {
                     //tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", party, VE.Checkbox7);
-                    tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, mtrljobcd, "", selitgrpcd, "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", party, VE.Checkbox7, false, false, false, "", false, loccd);
+                    tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, mtrljobcd, "", selitgrpcd, "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", party, VE.Checkbox7, false, false, false, "", false, loccd, "", ShowShade);
                 }
                 if (rateon == "FIFO")
                 {
-                    fifotbl = Salesfunc.GenStocktblwithVal("FIFO", asdt, "", mtrljobcd, selitgrpcd, selitcd, selgocd, true, "", true, "", "", loccd, "", VE.Checkbox9);
+                    fifotbl = Salesfunc.GenStocktblwithVal("FIFO", asdt, "", mtrljobcd, selitgrpcd, selitcd, selgocd, true, "", true, "", "", loccd, "", VE.Checkbox9, false, "", ShowShade);
                 }
                 if (tbl != null && tbl.Rows.Count > 0 && Onlynegativestock == true)
                 {
@@ -279,6 +280,18 @@ namespace Improvar.Controllers
         }
         public ActionResult Details(FormCollection FC, ReportViewinHtml VE, DataTable tbl, string COM, string LOC, string ASDT, string PRCCD, string QDSP, string summary, string rateon, DataTable fifotbl, string pghdr2)
         {
+            bool ShowShade = VE.Checkbox13;
+            DataView dv = new DataView(tbl);
+            if (ShowShade == true)
+            {
+                dv.Sort = "mtrljobnm,mtrljobcd,itgrpnm,itgrpcd,itstyle,itcd,shade,docdt,docno ASC";
+            }
+            else
+            {
+                dv.Sort = "mtrljobnm,mtrljobcd,itgrpnm,itgrpcd,itstyle,itcd,docdt,docno ASC";
+            }
+            tbl = dv.ToTable();
+
             Models.PrintViewer PV = new Models.PrintViewer();
             HtmlConverter HC = new HtmlConverter();
             DataTable IR = new DataTable("");
@@ -300,71 +313,80 @@ namespace Improvar.Controllers
             i = 0;
             while (i <= maxR)
             {
-                strbrgrpcd = tbl.Rows[i]["itgrpcd"].ToString();
-
+                string mtrljob = tbl.Rows[i]["mtrljobcd"].ToString();
                 IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + strbrgrpcd + "  " + " </span>" + tbl.Rows[i]["itgrpnm"].ToString();
+                IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " Material Job -  " + " </span>" + tbl.Rows[i]["mtrljobnm"].ToString();
                 IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
 
-                double bamt = 0, tqnty = 0;
-                while (tbl.Rows[i]["itgrpcd"].ToString() == strbrgrpcd)
+                while (tbl.Rows[i]["mtrljobcd"].ToString() == mtrljob)
                 {
-                    stritcd = tbl.Rows[i]["itcd"].ToString();
+                    strbrgrpcd = tbl.Rows[i]["itgrpcd"].ToString();
+
                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                    IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + stritcd + "  " + " </span>" + tbl.Rows[i]["itstyle"].ToString();
-                    IR.Rows[rNo]["Dammy"] = IR.Rows[rNo]["Dammy"] + " </span>" + " [" + tbl.Rows[i]["uomcd"] + "]";
+                    IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + strbrgrpcd + "  " + " </span>" + tbl.Rows[i]["itgrpnm"].ToString();
                     IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
-                    double iqnty = 0, iamt = 0;
-                    while (tbl.Rows[i]["itcd"].ToString() == stritcd)
+
+                    double bamt = 0, tqnty = 0;
+                    while (tbl.Rows[i]["mtrljobcd"].ToString() == mtrljob && tbl.Rows[i]["itgrpcd"].ToString() == strbrgrpcd)
                     {
+                        stritcd = tbl.Rows[i]["itcd"].ToString() + (ShowShade == true ? tbl.Rows[i]["shade"].retStr().Trim() : "");
                         IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                        IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"];
-                        IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].ToString().retDateStr();
-                        IR.Rows[rNo]["slcd"] = tbl.Rows[i]["slcd"].ToString();
-                        IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].ToString();
-                        IR.Rows[rNo]["qnty"] = tbl.Rows[i]["balqnty"].ToString();
-                        iqnty = iqnty + Convert.ToDouble(tbl.Rows[i]["balqnty"].retDbl());
-                        if (rateon == "FIFO")
+                        IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + tbl.Rows[i]["itcd"].ToString() + "  " + " </span>" + tbl.Rows[i]["itstyle"].ToString() + (ShowShade == true ? (tbl.Rows[i]["shade"].retStr().Trim() == "" ? "" : " (Shade : " + tbl.Rows[i]["shade"].retStr().Trim() + ")") : "");
+                        IR.Rows[rNo]["Dammy"] = IR.Rows[rNo]["Dammy"] + " </span>" + " [" + tbl.Rows[i]["uomcd"] + "]";
+                        IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
+                        double iqnty = 0, iamt = 0;
+                        while (tbl.Rows[i]["mtrljobcd"].ToString() == mtrljob && tbl.Rows[i]["itgrpcd"].ToString() == strbrgrpcd && tbl.Rows[i]["itcd"].ToString() + (ShowShade == true ? tbl.Rows[i]["shade"].retStr().Trim() : "") == stritcd)
                         {
-                            if (fifotbl != null && fifotbl.Rows.Count > 0)
+                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                            IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"];
+                            IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].ToString().retDateStr();
+                            IR.Rows[rNo]["slcd"] = tbl.Rows[i]["slcd"].ToString();
+                            IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].ToString();
+                            IR.Rows[rNo]["qnty"] = tbl.Rows[i]["balqnty"].ToString();
+                            iqnty = iqnty + Convert.ToDouble(tbl.Rows[i]["balqnty"].retDbl());
+                            if (rateon == "FIFO")
                             {
-                                var fifort = (from DataRow a in fifotbl.Rows where a["itcd"].retStr() == stritcd select a["rate"]).FirstOrDefault();
-                                IR.Rows[rNo]["rate"] = fifort.retDbl();
-                                IR.Rows[rNo]["amt"] = (fifort.retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
-                                iamt = iamt + (fifort.retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
+                                if (fifotbl != null && fifotbl.Rows.Count > 0)
+                                {
+                                    var fifort = (from DataRow a in fifotbl.Rows where a["itcd"].retStr() + (ShowShade == true ? a["shade"].retStr().Trim() : "") == stritcd select a["rate"]).FirstOrDefault();
+                                    IR.Rows[rNo]["rate"] = fifort.retDbl();
+                                    IR.Rows[rNo]["amt"] = (fifort.retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
+                                    iamt = iamt + (fifort.retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
+                                }
                             }
+                            else
+                            {
+                                IR.Rows[rNo]["rate"] = tbl.Rows[i]["rate"].retDbl();
+                                IR.Rows[rNo]["amt"] = (tbl.Rows[i]["rate"].retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
+                                iamt = iamt + (tbl.Rows[i]["rate"].retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
+                            }
+                            //IR.Rows[rNo]["rate"] = tbl.Rows[i]["rate"].retDbl();
+                            //IR.Rows[rNo]["amt"] = (tbl.Rows[i]["rate"].retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
+                            //iqnty = iqnty + Convert.ToDouble(tbl.Rows[i]["balqnty"].retDbl());
+                            //iamt = iamt + (tbl.Rows[i]["rate"].retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
+                            i++;
+                            if (i > maxR) break;
                         }
-                        else
-                        {
-                            IR.Rows[rNo]["rate"] = tbl.Rows[i]["rate"].retDbl();
-                            IR.Rows[rNo]["amt"] = (tbl.Rows[i]["rate"].retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
-                            iamt = iamt + (tbl.Rows[i]["rate"].retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
-                        }
-                        //IR.Rows[rNo]["rate"] = tbl.Rows[i]["rate"].retDbl();
-                        //IR.Rows[rNo]["amt"] = (tbl.Rows[i]["rate"].retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
-                        //iqnty = iqnty + Convert.ToDouble(tbl.Rows[i]["balqnty"].retDbl());
-                        //iamt = iamt + (tbl.Rows[i]["rate"].retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
-                        i++;
+                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                        IR.Rows[rNo]["slnm"] = "Total of " + tbl.Rows[i - 1]["itstyle"].ToString();
+                        IR.Rows[rNo]["qnty"] = iqnty;
+                        IR.Rows[rNo]["amt"] = iamt;
+                        IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
+
+                        bamt = bamt + iamt;
+                        tqnty = tqnty + iqnty;
                         if (i > maxR) break;
                     }
                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                    IR.Rows[rNo]["slnm"] = "Total of " + tbl.Rows[i - 1]["itstyle"].ToString();
-                    IR.Rows[rNo]["qnty"] = iqnty;
-                    IR.Rows[rNo]["amt"] = iamt;
+                    IR.Rows[rNo]["slnm"] = "Total of " + tbl.Rows[i - 1]["itgrpnm"].ToString();
+                    IR.Rows[rNo]["amt"] = bamt;
+                    //IR.Rows[rNo]["qnty"] = tqnty;
                     IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
-
-                    bamt = bamt + iamt;
-                    tqnty = tqnty + iqnty;
+                    gamt = gamt + bamt;
+                    gqnty = gqnty + tqnty;
+                    //i++;
                     if (i > maxR) break;
                 }
-                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                IR.Rows[rNo]["slnm"] = "Total of " + tbl.Rows[i - 1]["itgrpnm"].ToString();
-                IR.Rows[rNo]["amt"] = bamt;
-                //IR.Rows[rNo]["qnty"] = tqnty;
-                IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
-                gamt = gamt + bamt;
-                gqnty = gqnty + tqnty;
-                //i++;
                 if (i > maxR) break;
             }
             IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
@@ -389,6 +411,7 @@ namespace Improvar.Controllers
         }
         public ActionResult Summary(FormCollection FC, ReportViewinHtml VE, DataTable tbl, string COM, string LOC, string ASDT, string PRCCD, string QDSP, bool ignoreitems, string summary, string rateon, DataTable fifotbl, string pghdr2)
         {
+            bool ShowShade = VE.Checkbox13;
             Models.PrintViewer PV = new Models.PrintViewer();
             HtmlConverter HC = new HtmlConverter();
             DataTable IR = new DataTable("");
@@ -461,7 +484,14 @@ namespace Improvar.Controllers
             if (ageingperiod >= 4) HC.GetPrintHeader(IR, "stk4amt", "double", "n,14,2", "> " + due3tDys.ToString() + ";Amt");
             maxR = tbl.Rows.Count - 1;
             DataView dv = new DataView(tbl);
-            dv.Sort = "itgrpcd, itcd ASC";
+            if (ShowShade == true)
+            {
+                dv.Sort = "mtrljobnm,mtrljobcd,itgrpcd, itcd,shade ASC";
+            }
+            else
+            {
+                dv.Sort = "mtrljobnm,mtrljobcd,itgrpcd, itcd ASC";
+            }
             tbl = dv.ToTable();
 
             string strbrgrpcd = "", stritcd = "";
@@ -472,127 +502,136 @@ namespace Improvar.Controllers
             gdue1Qty = 0; gdue2Qty = 0; gdue3Qty = 0; gdue4Qty = 0;
             while (i <= maxR)
             {
-                strbrgrpcd = tbl.Rows[i]["itgrpcd"].ToString();
-                if (ignoreitems == false)
-                {
-                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                    IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + strbrgrpcd + "  " + " </span>" + tbl.Rows[i]["itgrpnm"].ToString();
-                    IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
-                }
+                string mtrljob = tbl.Rows[i]["mtrljobcd"].ToString();
+                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " Material Job -  " + " </span>" + tbl.Rows[i]["mtrljobnm"].ToString();
+                IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
 
-                double bamt = 0, bqnty = 0;
-                if (ignoreitems == false) islno = 0;
-                bdue1Amt = 0; bdue2Amt = 0; bdue3Amt = 0; bdue4Amt = 0;
-                bdue1Qty = 0; bdue2Qty = 0; bdue3Qty = 0; bdue4Qty = 0;
-                while (tbl.Rows[i]["itgrpcd"].ToString() == strbrgrpcd)
+                while (tbl.Rows[i]["mtrljobcd"].ToString() == mtrljob)
                 {
-                    stritcd = tbl.Rows[i]["itcd"].ToString();
-                    double iqnty = 0, iamt = 0;
-                    due1Amt = 0; due2Amt = 0; due3Amt = 0; due4Amt = 0;
-                    due1Qty = 0; due2Qty = 0; due3Qty = 0; due4Qty = 0;
-                    while (tbl.Rows[i]["itcd"].ToString() == stritcd)
+                    strbrgrpcd = tbl.Rows[i]["itgrpcd"].ToString();
+                    if (ignoreitems == false)
                     {
-                        double days = 0;
-                        TimeSpan TSdys;
-                        if (tbl.Rows[i]["docdt"] == DBNull.Value) days = 0;
-                        else
+                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                        IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + strbrgrpcd + "  " + " </span>" + tbl.Rows[i]["itgrpnm"].ToString();
+                        IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
+                    }
+
+                    double bamt = 0, bqnty = 0;
+                    if (ignoreitems == false) islno = 0;
+                    bdue1Amt = 0; bdue2Amt = 0; bdue3Amt = 0; bdue4Amt = 0;
+                    bdue1Qty = 0; bdue2Qty = 0; bdue3Qty = 0; bdue4Qty = 0;
+                    while (tbl.Rows[i]["mtrljobcd"].ToString() == mtrljob && tbl.Rows[i]["itgrpcd"].ToString() == strbrgrpcd)
+                    {
+                        stritcd = tbl.Rows[i]["itcd"].ToString() + (ShowShade == true ? tbl.Rows[i]["shade"].retStr().Trim() : "");
+                        double iqnty = 0, iamt = 0;
+                        due1Amt = 0; due2Amt = 0; due3Amt = 0; due4Amt = 0;
+                        due1Qty = 0; due2Qty = 0; due3Qty = 0; due4Qty = 0;
+                        while (tbl.Rows[i]["mtrljobcd"].ToString() == mtrljob && tbl.Rows[i]["itgrpcd"].ToString() == strbrgrpcd && tbl.Rows[i]["itcd"].ToString() + (ShowShade == true ? tbl.Rows[i]["shade"].retStr().Trim() : "") == stritcd)
                         {
-                            TSdys = Convert.ToDateTime(ASDT) - Convert.ToDateTime(tbl.Rows[i]["docdt"]);
-                            days = TSdys.Days;
+                            double days = 0;
+                            TimeSpan TSdys;
+                            if (tbl.Rows[i]["docdt"] == DBNull.Value) days = 0;
+                            else
+                            {
+                                TSdys = Convert.ToDateTime(ASDT) - Convert.ToDateTime(tbl.Rows[i]["docdt"]);
+                                days = TSdys.Days;
+                            }
+
+                            //double _qty = Convert.ToDouble(tbl.Rows[i]["balqnty"].ToString()), _amt = (tbl.Rows[i]["rate"].retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
+                            double _qty = Convert.ToDouble(tbl.Rows[i]["balqnty"].ToString());
+                            double _amt = 0;
+                            if (rateon == "FIFO")
+                            {
+                                if (fifotbl != null && fifotbl.Rows.Count > 0)
+                                {
+                                    var fifort = (from DataRow a in fifotbl.Rows where a["itcd"].retStr() + (ShowShade == true ? a["shade"].retStr().Trim() : "") == stritcd select a["rate"]).FirstOrDefault();
+                                    _amt = (fifort.retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
+                                }
+                            }
+                            else
+                            {
+                                _amt = (tbl.Rows[i]["rate"].retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
+                            }
+                            if (ageingperiod > 0)
+                            {
+                                if (days <= due1tDys && due1tDys != 0) { due1Qty = due1Qty + _qty; due1Amt = due1Amt + _amt; }
+                                else if (days <= due2tDys && due2tDys != 0) { due2Qty = due2Qty + _qty; due2Amt = due2Amt + _amt; }
+                                else if (days <= due3tDys && due3tDys != 0) { due3Qty = due3Qty + _qty; due3Amt = due3Amt + _amt; }
+                                else { due4Qty = due4Qty + _qty; due4Amt = due4Amt + _amt; }
+                            }
+                            iqnty = iqnty + _qty;
+                            iamt = iamt + _amt;
+                            i++;
+                            if (i > maxR) break;
+                        }
+                        if (Math.Round(iqnty, 6) != 0)
+                        {
+                            double avrt = 0;
+                            if (iqnty != 0) avrt = iamt / iqnty;
+                            if (ignoreitems == false)
+                            {
+                                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                islno++;
+                                IR.Rows[rNo]["slno"] = islno;
+                                IR.Rows[rNo]["itcd"] = tbl.Rows[i - 1]["itcd"].ToString();
+                                IR.Rows[rNo]["itnm"] = tbl.Rows[i - 1]["itstyle"].ToString() + (ShowShade == true ? (tbl.Rows[i - 1]["shade"].retStr().Trim() == "" ? "" : " (Shade : " + tbl.Rows[i - 1]["shade"].retStr().Trim() + ")") : "");
+                                IR.Rows[rNo]["uomnm"] = tbl.Rows[i - 1]["uomcd"].ToString();
+                                IR.Rows[rNo]["qnty"] = iqnty;
+                                IR.Rows[rNo]["rate"] = avrt;
+                                IR.Rows[rNo]["amt"] = iamt;
+
+                                if (ageingperiod > 0)
+                                {
+                                    if (due1Qty != 0) { IR.Rows[rNo]["stk1qty"] = due1Qty; IR.Rows[rNo]["stk1amt"] = due1Amt; }
+                                    if (due2Qty != 0) { IR.Rows[rNo]["stk2qty"] = due2Qty; IR.Rows[rNo]["stk2amt"] = due2Amt; }
+                                    if (due3Qty != 0) { IR.Rows[rNo]["stk3qty"] = due3Qty; IR.Rows[rNo]["stk3amt"] = due3Amt; }
+                                    if (due4Qty != 0) { IR.Rows[rNo]["stk4qty"] = due4Qty; IR.Rows[rNo]["stk4amt"] = due4Amt; }
+                                }
+                            }
+                            bdue1Qty = bdue1Qty + due1Qty; bdue1Amt = bdue1Amt + due1Amt;
+                            bdue2Qty = bdue2Qty + due2Qty; bdue2Amt = bdue2Amt + due2Amt;
+                            bdue3Qty = bdue3Qty + due3Qty; bdue3Amt = bdue3Amt + due3Amt;
+                            bdue4Qty = bdue4Qty + due4Qty; bdue4Amt = bdue4Amt + due4Amt;
+                            bamt = bamt + iamt;
+                            bqnty = bqnty + iqnty;
                         }
 
-                        //double _qty = Convert.ToDouble(tbl.Rows[i]["balqnty"].ToString()), _amt = (tbl.Rows[i]["rate"].retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
-                        double _qty = Convert.ToDouble(tbl.Rows[i]["balqnty"].ToString());
-                        double _amt = 0;
-                        if (rateon == "FIFO")
-                        {
-                            if (fifotbl != null && fifotbl.Rows.Count > 0)
-                            {
-                                var fifort = (from DataRow a in fifotbl.Rows where a["itcd"].retStr() == stritcd select a["rate"]).FirstOrDefault();
-                                _amt = (fifort.retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
-                            }
-                        }
-                        else
-                        {
-                            _amt = (tbl.Rows[i]["rate"].retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
-                        }
-                        if (ageingperiod > 0)
-                        {
-                            if (days <= due1tDys && due1tDys != 0) { due1Qty = due1Qty + _qty; due1Amt = due1Amt + _amt; }
-                            else if (days <= due2tDys && due2tDys != 0) { due2Qty = due2Qty + _qty; due2Amt = due2Amt + _amt; }
-                            else if (days <= due3tDys && due3tDys != 0) { due3Qty = due3Qty + _qty; due3Amt = due3Amt + _amt; }
-                            else { due4Qty = due4Qty + _qty; due4Amt = due4Amt + _amt; }
-                        }
-                        iqnty = iqnty + _qty;
-                        iamt = iamt + _amt;
-                        i++;
                         if (i > maxR) break;
                     }
-                    if (Math.Round(iqnty, 6) != 0)
+                    if (ignoreitems == false)
                     {
-                        double avrt = 0;
-                        if (iqnty != 0) avrt = iamt / iqnty;
-                        if (ignoreitems == false)
+                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                        IR.Rows[rNo]["itnm"] = "Total of " + tbl.Rows[i - 1]["itgrpnm"].ToString();
+                        IR.Rows[rNo]["amt"] = bamt;
+                        IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
+                    }
+                    else
+                    {
+                        if (bqnty != 0)
                         {
                             IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                             islno++;
                             IR.Rows[rNo]["slno"] = islno;
-                            IR.Rows[rNo]["itcd"] = tbl.Rows[i - 1]["itcd"].ToString();
-                            IR.Rows[rNo]["itnm"] = tbl.Rows[i - 1]["itstyle"].ToString();
+                            IR.Rows[rNo]["itcd"] = tbl.Rows[i - 1]["itgrpcd"].ToString();
+                            IR.Rows[rNo]["itnm"] = tbl.Rows[i - 1]["itgrpnm"].ToString();
                             IR.Rows[rNo]["uomnm"] = tbl.Rows[i - 1]["uomcd"].ToString();
-                            IR.Rows[rNo]["qnty"] = iqnty;
-                            IR.Rows[rNo]["rate"] = avrt;
-                            IR.Rows[rNo]["amt"] = iamt;
-
-                            if (ageingperiod > 0)
-                            {
-                                if (due1Qty != 0) { IR.Rows[rNo]["stk1qty"] = due1Qty; IR.Rows[rNo]["stk1amt"] = due1Amt; }
-                                if (due2Qty != 0) { IR.Rows[rNo]["stk2qty"] = due2Qty; IR.Rows[rNo]["stk2amt"] = due2Amt; }
-                                if (due3Qty != 0) { IR.Rows[rNo]["stk3qty"] = due3Qty; IR.Rows[rNo]["stk3amt"] = due3Amt; }
-                                if (due4Qty != 0) { IR.Rows[rNo]["stk4qty"] = due4Qty; IR.Rows[rNo]["stk4amt"] = due4Amt; }
-                            }
+                            IR.Rows[rNo]["qnty"] = bqnty;
+                            IR.Rows[rNo]["amt"] = bamt;
                         }
-                        bdue1Qty = bdue1Qty + due1Qty; bdue1Amt = bdue1Amt + due1Amt;
-                        bdue2Qty = bdue2Qty + due2Qty; bdue2Amt = bdue2Amt + due2Amt;
-                        bdue3Qty = bdue3Qty + due3Qty; bdue3Amt = bdue3Amt + due3Amt;
-                        bdue4Qty = bdue4Qty + due4Qty; bdue4Amt = bdue4Amt + due4Amt;
-                        bamt = bamt + iamt;
-                        bqnty = bqnty + iqnty;
                     }
-
+                    if (ageingperiod > 0)
+                    {
+                        if (bdue1Qty != 0) { IR.Rows[rNo]["stk1qty"] = bdue1Qty; IR.Rows[rNo]["stk1amt"] = bdue1Amt; gdue1Qty = gdue1Qty + bdue1Qty; gdue1Amt = gdue1Amt + bdue1Amt; }
+                        if (bdue2Qty != 0) { IR.Rows[rNo]["stk2qty"] = bdue2Qty; IR.Rows[rNo]["stk2amt"] = bdue2Amt; gdue2Qty = gdue2Qty + bdue2Qty; gdue2Amt = gdue2Amt + bdue2Amt; }
+                        if (bdue3Qty != 0) { IR.Rows[rNo]["stk3qty"] = bdue3Qty; IR.Rows[rNo]["stk3amt"] = bdue3Amt; gdue3Qty = gdue3Qty + bdue3Qty; gdue3Amt = gdue3Amt + bdue3Amt; }
+                        if (bdue4Qty != 0) { IR.Rows[rNo]["stk4qty"] = bdue4Qty; IR.Rows[rNo]["stk4amt"] = bdue4Amt; gdue4Qty = gdue4Qty + bdue4Qty; gdue4Amt = gdue4Amt + bdue4Amt; }
+                    }
+                    gamt = gamt + bamt;
+                    gqnty = gqnty + bqnty;
+                    //i++;
                     if (i > maxR) break;
                 }
-                if (ignoreitems == false)
-                {
-                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                    IR.Rows[rNo]["itnm"] = "Total of " + tbl.Rows[i - 1]["itgrpnm"].ToString();
-                    IR.Rows[rNo]["amt"] = bamt;
-                    IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
-                }
-                else
-                {
-                    if (bqnty != 0)
-                    {
-                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                        islno++;
-                        IR.Rows[rNo]["slno"] = islno;
-                        IR.Rows[rNo]["itcd"] = tbl.Rows[i - 1]["itgrpcd"].ToString();
-                        IR.Rows[rNo]["itnm"] = tbl.Rows[i - 1]["itgrpnm"].ToString();
-                        IR.Rows[rNo]["uomnm"] = tbl.Rows[i - 1]["uomcd"].ToString();
-                        IR.Rows[rNo]["qnty"] = bqnty;
-                        IR.Rows[rNo]["amt"] = bamt;
-                    }
-                }
-                if (ageingperiod > 0)
-                {
-                    if (bdue1Qty != 0) { IR.Rows[rNo]["stk1qty"] = bdue1Qty; IR.Rows[rNo]["stk1amt"] = bdue1Amt; gdue1Qty = gdue1Qty + bdue1Qty; gdue1Amt = gdue1Amt + bdue1Amt; }
-                    if (bdue2Qty != 0) { IR.Rows[rNo]["stk2qty"] = bdue2Qty; IR.Rows[rNo]["stk2amt"] = bdue2Amt; gdue2Qty = gdue2Qty + bdue2Qty; gdue2Amt = gdue2Amt + bdue2Amt; }
-                    if (bdue3Qty != 0) { IR.Rows[rNo]["stk3qty"] = bdue3Qty; IR.Rows[rNo]["stk3amt"] = bdue3Amt; gdue3Qty = gdue3Qty + bdue3Qty; gdue3Amt = gdue3Amt + bdue3Amt; }
-                    if (bdue4Qty != 0) { IR.Rows[rNo]["stk4qty"] = bdue4Qty; IR.Rows[rNo]["stk4amt"] = bdue4Amt; gdue4Qty = gdue4Qty + bdue4Qty; gdue4Amt = gdue4Amt + bdue4Amt; }
-                }
-                gamt = gamt + bamt;
-                gqnty = gqnty + bqnty;
-                //i++;
                 if (i > maxR) break;
             }
             IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
@@ -623,6 +662,7 @@ namespace Improvar.Controllers
         }
         public ActionResult Godownwise(FormCollection FC, ReportViewinHtml VE, DataTable tbl, string COM, string LOC, string ASDT, string PRCCD, string QDSP, string pghdr2)
         {
+            bool ShowShade = VE.Checkbox13;
             Models.PrintViewer PV = new Models.PrintViewer();
             HtmlConverter HC = new HtmlConverter();
             DataTable IR = new DataTable("");
@@ -630,7 +670,14 @@ namespace Improvar.Controllers
 
 
             DataView dv = new DataView(tbl);
-            dv.Sort = "itcd, gocd asc";
+            if (ShowShade == true)
+            {
+                dv.Sort = "mtrljobnm,mtrljobcd,itcd,shade, gocd asc";
+            }
+            else
+            {
+                dv.Sort = "mtrljobnm,mtrljobcd,itcd, gocd asc";
+            }
             tbl = dv.ToTable();
             DataTable amtDT = new DataTable("goDT");
             string[] amtTBLCOLS = new string[] { "gocd", "gonm" };
@@ -662,73 +709,81 @@ namespace Improvar.Controllers
             double _qty = 0, _amt = 0;
             while (i <= maxR)
             {
-                strbrgrpcd = tbl.Rows[i]["itgrpcd"].ToString();
-
+                string mtrljob = tbl.Rows[i]["mtrljobcd"].ToString();
                 IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + strbrgrpcd + "  " + " </span>" + tbl.Rows[i]["itgrpnm"].ToString();
+                IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " Material Job -  " + " </span>" + tbl.Rows[i]["mtrljobnm"].ToString();
                 IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
 
-                foreach (DataRow amtdr in amtDT.Rows) amtdr["goqty"] = 0;
-                double bamt = 0, bqnty = 0;
-
-                bdue1Amt = 0; bdue2Amt = 0; bdue3Amt = 0; bdue4Amt = 0;
-                bdue1Qty = 0; bdue2Qty = 0; bdue3Qty = 0; bdue4Qty = 0; double tqty = 0, tqty_ = 0;
-                while (tbl.Rows[i]["itgrpcd"].ToString() == strbrgrpcd)
+                while (tbl.Rows[i]["mtrljobcd"].ToString() == mtrljob)
                 {
-                    stritcd = tbl.Rows[i]["itcd"].ToString();
-                    double iqnty = 0, iamt = 0;
-                    due1Amt = 0; due2Amt = 0; due3Amt = 0; due4Amt = 0;
-                    due1Qty = 0; due2Qty = 0; due3Qty = 0; due4Qty = 0;
-                    tqty_ = 0;
+                    strbrgrpcd = tbl.Rows[i]["itgrpcd"].ToString();
 
                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                    islno++;
-                    IR.Rows[rNo]["slno"] = islno;
-                    IR.Rows[rNo]["itcd"] = tbl.Rows[i]["itcd"].ToString();
-                    IR.Rows[rNo]["itnm"] = tbl.Rows[i]["itstyle"].ToString();
-                    IR.Rows[rNo]["uomnm"] = tbl.Rows[i]["uomcd"].ToString();
+                    IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + strbrgrpcd + "  " + " </span>" + tbl.Rows[i]["itgrpnm"].ToString();
+                    IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
 
-                    while (tbl.Rows[i]["itcd"].ToString() == stritcd)
+                    foreach (DataRow amtdr in amtDT.Rows) amtdr["goqty"] = 0;
+                    double bamt = 0, bqnty = 0;
+
+                    bdue1Amt = 0; bdue2Amt = 0; bdue3Amt = 0; bdue4Amt = 0;
+                    bdue1Qty = 0; bdue2Qty = 0; bdue3Qty = 0; bdue4Qty = 0; double tqty = 0, tqty_ = 0;
+                    while (tbl.Rows[i]["mtrljobcd"].ToString() == mtrljob && tbl.Rows[i]["itgrpcd"].ToString() == strbrgrpcd)
                     {
-                        double avrt = 0;
-                        if (iqnty != 0) avrt = iamt / iqnty;
+                        stritcd = tbl.Rows[i]["itcd"].ToString() + (ShowShade == true ? tbl.Rows[i]["shade"].retStr().Trim() : "");
+                        double iqnty = 0, iamt = 0;
+                        due1Amt = 0; due2Amt = 0; due3Amt = 0; due4Amt = 0;
+                        due1Qty = 0; due2Qty = 0; due3Qty = 0; due4Qty = 0;
+                        tqty_ = 0;
 
-                        gocd = tbl.Rows[i]["gocd"].ToString();
+                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                        islno++;
+                        IR.Rows[rNo]["slno"] = islno;
+                        IR.Rows[rNo]["itcd"] = tbl.Rows[i]["itcd"].ToString();
+                        IR.Rows[rNo]["itnm"] = tbl.Rows[i]["itstyle"].ToString() + (ShowShade == true ? (tbl.Rows[i]["shade"].retStr().Trim() == "" ? "" : " (Shade : " + tbl.Rows[i]["shade"].retStr().Trim() + ")") : "");
+                        IR.Rows[rNo]["uomnm"] = tbl.Rows[i]["uomcd"].ToString();
 
-                        foreach (DataRow amtdr in amtDT.Rows)
+                        while (tbl.Rows[i]["mtrljobcd"].ToString() == mtrljob && tbl.Rows[i]["itgrpcd"].ToString() == strbrgrpcd && tbl.Rows[i]["itcd"].ToString() + (ShowShade == true ? tbl.Rows[i]["shade"].retStr().Trim() : "") == stritcd)
                         {
-                            if (gocd == amtdr["gocd"].retStr())
-                            {
-                                amtdr["goqty"] = amtdr["goqty"].retDbl() + tbl.Rows[i]["balqnty"].retDbl();
-                                tqty_ += tbl.Rows[i]["balqnty"].retDbl();
-                                IR.Rows[rNo][amtdr["gocd"].ToString()] = tbl.Rows[i]["balqnty"].retDbl();
-                                //IR.Rows[rNo][amtdr["gocd"].ToString()] = tqty_;
+                            double avrt = 0;
+                            if (iqnty != 0) avrt = iamt / iqnty;
 
+                            gocd = tbl.Rows[i]["gocd"].ToString();
+
+                            foreach (DataRow amtdr in amtDT.Rows)
+                            {
+                                if (gocd == amtdr["gocd"].retStr())
+                                {
+                                    amtdr["goqty"] = amtdr["goqty"].retDbl() + tbl.Rows[i]["balqnty"].retDbl();
+                                    tqty_ += tbl.Rows[i]["balqnty"].retDbl();
+                                    IR.Rows[rNo][amtdr["gocd"].ToString()] = tbl.Rows[i]["balqnty"].retDbl();
+                                    //IR.Rows[rNo][amtdr["gocd"].ToString()] = tqty_;
+
+                                }
                             }
+                            i++;
+                            if (i > maxR) break;
                         }
-                        i++;
+                        IR.Rows[rNo]["totalqnty"] = tqty_.retDbl();
                         if (i > maxR) break;
                     }
-                    IR.Rows[rNo]["totalqnty"] = tqty_.retDbl();
+                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+
+                    tqty = 0;
+                    IR.Rows[rNo]["itnm"] = "Total of " + tbl.Rows[i - 1]["itgrpnm"].ToString();
+                    foreach (DataRow amtdr in amtDT.Rows)
+                    {
+                        IR.Rows[rNo][amtdr["gocd"].ToString()] = amtdr["goqty"].retDbl();
+                        tqty += amtdr["goqty"].retDbl();
+
+                    }
+                    //tqty += tqty_.retDbl();
+                    IR.Rows[rNo]["totalqnty"] = tqty;
+                    IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
+
                     if (i > maxR) break;
                 }
-                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-
-                tqty = 0;
-                IR.Rows[rNo]["itnm"] = "Total of " + tbl.Rows[i - 1]["itgrpnm"].ToString();
-                foreach (DataRow amtdr in amtDT.Rows)
-                {
-                    IR.Rows[rNo][amtdr["gocd"].ToString()] = amtdr["goqty"].retDbl();
-                    tqty += amtdr["goqty"].retDbl();
-
-                }
-                //tqty += tqty_.retDbl();
-                IR.Rows[rNo]["totalqnty"] = tqty;
-                IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
-
                 if (i > maxR) break;
             }
-
 
             string pghdr1 = "";
             string repname = "Stock_Val" + System.DateTime.Now;
@@ -750,34 +805,35 @@ namespace Improvar.Controllers
             string errorrow = "";
             try
             {
+                bool ShowShade = VE.Checkbox13;
                 string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
                 string fdt = CommVar.FinStartDate(UNQSNO);
 
-                string query = "select a.barno, e.itcd, e.fabitcd, a.doctag, a.qnty, a.txblval, a.othramt, f.itgrpcd, h.itgrpnm, f.itnm, "+Environment.NewLine;
+                string query = "select a.barno, e.itcd, e.fabitcd, a.doctag, a.qnty, a.txblval, a.othramt, f.itgrpcd, h.itgrpnm, f.itnm, " + Environment.NewLine;
                 query += "nvl(e.pdesign, f.styleno) styleno, e.othrate, nvl(b.rate, 0) oprate, nvl(c.rate, 0) clrate, " + Environment.NewLine;
-                query += "f.uomcd, i.uomnm, i.decimals, g.itnm fabitnm,e.hsncode,f.styleno||' '||f.itnm itstyle   from " + Environment.NewLine;
+                query += "f.uomcd, i.uomnm, i.decimals, g.itnm fabitnm,e.hsncode,f.styleno||' '||f.itnm itstyle,a.mtrljobcd,j.mtrljobnm" + (ShowShade == true ? ",a.shade" : "") + "   from " + Environment.NewLine;
 
-                query += "(select a.barno, 'OP' doctag, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, " + Environment.NewLine;
+                query += "(select a.mtrljobcd,a.barno, 'OP' doctag, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, " + Environment.NewLine;
                 query += "sum(case a.stkdrcr when 'D' then nvl(a.txblval, 0) else nvl(a.txblval, 0) * -1 end) txblval, " + Environment.NewLine;
-                query += "sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt " + Environment.NewLine;
+                query += "sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt" + (ShowShade == true ? ",a.shade" : "") + " " + Environment.NewLine;
                 query += "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e " + Environment.NewLine;
                 query += "where a.barno = b.barno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and " + Environment.NewLine;
                 query += "d.compcd = '" + COM + "' and d.loccd in (" + LOC + ") and nvl(d.cancel, 'N') = 'N' and e.doctype not in ('KHSR') and a.stkdrcr in ('D', 'C') and " + Environment.NewLine;
                 query += "d.docdt < to_date('" + fdt + "', 'dd/mm/yyyy') " + Environment.NewLine;
                 if (GOCD.retStr() != "") query += "and a.gocd in (" + GOCD + ") " + Environment.NewLine;
                 if (mtrljobcd.retStr() != "") query += "and a.mtrljobcd in (" + mtrljobcd + ") " + Environment.NewLine;
-                query += "group by a.barno, 'OP' " + Environment.NewLine;
+                query += "group by a.mtrljobcd,a.barno, 'OP'" + (ShowShade == true ? ",a.shade" : "") + " " + Environment.NewLine;
                 query += "union all " + Environment.NewLine;
-                query += "select a.barno, c.doctag, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, " + Environment.NewLine;
+                query += "select a.mtrljobcd,a.barno, c.doctag, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, " + Environment.NewLine;
                 query += "sum(case a.stkdrcr when 'D' then nvl(a.txblval, 0) else nvl(a.txblval, 0) * -1 end) txblval, " + Environment.NewLine;
-                query += "sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt " + Environment.NewLine;
+                query += "sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt" + (ShowShade == true ? ",a.shade" : "") + " " + Environment.NewLine;
                 query += "    from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e " + Environment.NewLine;
                 query += "where a.barno = b.barno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and " + Environment.NewLine;
                 query += "d.compcd = '" + COM + "' and d.loccd in (" + LOC + ") and nvl(d.cancel, 'N')= 'N' and e.doctype not in ('KHSR') and a.stkdrcr in ('D','C') and " + Environment.NewLine;
                 query += "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and d.docdt <= to_date('" + ASDT + "', 'dd/mm/yyyy') " + Environment.NewLine;
                 if (GOCD.retStr() != "") query += "and a.gocd in (" + GOCD + ") " + Environment.NewLine;
                 if (mtrljobcd.retStr() != "") query += "and a.mtrljobcd in (" + mtrljobcd + ") " + Environment.NewLine;
-                query += "group by a.barno, c.doctag ) a, " + Environment.NewLine;
+                query += "group by a.mtrljobcd,a.barno, c.doctag" + (ShowShade == true ? ",a.shade" : "") + " ) a, " + Environment.NewLine;
 
                 query += "(select barno, effdt, prccd, rate from ( " + Environment.NewLine;
                 query += "select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn " + Environment.NewLine;
@@ -789,13 +845,13 @@ namespace Improvar.Controllers
                 query += "from " + scm + ".t_batchmst_price a " + Environment.NewLine;
                 query += "where a.effdt <= to_date('" + ASDT + "', 'dd/mm/yyyy') and a.prccd = '" + PRCCD + "' ) where rn = 1) c, " + Environment.NewLine;
 
-                query += "" + scm + ".t_batchmst e, " + scm + ".m_sitem f, " + scm + ".m_sitem g, " + scm + ".m_group h, " + scmf + ".m_uom i " + Environment.NewLine;
+                query += "" + scm + ".t_batchmst e, " + scm + ".m_sitem f, " + scm + ".m_sitem g, " + scm + ".m_group h, " + scmf + ".m_uom i, " + scm + ".m_mtrljobmst j " + Environment.NewLine;
                 query += "where a.barno = e.barno(+) and e.itcd = f.itcd(+) and e.fabitcd = g.itcd(+) and " + Environment.NewLine;
                 query += "a.barno = b.barno(+) and a.barno = c.barno(+) and " + Environment.NewLine;
-                query += "f.itgrpcd = h.itgrpcd(+) and f.uomcd = i.uomcd(+) " + Environment.NewLine;
+                query += "f.itgrpcd = h.itgrpcd(+) and f.uomcd = i.uomcd(+) and a.mtrljobcd=j.mtrljobcd(+) " + Environment.NewLine;
                 if (ITGRPCD.retStr() != "") query += "and f.itgrpcd in (" + ITGRPCD + ") " + Environment.NewLine;
                 if (ITCD.retStr() != "") query += "and e.itcd in (" + ITCD + ") " + Environment.NewLine;
-                query += "order by itgrpnm, itgrpcd, fabitnm, fabitcd, itnm, itcd, styleno, barno " + Environment.NewLine;
+                query += "order by mtrljobnm,mtrljobcd,itgrpnm, itgrpcd, fabitnm, fabitcd, itnm, itcd, styleno, barno " + Environment.NewLine;
                 DataTable tbl1 = MasterHelp.SQLquery(query);
                 if (tbl1.Rows.Count == 0) return Content("no records..");
 
@@ -840,10 +896,13 @@ namespace Improvar.Controllers
                 summarybarcode.Columns.Add("balval", typeof(double), "");
                 summarybarcode.Columns.Add("itfabitcd", typeof(string), "");
                 summarybarcode.Columns.Add("itstyle", typeof(string), "");
+                summarybarcode.Columns.Add("mtrljobcd", typeof(string), "");
+                summarybarcode.Columns.Add("mtrljobnm", typeof(string), "");
+                summarybarcode.Columns.Add("shade", typeof(string), "");
 
                 while (i <= maxR)
                 {
-                    string keyval = tbl1.Rows[i]["uomcd"].retStr() + tbl1.Rows[i]["itgrpcd"].retStr() + tbl1.Rows[i]["fabitcd"].retStr() + tbl1.Rows[i]["itcd"].retStr() + tbl1.Rows[i]["styleno"].retStr() + tbl1.Rows[i]["barno"].retStr();// + tbl1.Rows[i]["barno"].retStr();
+                    string keyval = tbl1.Rows[i]["uomcd"].retStr() + tbl1.Rows[i]["itgrpcd"].retStr() + tbl1.Rows[i]["fabitcd"].retStr() + tbl1.Rows[i]["itcd"].retStr() + tbl1.Rows[i]["styleno"].retStr() + tbl1.Rows[i]["barno"].retStr() + tbl1.Rows[i]["mtrljobcd"].retStr() + (ShowShade == true ? tbl1.Rows[i]["shade"].retStr() : "");// + tbl1.Rows[i]["barno"].retStr();
                     errorrow = i.retStr() + "     key:" + keyval;
                     //calculation
                     double opqty = 0, opval = 0, netpur = 0, purval = 0, karqty = 0, karval = 0, netsale = 0, salevalue = 0, approval = 0, netstktrans = 0, netadj = 0, balqty = 0, balval = 0;
@@ -948,22 +1007,29 @@ namespace Improvar.Controllers
                         summarybarcode.Rows[rNo]["balqty"] = balqty;
                         summarybarcode.Rows[rNo]["balval"] = balval;
                         summarybarcode.Rows[rNo]["itstyle"] = tbl1.Rows[i]["itstyle"].retStr();
+                        summarybarcode.Rows[rNo]["mtrljobcd"] = tbl1.Rows[i]["mtrljobcd"].retStr();
+                        summarybarcode.Rows[rNo]["mtrljobnm"] = tbl1.Rows[i]["mtrljobnm"].retStr();
+                        if (ShowShade == true)
+                        {
+                            summarybarcode.Rows[rNo]["shade"] = tbl1.Rows[i]["shade"].retStr();
+                        }
                     }
                     i++;
                     if (i > maxR) break;
                 }
 
                 if (VE.Checkbox8 == true)
-                { summarybarcode.DefaultView.Sort = "hsncode,itgrpcd,itcd,fabitcd,styleno,barno "; }
-                else { summarybarcode.DefaultView.Sort = "itgrpcd,itcd,fabitcd,styleno,barno "; }
+                { summarybarcode.DefaultView.Sort = "hsncode,mtrljobnm,mtrljobcd,itgrpcd,itcd,fabitcd,styleno,barno" + (ShowShade == true ? ",shade" : "") + " "; }
+                else { summarybarcode.DefaultView.Sort = "mtrljobnm,mtrljobcd,itgrpcd,itcd,fabitcd,styleno,barno" + (ShowShade == true ? ",shade" : "") + " "; }
 
 
                 summarybarcode = summarybarcode.DefaultView.ToTable();
                 #endregion
-                string chkfld1 = "", chkval1 = "", chkfld2 = "", chkval2 = "", chkval3 = "", chkfld3 = "";
+                string chkfld1 = "", chkval1 = "", chkfld2 = "", chkval2 = "", chkval3 = "", chkfld3 = "", chkfld4 = "", chkval4 = "";
                 chkfld1 = VE.Checkbox3 == true ? "styleno" : "itfabitcd";
                 chkfld2 = VE.Checkbox4 == true ? "barno" : "itfabitcd";
                 chkfld3 = VE.Checkbox8 == true ? "hsncode" : "itfabitcd";
+                chkfld4 = ShowShade == true ? "shade" : "itfabitcd";
                 Models.PrintViewer PV = new Models.PrintViewer();
                 HtmlConverter HC = new HtmlConverter();
                 DataTable IR = new DataTable("");
@@ -1009,173 +1075,183 @@ namespace Improvar.Controllers
                 i = 0;
                 while (i <= maxB)
                 {
-                    strbrgrpcd = summarybarcode.Rows[i]["itgrpcd"].retStr();
+                    string mtrljob = summarybarcode.Rows[i]["mtrljobcd"].ToString();
 
                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                    IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + strbrgrpcd + "  " + " </span>" + summarybarcode.Rows[i]["itgrpnm"].ToString();
+                    IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " Material Job -  " + " </span>" + summarybarcode.Rows[i]["mtrljobnm"].ToString();
                     IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
-
-                    while (summarybarcode.Rows[i]["itgrpcd"].retStr() == strbrgrpcd)
+                    while (summarybarcode.Rows[i]["mtrljobcd"].ToString() == mtrljob)
                     {
-                        string itcdfabitcd = summarybarcode.Rows[i]["itfabitcd"].retStr();
-                        while (summarybarcode.Rows[i]["itgrpcd"].retStr() == strbrgrpcd && itcdfabitcd == summarybarcode.Rows[i]["itfabitcd"].retStr())
+                        strbrgrpcd = summarybarcode.Rows[i]["itgrpcd"].retStr();
+
+                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                        IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + strbrgrpcd + "  " + " </span>" + summarybarcode.Rows[i]["itgrpnm"].ToString();
+                        IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
+
+                        while (summarybarcode.Rows[i]["mtrljobcd"].ToString() == mtrljob && summarybarcode.Rows[i]["itgrpcd"].retStr() == strbrgrpcd)
                         {
-                            chkval1 = summarybarcode.Rows[i][chkfld1].ToString();
-                            while (summarybarcode.Rows[i]["itgrpcd"].retStr() == strbrgrpcd && itcdfabitcd == summarybarcode.Rows[i]["itfabitcd"].retStr() && chkval1 == summarybarcode.Rows[i][chkfld1].ToString())
+                            string itcdfabitcd = summarybarcode.Rows[i]["itfabitcd"].retStr();
+                            while (summarybarcode.Rows[i]["mtrljobcd"].ToString() == mtrljob && summarybarcode.Rows[i]["itgrpcd"].retStr() == strbrgrpcd && itcdfabitcd == summarybarcode.Rows[i]["itfabitcd"].retStr())
                             {
-                                chkval2 = summarybarcode.Rows[i][chkfld2].ToString();
-
-                                double opqty = 0, opval = 0, netpur = 0, purval = 0, karqty = 0, karval = 0, netsale = 0, salevalue = 0, approval = 0, netstktrans = 0, netadj = 0, balqty = 0, balval = 0;
-
-                                while (summarybarcode.Rows[i]["itgrpcd"].retStr() == strbrgrpcd && itcdfabitcd == summarybarcode.Rows[i]["itfabitcd"].retStr() && chkval1 == summarybarcode.Rows[i][chkfld1].ToString() && chkval2 == summarybarcode.Rows[i][chkfld2].ToString())
+                                chkval1 = summarybarcode.Rows[i][chkfld1].ToString();
+                                while (summarybarcode.Rows[i]["mtrljobcd"].ToString() == mtrljob && summarybarcode.Rows[i]["itgrpcd"].retStr() == strbrgrpcd && itcdfabitcd == summarybarcode.Rows[i]["itfabitcd"].retStr() && chkval1 == summarybarcode.Rows[i][chkfld1].ToString())
                                 {
-                                    chkval3 = summarybarcode.Rows[i][chkfld3].ToString();
-                                    opqty = 0; opval = 0; netpur = 0; purval = 0; karqty = 0; karval = 0; netsale = 0; salevalue = 0; approval = 0; netstktrans = 0; netadj = 0; balqty = 0; balval = 0;
-                                    while (summarybarcode.Rows[i]["itgrpcd"].retStr() == strbrgrpcd && itcdfabitcd == summarybarcode.Rows[i]["itfabitcd"].retStr() && chkval1 == summarybarcode.Rows[i][chkfld1].ToString() && chkval2 == summarybarcode.Rows[i][chkfld2].ToString() && chkval3 == summarybarcode.Rows[i][chkfld3].ToString())
-                                    {
+                                    chkval2 = summarybarcode.Rows[i][chkfld2].ToString();
 
-                                        opqty += summarybarcode.Rows[i]["opqty"].retDbl();
-                                        opval += summarybarcode.Rows[i]["opval"].retDbl();
-                                        netpur += summarybarcode.Rows[i]["netpur"].retDbl();
-                                        purval += summarybarcode.Rows[i]["purval"].retDbl();
-                                        karqty += summarybarcode.Rows[i]["karqty"].retDbl();
-                                        karval += summarybarcode.Rows[i]["karval"].retDbl();
-                                        netsale += summarybarcode.Rows[i]["netsale"].retDbl();
-                                        salevalue += summarybarcode.Rows[i]["salevalue"].retDbl();
-                                        approval += summarybarcode.Rows[i]["approval"].retDbl();
-                                        netstktrans += summarybarcode.Rows[i]["netstktrans"].retDbl();
-                                        netadj += summarybarcode.Rows[i]["netadj"].retDbl();
-                                        balqty += summarybarcode.Rows[i]["balqty"].retDbl();
-                                        balval += summarybarcode.Rows[i]["balval"].retDbl();
-                                        i++;
+                                    double opqty = 0, opval = 0, netpur = 0, purval = 0, karqty = 0, karval = 0, netsale = 0, salevalue = 0, approval = 0, netstktrans = 0, netadj = 0, balqty = 0, balval = 0;
+
+                                    while (summarybarcode.Rows[i]["mtrljobcd"].ToString() == mtrljob && summarybarcode.Rows[i]["itgrpcd"].retStr() == strbrgrpcd && itcdfabitcd == summarybarcode.Rows[i]["itfabitcd"].retStr() && chkval1 == summarybarcode.Rows[i][chkfld1].ToString() && chkval2 == summarybarcode.Rows[i][chkfld2].ToString())
+                                    {
+                                        chkval3 = summarybarcode.Rows[i][chkfld3].ToString();
+                                        chkval4 = summarybarcode.Rows[i][chkfld4].ToString();
+                                        opqty = 0; opval = 0; netpur = 0; purval = 0; karqty = 0; karval = 0; netsale = 0; salevalue = 0; approval = 0; netstktrans = 0; netadj = 0; balqty = 0; balval = 0;
+                                        while (summarybarcode.Rows[i]["mtrljobcd"].ToString() == mtrljob && summarybarcode.Rows[i]["itgrpcd"].retStr() == strbrgrpcd && itcdfabitcd == summarybarcode.Rows[i]["itfabitcd"].retStr() && chkval1 == summarybarcode.Rows[i][chkfld1].ToString() && chkval2 == summarybarcode.Rows[i][chkfld2].ToString() && chkval3 == summarybarcode.Rows[i][chkfld3].ToString() && chkval4 == summarybarcode.Rows[i][chkfld4].ToString())
+                                        {
+
+                                            opqty += summarybarcode.Rows[i]["opqty"].retDbl();
+                                            opval += summarybarcode.Rows[i]["opval"].retDbl();
+                                            netpur += summarybarcode.Rows[i]["netpur"].retDbl();
+                                            purval += summarybarcode.Rows[i]["purval"].retDbl();
+                                            karqty += summarybarcode.Rows[i]["karqty"].retDbl();
+                                            karval += summarybarcode.Rows[i]["karval"].retDbl();
+                                            netsale += summarybarcode.Rows[i]["netsale"].retDbl();
+                                            salevalue += summarybarcode.Rows[i]["salevalue"].retDbl();
+                                            approval += summarybarcode.Rows[i]["approval"].retDbl();
+                                            netstktrans += summarybarcode.Rows[i]["netstktrans"].retDbl();
+                                            netadj += summarybarcode.Rows[i]["netadj"].retDbl();
+                                            balqty += summarybarcode.Rows[i]["balqty"].retDbl();
+                                            balval += summarybarcode.Rows[i]["balval"].retDbl();
+                                            i++;
+                                            if (i > maxB) break;
+                                        }
+                                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                        islno++;
+                                        IR.Rows[rNo]["itgrpcd"] = summarybarcode.Rows[i - 1]["itgrpcd"].ToString();
+                                        IR.Rows[rNo]["slno"] = islno;
+                                        if (VE.Checkbox4 == true) IR.Rows[rNo]["barno"] = summarybarcode.Rows[i - 1]["barno"].ToString();
+                                        if (VE.Checkbox8 == true) IR.Rows[rNo]["hsncode"] = summarybarcode.Rows[i - 1]["hsncode"].ToString();
+                                        if (VE.Checkbox11 == true)
+                                        {
+                                            IR.Rows[rNo]["itnm"] = summarybarcode.Rows[i - 1]["itstyle"].ToString();
+                                        }
+                                        else {
+                                            IR.Rows[rNo]["itnm"] = summarybarcode.Rows[i - 1]["fabitnm"].ToString();
+                                        }
+                                        if (VE.Checkbox3 == true) IR.Rows[rNo]["styleno"] = summarybarcode.Rows[i - 1]["styleno"].ToString() + (ShowShade == true ? " (Shade : " + summarybarcode.Rows[i - 1]["shade"].ToString() + ")" : "");
+                                        IR.Rows[rNo]["uomnm"] = summarybarcode.Rows[i - 1]["uomcd"].ToString();
+                                        IR.Rows[rNo]["opqty"] = opqty;
+                                        IR.Rows[rNo]["netpur"] = netpur;
+                                        IR.Rows[rNo]["karqty"] = karqty;
+                                        IR.Rows[rNo]["netsale"] = netsale;
+                                        IR.Rows[rNo]["approval"] = approval;
+                                        IR.Rows[rNo]["netstktrans"] = netstktrans;
+                                        IR.Rows[rNo]["netadj"] = netadj;
+                                        IR.Rows[rNo]["balqty"] = balqty;
+                                        if (VE.Checkbox12 == false)
+                                        {
+                                            IR.Rows[rNo]["opval"] = opval;
+                                            IR.Rows[rNo]["purval"] = purval;
+                                            IR.Rows[rNo]["karval"] = karval;
+                                            IR.Rows[rNo]["salevalue"] = salevalue;
+                                            IR.Rows[rNo]["balval"] = balval;
+                                        }
                                         if (i > maxB) break;
                                     }
-                                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                                    islno++;
-                                    IR.Rows[rNo]["itgrpcd"] = summarybarcode.Rows[i - 1]["itgrpcd"].ToString();
-                                    IR.Rows[rNo]["slno"] = islno;
-                                    if (VE.Checkbox4 == true) IR.Rows[rNo]["barno"] = summarybarcode.Rows[i - 1]["barno"].ToString();
-                                    if (VE.Checkbox8 == true) IR.Rows[rNo]["hsncode"] = summarybarcode.Rows[i - 1]["hsncode"].ToString();
-                                    if (VE.Checkbox11 == true)
-                                    {
-                                        IR.Rows[rNo]["itnm"] = summarybarcode.Rows[i - 1]["itstyle"].ToString();
-                                    }
-                                    else {
-                                        IR.Rows[rNo]["itnm"] = summarybarcode.Rows[i - 1]["fabitnm"].ToString();
-                                    }
-                                    if (VE.Checkbox3 == true) IR.Rows[rNo]["styleno"] = summarybarcode.Rows[i - 1]["styleno"].ToString();
-                                    IR.Rows[rNo]["uomnm"] = summarybarcode.Rows[i - 1]["uomcd"].ToString();
-                                    IR.Rows[rNo]["opqty"] = opqty;
-                                    IR.Rows[rNo]["netpur"] = netpur;
-                                    IR.Rows[rNo]["karqty"] = karqty;
-                                    IR.Rows[rNo]["netsale"] = netsale;
-                                    IR.Rows[rNo]["approval"] = approval;
-                                    IR.Rows[rNo]["netstktrans"] = netstktrans;
-                                    IR.Rows[rNo]["netadj"] = netadj;
-                                    IR.Rows[rNo]["balqty"] = balqty;
-                                    if (VE.Checkbox12 == false)
-                                    {
-                                        IR.Rows[rNo]["opval"] = opval;
-                                        IR.Rows[rNo]["purval"] = purval;
-                                        IR.Rows[rNo]["karval"] = karval;
-                                        IR.Rows[rNo]["salevalue"] = salevalue;
-                                        IR.Rows[rNo]["balval"] = balval;
-                                    }
+                                    //IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                    //islno++;
+                                    //IR.Rows[rNo]["itgrpcd"] = summarybarcode.Rows[i - 1]["itgrpcd"].ToString();
+                                    //IR.Rows[rNo]["slno"] = islno;
+                                    //if (VE.Checkbox4 == true) IR.Rows[rNo]["barno"] = summarybarcode.Rows[i - 1]["barno"].ToString();
+                                    //if (VE.Checkbox8 == true) IR.Rows[rNo]["hsncode"] = summarybarcode.Rows[i - 1]["hsncode"].ToString();
+                                    //IR.Rows[rNo]["itnm"] = tbl1.Rows[i - 1]["fabitnm"].ToString();
+                                    //if (VE.Checkbox3 == true) IR.Rows[rNo]["styleno"] = summarybarcode.Rows[i - 1]["styleno"].ToString();
+                                    //IR.Rows[rNo]["uomnm"] = summarybarcode.Rows[i - 1]["uomcd"].ToString();
+                                    //IR.Rows[rNo]["opqty"] = opqty;
+                                    //IR.Rows[rNo]["opval"] = opval;
+                                    //IR.Rows[rNo]["netpur"] = netpur;
+                                    //IR.Rows[rNo]["purval"] = purval;
+                                    //IR.Rows[rNo]["karqty"] = karqty;
+                                    //IR.Rows[rNo]["karval"] = karval;
+                                    //IR.Rows[rNo]["netsale"] = netsale;
+                                    //IR.Rows[rNo]["salevalue"] = salevalue;
+                                    //IR.Rows[rNo]["approval"] = approval;
+                                    //IR.Rows[rNo]["netstktrans"] = netstktrans;
+                                    //IR.Rows[rNo]["netadj"] = netadj;
+                                    //IR.Rows[rNo]["balqty"] = balqty;
+                                    //IR.Rows[rNo]["balval"] = balval;
+                                    //if (i > maxB) break;
                                     if (i > maxB) break;
                                 }
-                                //IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                                //islno++;
-                                //IR.Rows[rNo]["itgrpcd"] = summarybarcode.Rows[i - 1]["itgrpcd"].ToString();
-                                //IR.Rows[rNo]["slno"] = islno;
-                                //if (VE.Checkbox4 == true) IR.Rows[rNo]["barno"] = summarybarcode.Rows[i - 1]["barno"].ToString();
-                                //if (VE.Checkbox8 == true) IR.Rows[rNo]["hsncode"] = summarybarcode.Rows[i - 1]["hsncode"].ToString();
-                                //IR.Rows[rNo]["itnm"] = tbl1.Rows[i - 1]["fabitnm"].ToString();
-                                //if (VE.Checkbox3 == true) IR.Rows[rNo]["styleno"] = summarybarcode.Rows[i - 1]["styleno"].ToString();
-                                //IR.Rows[rNo]["uomnm"] = summarybarcode.Rows[i - 1]["uomcd"].ToString();
-                                //IR.Rows[rNo]["opqty"] = opqty;
-                                //IR.Rows[rNo]["opval"] = opval;
-                                //IR.Rows[rNo]["netpur"] = netpur;
-                                //IR.Rows[rNo]["purval"] = purval;
-                                //IR.Rows[rNo]["karqty"] = karqty;
-                                //IR.Rows[rNo]["karval"] = karval;
-                                //IR.Rows[rNo]["netsale"] = netsale;
-                                //IR.Rows[rNo]["salevalue"] = salevalue;
-                                //IR.Rows[rNo]["approval"] = approval;
-                                //IR.Rows[rNo]["netstktrans"] = netstktrans;
-                                //IR.Rows[rNo]["netadj"] = netadj;
-                                //IR.Rows[rNo]["balqty"] = balqty;
-                                //IR.Rows[rNo]["balval"] = balval;
-                                //if (i > maxB) break;
                                 if (i > maxB) break;
                             }
                             if (i > maxB) break;
                         }
-                        if (i > maxB) break;
-                    }
-                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                    IR.Rows[rNo]["itnm"] = "Total of " + summarybarcode.Rows[i - 1]["itgrpnm"].ToString();
-                    IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;";
+                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                        IR.Rows[rNo]["itnm"] = "Total of " + summarybarcode.Rows[i - 1]["itgrpnm"].ToString();
+                        IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;";
 
-                    string itgrpcd = summarybarcode.Rows[i - 1]["itgrpcd"].ToString();
-                    var unitwisegrptotal = IR.AsEnumerable().Where(g => g.Field<string>("uomnm").retStr() != "" && g.Field<string>("itgrpcd").retStr() == itgrpcd)
-                                .GroupBy(g => g.Field<string>("uomnm"))
-                                .Select(g =>
-                                {
-                                    var row = IR.NewRow();
-                                    row["uomnm"] = g.Key;
-                                    row["opqty"] = g.Sum(r => r.Field<double?>("opqty") == null ? 0 : r.Field<double>("opqty"));
-                                    row["netpur"] = g.Sum(r => r.Field<double?>("netpur").retDbl());
-                                    row["karqty"] = g.Sum(r => r.Field<double?>("karqty").retDbl());
-                                    row["approval"] = g.Sum(r => r.Field<double?>("approval").retDbl());
-                                    row["netstktrans"] = g.Sum(r => r.Field<double?>("netstktrans").retDbl());
-                                    row["netadj"] = g.Sum(r => r.Field<double?>("netadj").retDbl());
-                                    row["netsale"] = g.Sum(r => r.Field<double?>("netsale").retDbl());
-                                    row["balqty"] = g.Sum(r => r.Field<double?>("balqty").retDbl());
-                                    if (VE.Checkbox12 == false)
+                        string itgrpcd = summarybarcode.Rows[i - 1]["itgrpcd"].ToString();
+                        var unitwisegrptotal = IR.AsEnumerable().Where(g => g.Field<string>("uomnm").retStr() != "" && g.Field<string>("itgrpcd").retStr() == itgrpcd)
+                                    .GroupBy(g => g.Field<string>("uomnm"))
+                                    .Select(g =>
                                     {
-                                        row["balval"] = g.Sum(r => r.Field<double?>("balval").retDbl());
-                                        row["opval"] = g.Sum(r => r.Field<double?>("opval") == null ? 0 : r.Field<double>("opval"));
-                                        row["purval"] = g.Sum(r => r.Field<double?>("purval").retDbl());
-                                        row["karval"] = g.Sum(r => r.Field<double?>("karval").retDbl());
-                                        row["salevalue"] = g.Sum(r => r.Field<double?>("salevalue").retDbl());
-                                    }
-                                    return row;
-                                }).CopyToDataTable();
-                    int cnt = 0;
-                    for (int k = 0; k <= unitwisegrptotal.Rows.Count - 1; k++)
-                    {
-                        if (unitwisegrptotal.Rows[k]["opqty"].retDbl() != 0 || unitwisegrptotal.Rows[k]["netpur"].retDbl() != 0 || unitwisegrptotal.Rows[k]["karqty"].retDbl() != 0 || unitwisegrptotal.Rows[k]["approval"].retDbl() != 0 || unitwisegrptotal.Rows[k]["netstktrans"].retDbl() != 0 || unitwisegrptotal.Rows[k]["netadj"].retDbl() != 0 || unitwisegrptotal.Rows[k]["netsale"].retDbl() != 0 || unitwisegrptotal.Rows[k]["balqty"].retDbl() != 0)
+                                        var row = IR.NewRow();
+                                        row["uomnm"] = g.Key;
+                                        row["opqty"] = g.Sum(r => r.Field<double?>("opqty") == null ? 0 : r.Field<double>("opqty"));
+                                        row["netpur"] = g.Sum(r => r.Field<double?>("netpur").retDbl());
+                                        row["karqty"] = g.Sum(r => r.Field<double?>("karqty").retDbl());
+                                        row["approval"] = g.Sum(r => r.Field<double?>("approval").retDbl());
+                                        row["netstktrans"] = g.Sum(r => r.Field<double?>("netstktrans").retDbl());
+                                        row["netadj"] = g.Sum(r => r.Field<double?>("netadj").retDbl());
+                                        row["netsale"] = g.Sum(r => r.Field<double?>("netsale").retDbl());
+                                        row["balqty"] = g.Sum(r => r.Field<double?>("balqty").retDbl());
+                                        if (VE.Checkbox12 == false)
+                                        {
+                                            row["balval"] = g.Sum(r => r.Field<double?>("balval").retDbl());
+                                            row["opval"] = g.Sum(r => r.Field<double?>("opval") == null ? 0 : r.Field<double>("opval"));
+                                            row["purval"] = g.Sum(r => r.Field<double?>("purval").retDbl());
+                                            row["karval"] = g.Sum(r => r.Field<double?>("karval").retDbl());
+                                            row["salevalue"] = g.Sum(r => r.Field<double?>("salevalue").retDbl());
+                                        }
+                                        return row;
+                                    }).CopyToDataTable();
+                        int cnt = 0;
+                        for (int k = 0; k <= unitwisegrptotal.Rows.Count - 1; k++)
                         {
-                            cnt++;
-                            if (k == 0) { }
-                            else { IR.Rows.Add(""); rNo = IR.Rows.Count - 1; }
-                            IR.Rows[rNo]["uomnm"] = unitwisegrptotal.Rows[k]["uomnm"];
-                            IR.Rows[rNo]["opqty"] = unitwisegrptotal.Rows[k]["opqty"];
-                            IR.Rows[rNo]["netpur"] = unitwisegrptotal.Rows[k]["netpur"];
-                            IR.Rows[rNo]["karqty"] = unitwisegrptotal.Rows[k]["karqty"];
-                            IR.Rows[rNo]["approval"] = unitwisegrptotal.Rows[k]["approval"];
-                            IR.Rows[rNo]["netstktrans"] = unitwisegrptotal.Rows[k]["netstktrans"];
-                            IR.Rows[rNo]["netadj"] = unitwisegrptotal.Rows[k]["netadj"];
-                            IR.Rows[rNo]["netsale"] = unitwisegrptotal.Rows[k]["netsale"];
-                            IR.Rows[rNo]["balqty"] = unitwisegrptotal.Rows[k]["balqty"];
-                            if (VE.Checkbox12 == false)
+                            if (unitwisegrptotal.Rows[k]["opqty"].retDbl() != 0 || unitwisegrptotal.Rows[k]["netpur"].retDbl() != 0 || unitwisegrptotal.Rows[k]["karqty"].retDbl() != 0 || unitwisegrptotal.Rows[k]["approval"].retDbl() != 0 || unitwisegrptotal.Rows[k]["netstktrans"].retDbl() != 0 || unitwisegrptotal.Rows[k]["netadj"].retDbl() != 0 || unitwisegrptotal.Rows[k]["netsale"].retDbl() != 0 || unitwisegrptotal.Rows[k]["balqty"].retDbl() != 0)
                             {
-                                IR.Rows[rNo]["balval"] = unitwisegrptotal.Rows[k]["balval"];
-                                IR.Rows[rNo]["opval"] = unitwisegrptotal.Rows[k]["opval"];
-                                IR.Rows[rNo]["purval"] = unitwisegrptotal.Rows[k]["purval"];
-                                IR.Rows[rNo]["karval"] = unitwisegrptotal.Rows[k]["karval"];
-                                IR.Rows[rNo]["salevalue"] = unitwisegrptotal.Rows[k]["salevalue"];
-                            }
+                                cnt++;
+                                if (k == 0) { }
+                                else { IR.Rows.Add(""); rNo = IR.Rows.Count - 1; }
+                                IR.Rows[rNo]["uomnm"] = unitwisegrptotal.Rows[k]["uomnm"];
+                                IR.Rows[rNo]["opqty"] = unitwisegrptotal.Rows[k]["opqty"];
+                                IR.Rows[rNo]["netpur"] = unitwisegrptotal.Rows[k]["netpur"];
+                                IR.Rows[rNo]["karqty"] = unitwisegrptotal.Rows[k]["karqty"];
+                                IR.Rows[rNo]["approval"] = unitwisegrptotal.Rows[k]["approval"];
+                                IR.Rows[rNo]["netstktrans"] = unitwisegrptotal.Rows[k]["netstktrans"];
+                                IR.Rows[rNo]["netadj"] = unitwisegrptotal.Rows[k]["netadj"];
+                                IR.Rows[rNo]["netsale"] = unitwisegrptotal.Rows[k]["netsale"];
+                                IR.Rows[rNo]["balqty"] = unitwisegrptotal.Rows[k]["balqty"];
+                                if (VE.Checkbox12 == false)
+                                {
+                                    IR.Rows[rNo]["balval"] = unitwisegrptotal.Rows[k]["balval"];
+                                    IR.Rows[rNo]["opval"] = unitwisegrptotal.Rows[k]["opval"];
+                                    IR.Rows[rNo]["purval"] = unitwisegrptotal.Rows[k]["purval"];
+                                    IR.Rows[rNo]["karval"] = unitwisegrptotal.Rows[k]["karval"];
+                                    IR.Rows[rNo]["salevalue"] = unitwisegrptotal.Rows[k]["salevalue"];
+                                }
 
+                            }
                         }
-                    }
-                    if (cnt > 1)
-                    {
-                        IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;";
-                    }
-                    else
-                    {
-                        IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;border-top: 3px solid;";
+                        if (cnt > 1)
+                        {
+                            IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;";
+                        }
+                        else
+                        {
+                            IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;border-top: 3px solid;";
+                        }
+                        if (i > maxB) break;
                     }
                     if (i > maxB) break;
                 }

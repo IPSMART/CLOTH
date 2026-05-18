@@ -311,8 +311,12 @@ namespace Improvar.ViewModels
         public double BuyerTotTurnover { get; set; }
         public List<PAYMENT_DETAILS> PAYMENT_DETAILS { get; set; }
         public double CASHDISCPR { get; set; }
+        public string TDS_APPL { get; set; }
+        public string TDS_ROUNDCAL { get; set; }
+        public double TDS_LIMIT { get; set; }
+        public string TDS_CALCON { get; set; }
 
-
+        public double TDS_AMT { get; set; }
     }
 
     public class PAYMENT_DETAILS

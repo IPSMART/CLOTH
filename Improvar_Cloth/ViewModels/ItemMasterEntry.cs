@@ -57,5 +57,9 @@ namespace Improvar.ViewModels
         public string Itgrpnm { get; set; }
         public string Itnm { get; set; }
         public string collcd { get; set; }
+        public string PRICES_MTRLJOBCDDROP { get; set; }
+        public string PRICES_MtrljobnmDROP { get; set; }
+        public string PRICES_MTRLJOBCD { get; set; }
+        public string PRICES_Mtrljobnm { get; set; }
     }
 }

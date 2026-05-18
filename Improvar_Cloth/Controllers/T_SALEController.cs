@@ -776,6 +776,16 @@ namespace Improvar.Controllers
                         VE.TCSAUTOCAL = VE.TCSAPPL.retStr() == "Y" ? true : false;
                         VE.CASHDISCPR = party_data.Rows[0]["CASHDISCPR"].retDbl();
                     }
+
+                    string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
+                    string sql2 = "select distinct a.slcd,decode(nvl(k.TDSGOODSAPPL,'Y'),'N','N',nvl(a.tot194Q,'N')) tdsappl ";
+                    sql2 += "from " + scmf + ".m_subleg a, " + scmf + ".m_comp k ";
+                    sql2 += "where k.compcd='" + COM + "' and a.slcd='" + TXN.SLCD + "'  ";
+                    DataTable tbl1 = masterHelp.SQLquery(sql2);
+                    if (tbl1.Rows.Count > 0)
+                    {
+                        VE.TDS_APPL = tbl1.Rows[0]["tdsappl"].retStr();
+                    }
                 }
 
                 VE.CONSLNM = TXN.CONSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXN.CONSLCD).Select(b => b.SLNM).FirstOrDefault();
@@ -801,6 +811,7 @@ namespace Improvar.Controllers
                 }
                 VE.AMT = salesfunc.getSlcdTCSonCalc(panno.retStr(), TXN.DOCDT.retStr().Remove(10), VE.MENU_PARA, TXN.AUTONO).retDbl();
                 VE.BuyerTotTurnover = VE.AMT;
+                VE.TDS_AMT = VE.AMT;
                 VE.AMT = VE.AMT.retDbl() > VE.TDSLIMIT.retDbl() ? VE.TDSLIMIT.retDbl() : VE.AMT.retDbl();
                 if (TXN.TDSCODE.retStr() != "")
                 {
@@ -809,7 +820,20 @@ namespace Improvar.Controllers
                 if (TTDS != null && TTDS.TDSCODE.retStr() != "")
                 {
                     VE.TDSNM1 = DBF.M_TDS_CNTRL.Where(e => e.TDSCODE == TTDS.TDSCODE).FirstOrDefault()?.TDSNM;
+
+                    //tdsdata
+
+                    string linktds_code = TTDS.TDSCODE.retSqlformat();
+                    var tds_dt = getTDS(TXN.DOCDT.retStr().Remove(10), TXN.SLCD, linktds_code);
+                    if (tds_dt != null && tds_dt.Rows.Count > 0)
+                    {
+                        VE.TDS_LIMIT = tds_dt.Rows[0]["TDSLIMIT"].retDbl();
+                        VE.TDS_CALCON = tds_dt.Rows[0]["TDSCALCON"].retStr();
+                        VE.TDS_ROUNDCAL = tds_dt.Rows[0]["TDSROUNDCAL"].retStr();
+                    }
+                    VE.TDS_AMT = VE.TDS_AMT.retDbl() > VE.TDS_LIMIT.retDbl() ? VE.TDS_LIMIT.retDbl() : VE.TDS_AMT.retDbl();
                 }
+
                 if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN" || VE.MENU_PARA == "ISS" || VE.MENU_PARA == "REC")
                 {
                     VE.EXPGLCD = DBF.T_VCH_GST.Where(a => a.AUTONO == TXN.AUTONO).Select(b => b.EXPGLCD).FirstOrDefault();
@@ -4912,30 +4936,81 @@ namespace Improvar.Controllers
         {
             try
             {
-                string slcd = "", DOCDT = "";
+                string slcd = "", DOCDT = "", AUTONO = "";
                 var temp = Code.Split(Convert.ToChar(Cn.GCS()));
                 if (temp.Length > 1)
                 {
                     slcd = temp[0];
                     DOCDT = temp[1];
+                    AUTONO = temp[2];
                 }
                 if (DOCDT.retStr() == "") return Content("Enter Document Date");
                 if (slcd.retStr() == "") return Content("Enter Party Code");
-                if (val == "")
+                var str = masterHelp.TDSCODE_help(DOCDT, val, slcd);
+                if (str.IndexOf("='helpmnu'") >= 0)
                 {
-                    return PartialView("_Help2", masterHelp.TDSCODE_help(DOCDT, val, slcd));
+                    return PartialView("_Help2", str);
                 }
                 else
                 {
-                    return Content(masterHelp.TDSCODE_help(DOCDT, val, slcd));
+                    double TDSLIMIT = str.retCompValue("TDSLIMIT").retDbl();
+                    ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO).ToString());
+
+                    string panno = DBF.M_SUBLEG.Where(a => a.SLCD == slcd).Select(b => b.PANNO).FirstOrDefault();
+                    string AMT = salesfunc.getSlcdTCSonCalc(panno.retStr(), DOCDT, "PB", AUTONO.retStr()).ToString();
+                    AMT = AMT.retDbl() > TDSLIMIT.retDbl() ? TDSLIMIT.retStr() : AMT.retStr();
+                    str += "^AMT=^" + AMT + Cn.GCS();
+
+                    string TDS_APPL = "";
+                    string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
+                    string sql1 = "select distinct a.slcd,decode(nvl(k.TDSGOODSAPPL,'Y'),'N','N',nvl(a.tot194Q,'N')) tdsappl ";
+                    sql1 += "from " + scmf + ".m_subleg a, " + scmf + ".m_comp k ";
+                    sql1 += "where k.compcd='" + COM + "' and a.slcd='" + slcd + "'  ";
+                    DataTable tbl = masterHelp.SQLquery(sql1);
+                    if (tbl.Rows.Count > 0)
+                    {
+                        TDS_APPL = tbl.Rows[0]["tdsappl"].retStr();
+                    }
+                    str += "^TDS_APPL=^" + TDS_APPL + Cn.GCS();
+
+                    return Content(str);
                 }
             }
-            catch (Exception Ex)
+            catch (Exception ex)
             {
-                Cn.SaveException(Ex, "");
-                return Content(Ex.Message + Ex.InnerException);
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
             }
         }
+
+        //public ActionResult GetTDSDetails(string val, string Code)
+        //{
+        //    try
+        //    {
+        //        string slcd = "", DOCDT = "";
+        //        var temp = Code.Split(Convert.ToChar(Cn.GCS()));
+        //        if (temp.Length > 1)
+        //        {
+        //            slcd = temp[0];
+        //            DOCDT = temp[1];
+        //        }
+        //        if (DOCDT.retStr() == "") return Content("Enter Document Date");
+        //        if (slcd.retStr() == "") return Content("Enter Party Code");
+        //        if (val == "")
+        //        {
+        //            return PartialView("_Help2", masterHelp.TDSCODE_help(DOCDT, val, slcd));
+        //        }
+        //        else
+        //        {
+        //            return Content(masterHelp.TDSCODE_help(DOCDT, val, slcd));
+        //        }
+        //    }
+        //    catch (Exception Ex)
+        //    {
+        //        Cn.SaveException(Ex, "");
+        //        return Content(Ex.Message + Ex.InnerException);
+        //    }
+        //}
 
         public dynamic SAVE(TransactionSaleEntry VE, string othr_para = "")
         {

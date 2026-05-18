@@ -135,6 +135,7 @@
                     var MSG = result.indexOf('_T_OUTISSPROCESS_Programme_GRID');
                     if (MSG >= 0) {
                         $("#partialdivProgramme").html(res[0]);
+                        Checked_Disable('_T_OUTISSPROCESS_Programme_GRID');
                         $("#partialdivDetail").html(res[1]);
                         var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
                         for (var i = 0; i <= GridRow - 1; i++) {
@@ -2533,7 +2534,7 @@
                 $("#WaitingMode").hide();
                 $("#partialdivProgramme").animate({ marginTop: '-10px' }, 50);
                 $('#partialdivProgramme').html(result);
-                //Checked_Disable('_T_OUTISSPROCESS_Programme_GRID');
+                Checked_Disable('_T_OUTISSPROCESS_Programme_GRID');
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();

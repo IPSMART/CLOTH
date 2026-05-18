@@ -199,7 +199,7 @@ namespace Improvar.Controllers
                             DataRow dr = dbfdt.NewRow();
                             dr["EXCELROWNUM"] = rowNum;
                             string BLNO = workSheet.Cells[rowNum, 10].Value.retStr();
-                            string BLDT = workSheet.Cells[rowNum, 11].Value.retStr().Replace(".", "/");
+                            string BLDT = workSheet.Cells[rowNum, 12].Value.retStr().Replace(".", "/");
                             dr["BLNO"] = BLNO;
                             dr["BLDT"] = BLDT;
                             dbfdt.Rows.Add(dr);
@@ -453,6 +453,7 @@ namespace Improvar.Controllers
                 dbfdt.Columns.Add("BATCH", typeof(string));
                 dbfdt.Columns.Add("TCSPER", typeof(double));
                 dbfdt.Columns.Add("TCSAMT", typeof(double));
+                dbfdt.Columns.Add("BRAND", typeof(string));
 
                 HttpFileCollectionBase files = Request.Files;
                 HttpPostedFileBase file = files[0];
@@ -504,6 +505,7 @@ namespace Improvar.Controllers
                         row["NET_AMT"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("BS")].Value.retStr();
                         row["TCSPER"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("BU")].Value.retDbl();
                         row["TCSAMT"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("BV")].Value.retDbl();
+                        row["BRAND"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("BY")].Value.retStr();
                     }
                 }
 
@@ -594,7 +596,7 @@ namespace Improvar.Controllers
                     //var roffamt = (blINV_VALUE - calcultednet).toRound(2);
                     //double blTAX_AMT = oudr["TAX_AMT"].retDbl();
                     double tcsamt = oudr["tcsamt"].retDbl();// (blINV_VALUE * TTXN.TCSPER.retDbl() / 100).toRound(2);
-                    TTXN.BLAMT = blINV_VALUE + tcsamt;
+                    //TTXN.BLAMT = blINV_VALUE + tcsamt;
                     //TTXN.TDSCODE = "X";
                     TTXN.ROYN = "Y";
                     TMPVE.RoundOff = true;
@@ -632,7 +634,17 @@ namespace Improvar.Controllers
                         }
                     }
 
-                    string LR_DATE = DateTime.ParseExact(oudr["LR_DATE"].ToString(), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture).ToString("dd/MM/yyyy");
+                    //string LR_DATE = DateTime.ParseExact(oudr["LR_DATE"].ToString(), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture).ToString("dd/MM/yyyy");
+                    string[] formats = { "yyyy-MM-dd HH:mm:ss", "dd/MM/yyyy" };
+                    DateTime lrdt;
+                    string LR_DATE = DateTime.TryParseExact(
+                                        oudr["LR_DATE"].ToString(),
+                                        formats,
+                                        CultureInfo.InvariantCulture,
+                                        DateTimeStyles.None,
+                                        out lrdt)
+                                    ? lrdt.ToString("dd/MM/yyyy")
+                                    : "";
                     TXNTRANS.LRNO = oudr["LR_NO"].ToString();
                     TXNTRANS.LRDT = Convert.ToDateTime(LR_DATE);
                     //----------------------------------------------------------//
@@ -668,12 +680,20 @@ namespace Improvar.Controllers
                         }
                         //detail tab start
                         TTXNDTL TTXNDTL = new TTXNDTL();
-                        string style = inrdr["MAT_GRP"].ToString() + inrdr["MATERIAL"].ToString().Split('-')[0];
+                        //string style = inrdr["MAT_GRP"].ToString() + inrdr["MATERIAL"].ToString().Split('-')[0];
+                        string MATERIAL = inrdr["MATERIAL"].ToString().Split('-')[0];
+                        string style = (MATERIAL.Length >= 6 ? MATERIAL.Substring(MATERIAL.Length - 6) : MATERIAL);
                         string shade = inrdr["MATERIAL"].ToString().Split('-')[1];
-                        string grpnm = inrdr["MAT_DESCRI"].ToString();
+                        double num;
+                        if (double.TryParse(shade, out num))
+                        {
+                            shade = num.ToString();
+                        }
+
+                        string grpnm = inrdr["BRAND"].ToString();//inrdr["MAT_DESCRI"].ToString();
                         string HSNCODE = inrdr["HSN_CODE"].ToString();
                         TTXNDTL.UOM = "MTR";
-                        ItemDet ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE, "", "", "F", "C","","","",0,false,"","","","Y");
+                        ItemDet ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE, "", "", "F", "C", "", "", "", 0, false, "", "", "", "Y");
                         if (ItemDet.ITCD.retStr() == "" && ItemDet.ErrMsg.retStr() == "")
                         {
                             dupgrid.MESSAGE = "Please add style:(" + style + ") at Item Master Manually because master transfer done in next year . ";
@@ -862,7 +882,11 @@ namespace Improvar.Controllers
                         TTXNAMTlist.Add(TTXNAMT);
                     }
                     //           //Amount tab end
+                    //TTXN.ROAMT = (TTXN.BLAMT.retDbl() - (txable + gstamt + tcsamt)).toRound(2);
+                    TTXN.BLAMT = Math.Round(txable + gstamt + tcsamt);
                     TTXN.ROAMT = (TTXN.BLAMT.retDbl() - (txable + gstamt + tcsamt)).toRound(2);
+
+                    dupgrid.BLAMT = TTXN.BLAMT.retStr();
                     dupgrid.ROAMT = TTXN.ROAMT.retStr();
                     TMPVE.T_TXN = TTXN;
                     TMPVE.T_TXNTRANS = TXNTRANS;

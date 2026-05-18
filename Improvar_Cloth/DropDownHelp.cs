@@ -508,7 +508,7 @@ namespace Improvar
             var UNQSNO = Cn.getQueryStringUNQSNO();
             string UR_ID = System.Web.HttpContext.Current.Session["UR_ID"].ToString(); //Module.Comp_Code;
             string scmf = CommVar.FinSchema(UNQSNO);
-            string scm = CommVar.FinSchema(UNQSNO);
+            string scm = CommVar.CurSchema(UNQSNO);
             string sql = "";
 
             sql += "select a.compcd, a.loccd, a.schema_name, a.menu_name, a.menu_index, b.compnm, c.locnm from ";

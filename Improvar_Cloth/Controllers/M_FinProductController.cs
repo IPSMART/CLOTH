@@ -583,13 +583,22 @@ namespace Improvar.Controllers
                 ItemMasterEntry VE = new ItemMasterEntry();
                 Cn.getQueryString(VE);
                 string MNUP = VE.MENU_PARA;
-
+                string streffdt = "";
+                if (CommVar.ClientCode(UNQSNO) != "DIWH" && CommVar.ClientCode(UNQSNO) != "SNFP" && CommVar.ClientCode(UNQSNO) != "ANKN") streffdt = ",effdt";
                 string scm = CommVar.CurSchema(UNQSNO);
-                string str = "select distinct a.itcd, d.itnm, d.styleno, d.itgrpcd, e.itgrpnm, f.COLLNM, d.uomcd, nvl(b.rate, 0) wprate, nvl(c.rate, 0) rprate from ";
+                string str = "select ";
+                if (CommVar.ClientCode(UNQSNO) == "DIWH" || CommVar.ClientCode(UNQSNO) == "SNFP" || CommVar.ClientCode(UNQSNO) == "ANKN") str += "distinct ";
+                str += "a.itcd, d.itnm, d.styleno, d.itgrpcd, e.itgrpnm, f.COLLNM, d.uomcd, nvl(b.rate, 0) wprate, nvl(c.rate, 0) rprate from ";
                 str += "(select a.itcd, b.barno ";
                 str += "from " + scm + ".m_sitem a, " + scm + ".T_BATCHmst b ";
                 str += "where a.itcd = b.itcd(+) ) a, ";
-                str += "(select barno, rate from ( ";
+
+                if (CommVar.ClientCode(UNQSNO) != "DIWH" && CommVar.ClientCode(UNQSNO) != "SNFP" && CommVar.ClientCode(UNQSNO) != "ANKN")
+                {
+                    str += "(select distinct a.barno, a.effdt from ";
+                    str += "" + scm + ".T_BATCHMST_PRICE a where a.prccd in ('WP','RP') and nvl(a.rate,0) !=0 order by a.effdt desc ) x, ";
+                }
+                str += "(select barno, rate" + streffdt + " from ( ";
                 str += "select a.barno, a.effdt, a.rate, ";
                 str += "row_number() over(partition by a.barno, a.effdt order by a.effdt desc) as rn ";
                 str += "from " + scm + ".T_BATCHMST_PRICE a ";
@@ -599,7 +608,7 @@ namespace Improvar.Controllers
                 else str += "and nvl(a.rate,0) !=0 ";
                 str += ") where rn = 1 ) b, ";
 
-                str += "(select barno, rate from ( ";
+                str += "(select barno, rate" + streffdt + " from ( ";
                 str += "select a.barno, a.effdt, a.rate, ";
                 str += "row_number() over(partition by a.barno, a.effdt order by a.effdt desc) as rn ";
                 str += "from " + scm + ".T_BATCHMST_PRICE a ";
@@ -610,10 +619,19 @@ namespace Improvar.Controllers
                 str += " ) where rn = 1 ) c, ";
 
                 str += "" + scm + ".m_sitem d, " + scm + ".m_group e, " + scm + ".M_COLLECTION f ";
-                str += "where a.barno = b.barno(+) and a.barno = c.barno(+) and a.itcd = d.itcd(+) and d.itgrpcd = e.itgrpcd(+) and d.COLLCD = f.COLLCD(+) ";
+                str += "where  a.itcd = d.itcd(+) and d.itgrpcd = e.itgrpcd(+) and d.COLLCD = f.COLLCD(+) ";
+                if (CommVar.ClientCode(UNQSNO) != "DIWH" && CommVar.ClientCode(UNQSNO) != "SNFP" && CommVar.ClientCode(UNQSNO) != "ANKN")
+                {
+                    str += "and a.barno = x.barno(+) and x.effdt = b.effdt(+) and x.barno = b.barno(+) and x.effdt = c.effdt(+) and x.barno = c.barno(+) ";
+                }
+                else
+                {
+                    str += "and a.barno = b.barno(+) and a.barno = c.barno(+) ";
+                }
                 if (MNUP == "F" || MNUP == "C") str += " and e.itgrptype='" + MNUP + "' ";
                 else str += " and e.itgrptype NOT IN ('F','C') ";
                 if (SRC_FLAG.retStr() != "") str += "and(upper(d.styleno) like '%" + SRC_FLAG.retStr().ToUpper() + "%' or upper(d.itcd) like '%" + SRC_FLAG.retStr().ToUpper() + "%' ) ";
+                if (CommVar.ClientCode(UNQSNO) != "DIWH" && CommVar.ClientCode(UNQSNO) != "SNFP" && CommVar.ClientCode(UNQSNO) != "ANKN") str += "order by x.effdt desc ";
                 DataTable MDT = masterHelp.SQLquery(str);
 
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
@@ -2999,6 +3017,26 @@ namespace Improvar.Controllers
                 errautono += m_autono + "/";
                 Cn.SaveException(ex, "");
                 return Content(ex.Message + ex.InnerException + " " + m_autono);
+            }
+        }
+        public ActionResult GetMaterialDetails(string val)
+        {
+            try
+            {
+                var str = masterHelp.MTRLJOBCD_help(val);
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
             }
         }
 

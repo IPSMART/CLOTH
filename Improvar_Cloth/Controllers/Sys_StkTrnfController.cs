@@ -1303,7 +1303,7 @@ namespace Improvar.Controllers
                         {
                             string progautono = PendingJobDT.Rows[i]["progautono"].ToString();
                             errorAutono = progautono;
-                            if (errorAutono == "2025ANKNKOLKSSOEMI0000000786")
+                            if (errorAutono == "2025ANKNPARKSSOEMI0000000023")
                             {
                                 var aa = "";
                             }
@@ -1365,7 +1365,7 @@ namespace Improvar.Controllers
                             while (PendingJobDT.Rows[i]["progautono"].retStr() == progautono)
                             {
                                 errorAutono = progautono;
-                                if (errorAutono == "2025ANKNKOLKSSOEMI0000000786")
+                                if (errorAutono == "2026ANKNKOLKSSOEMI0000000059")
                                 {
                                     var aa = "";
                                 }
@@ -1443,7 +1443,9 @@ namespace Improvar.Controllers
                                         }
                                     }
 
-                                    sql = "select autono from " + newschema + ".T_TXNDTL where autono='" + progautono + "' and slno=" + txnslno + " and itcd='" + itcd + "' ";
+                                    //sql = "select autono from " + newschema + ".T_TXNDTL where autono='" + progautono + "' and slno=" + txnslno + " and itcd='" + itcd + "' ";
+                                    //remove item filter for ankan.prog and mat iss tab item not same 2025ANKNPARKSSOEMI0000000023
+                                    sql = "select autono from " + newschema + ".T_TXNDTL where autono='" + progautono + "' and slno=" + txnslno + "  ";
                                     OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
                                     if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
                                     if (recoexist == false)
@@ -1451,7 +1453,7 @@ namespace Improvar.Controllers
                                         var TXNDTL = vTXNDTL.Where(m => m.AUTONO == progautono && m.SLNO == txnslno).FirstOrDefault();
                                         if (TXNDTL != null)
                                         {
-                                            TXNDTL.ITCD = PendingJobDT.Rows[i]["itcd"].ToString();
+                                            //TXNDTL.ITCD = PendingJobDT.Rows[i]["itcd"].ToString();
                                             TXNDTL.QNTY = PendingJobDT.Rows[i]["balqnty"].retDbl();
                                             TXNDTL.NOS = PendingJobDT.Rows[i]["balnos"].retInt();
                                             TXNDTL.STKDRCR = "N";
@@ -1492,8 +1494,8 @@ namespace Improvar.Controllers
                             }
                             if (i > maxR) break;
                         }//PendingJobDT.Rows.Count
-                        sql = "alter table " + newschema + ".t_progdtl enable constraint fkey_t_progdtl_progautono";
-                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                        //sql = "alter table " + newschema + ".t_progdtl enable constraint fkey_t_progdtl_progautono";
+                        //OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
                         sql = "alter table " + newschema + ".T_TXN_LINKNO enable constraint FKEY_T_TXN_LINKNO_ISSAUTONO";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();

@@ -917,7 +917,7 @@ namespace Improvar
         //    return tbl;
 
         //}
-        public DataTable GetStock(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false, bool exactbarno = true, string partcd = "", bool showallitems = false, string doctag = "", string SLCD = "", bool IncludeBaleStock = false, bool ShowOnlyFavitem = false, bool Phystk = false, bool skipNegetivStock = false, string fdt = "", bool exactstyleno = false, string loccd = "", string slcdfrrt = "")
+        public DataTable GetStock(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false, bool exactbarno = true, string partcd = "", bool showallitems = false, string doctag = "", string SLCD = "", bool IncludeBaleStock = false, bool ShowOnlyFavitem = false, bool Phystk = false, bool skipNegetivStock = false, string fdt = "", bool exactstyleno = false, string loccd = "", string slcdfrrt = "", bool ShowShade = false)
         {
             //showbatchno = true;
             string UNQSNO = CommVar.getQueryStringUNQSNO();
@@ -1139,7 +1139,7 @@ namespace Improvar
                 sql += "( " + Environment.NewLine;
                 if (BatchExist == true)
                 {
-                    sql += "select b.gocd, b.mtrljobcd, nvl(b.stktype,'F') stktype, a.barno, a.itcd, b.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, b.balqnty, b.balnos from " + Environment.NewLine;
+                    sql += "select b.gocd, b.mtrljobcd, nvl(b.stktype,'F') stktype, a.barno, a.itcd, b.partcd, a.colrcd, a.sizecd," + (ShowShade == true ? "b." : "a.") + "shade, a.cutlength, a.dia, b.balqnty, b.balnos from " + Environment.NewLine;
 
                     sql += "( select a.barno, a.itcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia from " + Environment.NewLine;
                     sql += scm + ".t_batchmst a " + Environment.NewLine;
@@ -1149,9 +1149,9 @@ namespace Improvar
                     sql += "a.barno is not null " + Environment.NewLine;
                     sql += ") a, " + Environment.NewLine;
 
-                    sql += "( select gocd, mtrljobcd, stktype, barno, partcd, sum(balqnty) balqnty, sum(balnos) balnos from " + Environment.NewLine;
+                    sql += "( select gocd, mtrljobcd, stktype, barno, partcd, sum(balqnty) balqnty, sum(balnos) balnos" + (ShowShade == true ? ",shade" : "") + " from " + Environment.NewLine;
                     sql += "( " + Environment.NewLine;
-                    sql += "select a.gocd, a.mtrljobcd, a.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia, " + Environment.NewLine;
+                    sql += "select a.gocd, a.mtrljobcd, a.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, " + (ShowShade == true ? "a." : "b.") + "shade, b.cutlength, b.dia, " + Environment.NewLine;
                     //if (MSYSCNFG.STKINCLPINV == "Y")
                     //{
                     //    sql += "sum(case a.stkdrcr when 'D' then a.qnty when 'C' then a.qnty*-1 when '0' then a.qnty*-1 end) balqnty, " + Environment.NewLine;
@@ -1190,11 +1190,11 @@ namespace Improvar
                     sql += "c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') " + Environment.NewLine;
                     sql += "and a.autono=g.autono(+) and a.txnslno = g.slno(+) " + Environment.NewLine;
                     if (IncludeBaleStock == false) sql += "and g.autono is null " + Environment.NewLine;
-                    sql += "group by a.gocd, a.mtrljobcd, a.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia " + Environment.NewLine;
+                    sql += "group by a.gocd, a.mtrljobcd, a.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, " + (ShowShade == true ? "a." : "b.") + "shade, b.cutlength, b.dia " + Environment.NewLine;
                     if (pendpslipconsider == true)
                     {
                         sql += "union all " + Environment.NewLine;
-                        sql += "select a.gocd, a.mtrljobcd, a.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia, " + Environment.NewLine;
+                        sql += "select a.gocd, a.mtrljobcd, a.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, " + (ShowShade == true ? "a." : "b.") + "shade, b.cutlength, b.dia, " + Environment.NewLine;
                         sql += "sum(a.qnty*-1) balqnty, sum(a.nos*-1) balnos " + Environment.NewLine;
                         sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_cntrl_hdr c, " + Environment.NewLine;
                         sql += "" + scm + ".m_doctype d, " + scm + ".t_txn_linkno e, " + scm + ".t_bale g " + Environment.NewLine;
@@ -1225,9 +1225,9 @@ namespace Improvar
                         sql += "c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') " + Environment.NewLine;
                         sql += "and a.autono=g.autono(+) and a.txnslno = g.slno(+) " + Environment.NewLine;
                         if (IncludeBaleStock == false) sql += "and g.autono is null " + Environment.NewLine;
-                        sql += "group by a.gocd, a.mtrljobcd, a.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia " + Environment.NewLine;
+                        sql += "group by a.gocd, a.mtrljobcd, a.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, " + (ShowShade == true ? "a." : "b.") + "shade, b.cutlength, b.dia " + Environment.NewLine;
                     }
-                    sql += ") group by gocd, mtrljobcd, stktype, barno, partcd " + Environment.NewLine;
+                    sql += ") group by gocd, mtrljobcd, stktype, barno, partcd" + (ShowShade == true ? ",shade" : "") + " " + Environment.NewLine;
                     sql += " ) b " + Environment.NewLine;
                     sql += "where a.barno=b.barno(+) " + Environment.NewLine;
                     if (shownilstock == false) sql += "and nvl(b.balqnty,0) <> 0 " + Environment.NewLine;
@@ -2053,7 +2053,7 @@ namespace Improvar
             sql += "n.agslcd=k.slcd(+) and n.slmslcd=l.slcd(+)  and m.partcd=p.partcd(+)  and ";
             if (brandcd != "") sql += "h.brandcd in (" + brandcd + ") and ";
             if (itgrpcd != "") sql += "d.itgrpcd in (" + itgrpcd + ") and ";
-            if(Skipngtv == true)
+            if (Skipngtv == true)
             {
                 sql += "nvl(a.qnty,0) - nvl(b.qnty,0) - nvl(c.qnty,0) > 0 ";
             }
@@ -2061,7 +2061,7 @@ namespace Improvar
             {
                 sql += "nvl(a.qnty,0) - nvl(b.qnty,0) - nvl(c.qnty,0) <> 0 ";
             }
-            
+
             sql += "order by styleno, print_seq, sizenm";
             return sql;
         }
@@ -3306,7 +3306,7 @@ namespace Improvar
         //    }
         //    return rsStock;
         //}
-        public DataTable GenStocktblwithVal(string calctype = "FIFO", string tdt = "", string barno = "", string mtrljobcd = "", string itgrpcd = "", string selitcd = "", string gocd = "", bool skipStkTrnf = true, string skipautono = "", bool summary = false, string unselitcd = "", string curschema = "", string LOCCD = "", string finschema = "", bool negstkrtfrmmaster = false, bool skipNegetivStock = false, string indatadocdt = "")
+        public DataTable GenStocktblwithVal(string calctype = "FIFO", string tdt = "", string barno = "", string mtrljobcd = "", string itgrpcd = "", string selitcd = "", string gocd = "", bool skipStkTrnf = true, string skipautono = "", bool summary = false, string unselitcd = "", string curschema = "", string LOCCD = "", string finschema = "", bool negstkrtfrmmaster = false, bool skipNegetivStock = false, string indatadocdt = "", bool ShowShade = false)
         {
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
             var MSYSCNFG = M_SYSCNFG(tdt.retDateStr());
@@ -3328,7 +3328,7 @@ namespace Improvar
             if (BatchExist == true)
             {
                 sql = "";
-                sql += "select distinct y.mtrljobcd, e.mtrljobnm, z.barno, a.itcd, a.itnm, a.styleno,a.styleno||' '||a.itnm itstyle, z.pdesign, z.ourdesign, a.uomcd, a.itgrpcd, c.itgrpnm, d.uomnm, d.decimals, z.fabitcd, q.itnm fabitnm,y.stktype " + Environment.NewLine;
+                sql += "select distinct y.mtrljobcd, e.mtrljobnm, z.barno, a.itcd, a.itnm, a.styleno,a.styleno||' '||a.itnm itstyle, z.pdesign, z.ourdesign, a.uomcd, a.itgrpcd, c.itgrpnm, d.uomnm, d.decimals, z.fabitcd, q.itnm fabitnm,y.stktype" + (ShowShade == true ? ",y.shade" : "") + " " + Environment.NewLine;
                 sql += "from " + scm + ".m_sitem a, " + scm + ".m_group c, " + scmf + ".m_uom d, " + scm + ".m_sitem q, " + Environment.NewLine;
                 sql += scm + ".t_batchdtl y, " + scm + ".t_batchmst z, " + scm + ".m_mtrljobmst e " + Environment.NewLine;
                 sql += "where z.itcd=a.itcd(+) and z.barno=y.barno(+) and a.itgrpcd=c.itgrpcd(+) and z.fabitcd=q.itcd(+) and " + Environment.NewLine;
@@ -3369,7 +3369,7 @@ namespace Improvar
                 sql += "a.mtrljobcd, h.itcd, a.barno, h.pdesign, a.mtrljobcd||h.itcd||a.barno itbarno, a.rate,  " + Environment.NewLine; /*nvl(a.txblval,0) + nvl(a.mtrlcost,0) + nvl(a.othramt,0) netamt, "; */
                 sql += sqld;
                 sql += "nvl(f.txblval,0) + nvl(f.othramt,0) netamt, " + Environment.NewLine;
-                sql += "sum(case a.stkdrcr when 'D' then a.qnty else a.qnty*-1 end) qnty, sum(case a.stkdrcr when 'D' then a.nos else a.nos*-1 end) nos, a.stkdrcr " + Environment.NewLine;//"a.qnty, a.nos ";
+                sql += "sum(case a.stkdrcr when 'D' then a.qnty else a.qnty*-1 end) qnty, sum(case a.stkdrcr when 'D' then a.nos else a.nos*-1 end) nos, a.stkdrcr" + (ShowShade == true ? ",a.shade" : "") + " " + Environment.NewLine;//"a.qnty, a.nos ";
                 sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c, " + scmf + ".m_subleg g, " + scm + ".t_batchmst h, " + Environment.NewLine;
                 sql += scm + ".m_sitem d, " + scm + ".m_group e," + scm + ".t_txndtl f, " + scm + ".t_bale g " + Environment.NewLine;
                 sql += sqlc;
@@ -3387,13 +3387,13 @@ namespace Improvar
                 sql += "group by a.autono, A.TXNSLNO,a.slno, c.doctag, conslcd, c.slcd, g.slnm, b.doccd, b.docdt, b.docno, " + Environment.NewLine;
                 sql += "c.prefno,b.docno, c.prefdt,b.docdt,a.mtrljobcd, h.itcd, a.barno, h.pdesign,a.rate,nvl(f.txblval,0) + nvl(f.othramt,0) " + Environment.NewLine;
                 if (gocd.retStr() != "") sql += ",a.gocd " + Environment.NewLine;
-                sql += ",a.stktype,a.stkdrcr " + Environment.NewLine;
+                sql += ",a.stktype,a.stkdrcr" + (ShowShade == true ? ",a.shade" : "") + " " + Environment.NewLine;
                 sql += "order by itcd, docdt, autono " + Environment.NewLine; //slno
                 if (calctype == "LIFO") sql += "desc " + Environment.NewLine;
 
                 string str = "";
                 str = "select  autono||TXNSLNO AUTONO,slno,doctag,stktype, conslcd, slcd, slnm, doccd, docdt, docno, blno, bldt, gocd, " + Environment.NewLine;//slno, autoslno
-                str += "mtrljobcd, itcd, barno, itbarno, pdesign, rate, netamt, itbarno||gocd itgocd, nvl(nos,0) nos, nvl(qnty,0) qnty from (" + Environment.NewLine;
+                str += "mtrljobcd, itcd, barno, itbarno, pdesign, rate, netamt, itbarno||gocd itgocd, nvl(nos,0) nos, nvl(qnty,0) qnty" + (ShowShade == true ? ",shade" : "") + " from (" + Environment.NewLine;
                 str += sql + ") " + Environment.NewLine;
                 if (barno.retStr() != "")
                 {
@@ -3410,17 +3410,17 @@ namespace Improvar
                 sql += "select a.mtrljobcd, a.barno, h.itcd, a.mtrljobcd||h.itcd||a.barno itbarno, " + Environment.NewLine;
                 sql += sqld;
                 sql += "sum(case a.stkdrcr when 'D' then a.nos*-1 else a.nos end) nos, " + Environment.NewLine;
-                sql += "sum(case a.stkdrcr when 'D' then a.qnty*-1 else a.qnty end) qnty " + Environment.NewLine;
+                sql += "sum(case a.stkdrcr when 'D' then a.qnty*-1 else a.qnty end) qnty" + (ShowShade == true ? ",a.shade" : "") + " " + Environment.NewLine;
                 sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c, " + scm + ".t_batchmst h, " + scm + ".t_bale g, " + Environment.NewLine;
                 sql += scm + ".m_sitem d, " + scm + ".m_group e " + Environment.NewLine;
                 sql += sqlc + " and a.autono=g.autono(+) and a.txnslno=g.slno(+) and g.autono is null and ";
                 sql += "a.stkdrcr in ('C') " + Environment.NewLine;
                 if (tdt.retStr() != "") sql += "and b.docdt <= to_date('" + tdt + "','dd/mm/yyyy') " + Environment.NewLine;
-                sql += "group by a.mtrljobcd, a.barno, h.itcd, a.mtrljobcd||h.itcd||a.barno " + Environment.NewLine;
+                sql += "group by a.mtrljobcd, a.barno, h.itcd, a.mtrljobcd||h.itcd||a.barno" + (ShowShade == true ? ",a.shade" : "") + " " + Environment.NewLine;
                 sql += sqldgrp;
                 sql += "order by itcd " + Environment.NewLine;
 
-                str = "select mtrljobcd, itcd, barno, gocd, itbarno||gocd itgocd, nvl(qnty,0) qnty,nvl(nos,0) nos from (" + Environment.NewLine;
+                str = "select mtrljobcd, itcd, barno, gocd, itbarno||gocd itgocd, nvl(qnty,0) qnty,nvl(nos,0) nos" + (ShowShade == true ? ",shade" : "") + " from (" + Environment.NewLine;
                 str += sql + " )";
                 if (skipNegetivStock == true) str += " where nvl(qnty, 0)> 0 " + Environment.NewLine;
 
@@ -3429,7 +3429,7 @@ namespace Improvar
             else
             {
                 sql = "";
-                sql += "select distinct y.mtrljobcd, e.mtrljobnm, z.barno, a.itcd, a.itnm, a.styleno,a.styleno||' '||a.itnm itstyle, z.pdesign, z.ourdesign, a.uomcd, a.itgrpcd, c.itgrpnm, d.uomnm, d.decimals, z.fabitcd, q.itnm fabitnm,y.stktype " + Environment.NewLine;
+                sql += "select distinct y.mtrljobcd, e.mtrljobnm, z.barno, a.itcd, a.itnm, a.styleno,a.styleno||' '||a.itnm itstyle, z.pdesign, z.ourdesign, a.uomcd, a.itgrpcd, c.itgrpnm, d.uomnm, d.decimals, z.fabitcd, q.itnm fabitnm,y.stktype,''shade " + Environment.NewLine;
                 sql += "from " + scm + ".m_sitem a, " + scm + ".m_group c, " + scmf + ".m_uom d, " + scm + ".m_sitem q, " + Environment.NewLine;
                 sql += scm + ".t_txndtl y, " + scm + ".t_batchmst z, " + scm + ".m_mtrljobmst e " + Environment.NewLine;
                 sql += "where y.itcd=a.itcd(+) and y.barno=z.barno(+) and a.itgrpcd=c.itgrpcd(+) and z.fabitcd=q.itcd(+) and " + Environment.NewLine;
@@ -3469,7 +3469,7 @@ namespace Improvar
                 sql += "a.mtrljobcd, a.itcd, a.barno, h.pdesign, a.mtrljobcd||a.itcd||a.barno itbarno, a.rate,  " + Environment.NewLine; /*nvl(a.txblval,0) + nvl(a.mtrlcost,0) + nvl(a.othramt,0) netamt, "; */
                 sql += sqld;
                 sql += "nvl(f.txblval,0) + nvl(f.othramt,0) netamt, " + Environment.NewLine;
-                sql += "sum(case a.stkdrcr when 'D' then a.qnty else a.qnty*-1 end) qnty, sum(case a.stkdrcr when 'D' then a.nos else a.nos*-1 end) nos, a.stkdrcr " + Environment.NewLine;//"a.qnty, a.nos ";
+                sql += "sum(case a.stkdrcr when 'D' then a.qnty else a.qnty*-1 end) qnty, sum(case a.stkdrcr when 'D' then a.nos else a.nos*-1 end) nos, a.stkdrcr,''shade " + Environment.NewLine;//"a.qnty, a.nos ";
                 sql += "from " + scm + ".t_txndtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c, " + scmf + ".m_subleg g, " + scm + ".t_batchmst h, " + Environment.NewLine;
                 sql += scm + ".m_sitem d, " + scm + ".m_group e," + scm + ".t_txndtl f, " + scm + ".t_bale g " + Environment.NewLine;
                 sql += sqlc;
@@ -3493,7 +3493,7 @@ namespace Improvar
 
                 string str = "";
                 str = "select  autono||TXNSLNO AUTONO,slno,doctag,stktype, conslcd, slcd, slnm, doccd, docdt, docno, blno, bldt, gocd, " + Environment.NewLine;//slno, autoslno
-                str += "mtrljobcd, itcd, barno, itbarno, pdesign, rate, netamt, itbarno||gocd itgocd, nvl(nos,0) nos, nvl(qnty,0) qnty from (" + Environment.NewLine;
+                str += "mtrljobcd, itcd, barno, itbarno, pdesign, rate, netamt, itbarno||gocd itgocd, nvl(nos,0) nos, nvl(qnty,0) qnty,''shade from (" + Environment.NewLine;
                 str += sql + ") " + Environment.NewLine;
                 if (barno.retStr() != "")
                 {
@@ -3510,7 +3510,7 @@ namespace Improvar
                 sql += "select a.mtrljobcd, a.barno, a.itcd, a.mtrljobcd||a.itcd||a.barno itbarno, " + Environment.NewLine;
                 sql += sqld;
                 sql += "sum(case a.stkdrcr when 'D' then a.nos*-1 else a.nos end) nos, " + Environment.NewLine;
-                sql += "sum(case a.stkdrcr when 'D' then a.qnty*-1 else a.qnty end) qnty " + Environment.NewLine;
+                sql += "sum(case a.stkdrcr when 'D' then a.qnty*-1 else a.qnty end) qnty,''shade " + Environment.NewLine;
                 sql += "from " + scm + ".t_txndtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c, " + scm + ".t_batchmst h, " + scm + ".t_bale g, " + Environment.NewLine;
                 sql += scm + ".m_sitem d, " + scm + ".m_group e " + Environment.NewLine;
                 sql += sqlc + " and a.autono=g.autono(+) and a.slno=g.slno(+) and g.autono is null and ";
@@ -3539,7 +3539,7 @@ namespace Improvar
             #region //Create Datatable rsstock
             DataTable rsStock = new DataTable("stock");
             rsStock.Columns.Add("mtrljobcd", typeof(string), "");
-            //rsStock.Columns.Add("mtrljobnm", typeof(string), "");
+            rsStock.Columns.Add("mtrljobnm", typeof(string), "");
             rsStock.Columns.Add("doctag", typeof(string), "");
             rsStock.Columns.Add("conslcd", typeof(string), "");
             rsStock.Columns.Add("autono", typeof(string), "");
@@ -3578,6 +3578,7 @@ namespace Improvar
             rsStock.Columns.Add("documentdt", typeof(DateTime), "");
             rsStock.Columns.Add("lastprate", typeof(double), "");
             rsStock.Columns.Add("lastpdocno", typeof(string), "");
+            rsStock.Columns.Add("shade", typeof(string), "");
             #endregion
 
             double balqty = 0, outqty = 0, avrate = 0, stkamt = 0, outnos = 0, balnos = 0;
@@ -3597,7 +3598,7 @@ namespace Improvar
                 while (ig <= varGodown.Count - 1)
                 {
                     strgocd = varGodown[ig].GOCD;
-                    string data = "itgocd = '" + strmtrljobcd + stritcd + strbarno + strgocd + "'";
+                    string data = "itgocd = '" + strmtrljobcd + stritcd + strbarno + strgocd + "'" + (ShowShade == true ? (rsitem.Rows[it]["shade"].retStr().Trim() == ""?"and trim(shade) is null ":"and shade='" + rsitem.Rows[it]["shade"].ToString() + "'") : "") + "";
                     if (stritcd == "F10001769" && strmtrljobcd == "FS" && strbarno == "10001769" && strgocd == "38G")
                     {
                     }
@@ -3716,7 +3717,7 @@ namespace Improvar
 
                                 rsStock.Rows[rNo]["barno"] = rsitem.Rows[it]["barno"];
                                 rsStock.Rows[rNo]["mtrljobcd"] = rsitem.Rows[it]["mtrljobcd"];
-                                //rsStock.Rows[rNo]["mtrljobnm"] = rsitem.Rows[it]["mtrljobnm"];
+                                rsStock.Rows[rNo]["mtrljobnm"] = rsitem.Rows[it]["mtrljobnm"];
                                 //rsStock.Rows[rNo]["styleno"] = rsitem.Rows[it]["styleno"];
                                 rsStock.Rows[rNo]["itstyle"] = rsitem.Rows[it]["itstyle"];
                                 //rsStock.Rows[rNo]["fabitcd"] = rsitem.Rows[it]["fabitcd"];
@@ -3725,6 +3726,10 @@ namespace Improvar
                                 rsStock.Rows[rNo]["outqnty"] = 0;
                                 rsStock.Rows[rNo]["lastprate"] = lastprt.toRound(4);
                                 rsStock.Rows[rNo]["lastpdocno"] = lastpdocno;
+                                if (ShowShade == true)
+                                {
+                                    rsStock.Rows[rNo]["shade"] = rsitem.Rows[it]["shade"].ToString();
+                                }
 
                             }
                             i++;
@@ -3759,7 +3764,7 @@ namespace Improvar
 
                             rsStock.Rows[rNo]["barno"] = rsitem.Rows[it]["barno"];
                             rsStock.Rows[rNo]["mtrljobcd"] = rsitem.Rows[it]["mtrljobcd"];
-                            //rsStock.Rows[rNo]["mtrljobnm"] = rsitem.Rows[it]["mtrljobnm"];
+                            rsStock.Rows[rNo]["mtrljobnm"] = rsitem.Rows[it]["mtrljobnm"];
                             //rsStock.Rows[rNo]["styleno"] = rsitem.Rows[it]["styleno"];
                             rsStock.Rows[rNo]["itstyle"] = rsitem.Rows[it]["itstyle"];
                             rsStock.Rows[rNo]["stktype"] = rsitem.Rows[it]["stktype"];
@@ -3769,6 +3774,10 @@ namespace Improvar
                             rsStock.Rows[rNo]["outqnty"] = 0;
                             rsStock.Rows[rNo]["lastprate"] = lastprt.toRound(4);
                             rsStock.Rows[rNo]["lastpdocno"] = lastpdocno;
+                            if (ShowShade == true)
+                            {
+                                rsStock.Rows[rNo]["shade"] = rsitem.Rows[it]["shade"].ToString();
+                            }
                         }
                     }
                     ig++;
@@ -3790,8 +3799,10 @@ namespace Improvar
                         gonm = r["gonm"],
                         barno = r["barno"],
                         mtrljobcd = r["mtrljobcd"],
+                        mtrljobnm = r["mtrljobnm"],
                         itstyle = r["itstyle"],
                         stktype = r["stktype"],
+                        shade = ShowShade == true ? r["shade"] : "",
                     })
           .Select(g =>
           {
@@ -3804,6 +3815,7 @@ namespace Improvar
               row["gonm"] = g.Key.gonm;
               row["barno"] = g.Key.barno;
               row["mtrljobcd"] = g.Key.mtrljobcd;
+              row["mtrljobnm"] = g.Key.mtrljobnm;
               row["itstyle"] = g.Key.itstyle;
               row["stktype"] = g.Key.stktype;
               row["balqnty"] = g.Sum(r => r.Field<double>("balqnty")).toRound(6);
@@ -3813,6 +3825,7 @@ namespace Improvar
               row["outqnty"] = g.Sum(r => r.Field<double>("outqnty"));
               row["lastprate"] = g.Select(r => r.Field<double>("lastprate")).FirstOrDefault();
               row["lastpdocno"] = string.Join(",", g.Select(r => r.Field<string>("lastpdocno")));
+              row["shade"] = ShowShade == true ? g.Key.shade : "";
               return row;
 
           }).CopyToDataTable();
