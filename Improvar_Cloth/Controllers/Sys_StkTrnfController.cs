@@ -1494,8 +1494,8 @@ namespace Improvar.Controllers
                             }
                             if (i > maxR) break;
                         }//PendingJobDT.Rows.Count
-                        //sql = "alter table " + newschema + ".t_progdtl enable constraint fkey_t_progdtl_progautono";
-                        //OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                        sql = "alter table " + newschema + ".t_progdtl enable constraint fkey_t_progdtl_progautono";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
                         sql = "alter table " + newschema + ".T_TXN_LINKNO enable constraint FKEY_T_TXN_LINKNO_ISSAUTONO";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();

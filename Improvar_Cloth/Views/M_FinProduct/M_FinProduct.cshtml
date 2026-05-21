@@ -734,7 +734,11 @@
 <script>
     function SetEffdt() {
         var effdt = $("#PRICES_EFFDTDROP").val();
+        var mtrljobcd = $("#PRICES_MTRLJOBCDDROP").val();
+        var mtrljobnm = $("#PRICES_MtrljobnmDROP").val();
         $("#PRICES_EFFDT").val(effdt);
+        $("#PRICES_MTRLJOBCD").val(mtrljobcd);
+        $("#PRICES_Mtrljobnm").val(mtrljobnm);
     }
 </script>
 <script>
@@ -742,6 +746,7 @@
         if (tag != "All")
         {
             if (!emptyFieldCheck("Enter Effective Date", "PRICES_EFFDT")) { return false; }
+            if (!emptyFieldCheck("Enter Material Job", "PRICES_MTRLJOBCD")) { return false; }
         }
         $.ajax({
             type: 'POST',

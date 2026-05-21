@@ -20,7 +20,7 @@
 </script>
 <div>
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-3" style="width:auto;">
             <div class="editor-field" style="margin-top: 4px;">
                 @Html.Label("", "Effective Date")
             </div>
@@ -30,24 +30,32 @@
                 @Html.DropDownListFor(model => model.PRICES_EFFDTDROP, new SelectList(Model.DropDown_list1, "Value", "Text"), new { @class = "form-control", id = "PRICES_EFFDTDROP", onchange = "SetEffdt();" })
             </div>
         </div>
-        <div class="col-lg-2">
+        <div class="col-lg-2" style="width:auto;">
             <div class="editor-label" style="margin-top: 6px;">
                 @Html.Label("", "Material Job")
                 <b style="color:Red;">*</b>
             </div>
         </div>
-        <div class="col-lg-2">
+        <div class="col-md-1">
             <div class="editor-field">
-                @Html.EditorFor(model => model.PRICES_MTRLJOBCDDROP, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PRICES_MTRLJOBCDDROP", onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialDetails", PageControllerName) + "','Material Job Details','PRICES_MTRLJOBCDDROP','PRICES_MTRLJOBCDDROP=MTRLJOBCD=1/PRICES_MtrljobnmDROP=Mtrljobnm=0','PRICES_EFFDTDROP')", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialDetails", PageControllerName) + "','Material Job Details','PRICES_MTRLJOBCDDROP','PRICES_MTRLJOBCDDROP=MTRLJOBCD=1/PRICES_MtrljobnmDROP=Mtrljobnm=0','PRICES_EFFDTDROP');", @placeholder = "Material Job Code", maxlength = 2 } })
-                <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetMaterialDetails", PageControllerName)','Material Job Details','PRICES_MTRLJOBCDDROP','PRICES_MTRLJOBCDDROP=MTRLJOBCD=1/PRICES_MtrljobnmDROP=Mtrljobnm=0','PRICES_EFFDTDROP')" />
-            </div>
+                @if (Model.DefaultAction == "E")
+                {
+                @Html.EditorFor(model => model.PRICES_MTRLJOBCDDROP, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PRICES_MTRLJOBCDDROP", onkeydown = "GetHelpBlur('" + @Url.Action("GetPriceMaterialDetails", PageControllerName) + "','Material Job Details','PRICES_MTRLJOBCDDROP','PRICES_MTRLJOBCDDROP=MTRLJOBCD=1/PRICES_MtrljobnmDROP=Mtrljobnm=0/PRICES_MTRLJOBCD=MTRLJOBCD=1/PRICES_Mtrljobnm=Mtrljobnm=0','PRICES_EFFDTDROP/ITCD')", onblur = "GetHelpBlur('" + @Url.Action("GetPriceMaterialDetails", PageControllerName) + "','Material Job Details','PRICES_MTRLJOBCDDROP','PRICES_MTRLJOBCDDROP=MTRLJOBCD=1/PRICES_MtrljobnmDROP=Mtrljobnm=0/PRICES_MTRLJOBCD=MTRLJOBCD=1/PRICES_Mtrljobnm=Mtrljobnm=0','PRICES_EFFDTDROP/ITCD');", @placeholder = "Material Job Code", maxlength = 2 } })
+                <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPriceMaterialDetails", PageControllerName)','Material Job Details','PRICES_MTRLJOBCDDROP','PRICES_MTRLJOBCDDROP=MTRLJOBCD=1/PRICES_MtrljobnmDROP=Mtrljobnm=0/PRICES_MTRLJOBCD=MTRLJOBCD=1/PRICES_Mtrljobnm=Mtrljobnm=0','PRICES_EFFDTDROP/ITCD')" />
+                }
+                else
+                {
+                    @Html.EditorFor(model => model.PRICES_MTRLJOBCDDROP, new { htmlAttributes = new { @class = "form-control", id = "PRICES_MTRLJOBCDDROP", maxlength = 2, @title = "Only for View", @placeholder = "Material Job Code", @readonly = "readonly", tabindex = "-1" } })
+
+                }
+             </div>
         </div>
-        <div class="col-lg-3">
+        <div class="col-md-3">
             <div class="editor-field">
                 @Html.EditorFor(model => model.PRICES_MtrljobnmDROP, new { htmlAttributes = new { @class = "form-control", id = "PRICES_MtrljobnmDROP", maxlength = 45, @title = "Only for View", @placeholder = "Material Job Name", @readonly = "readonly", tabindex = "-1" } })
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3" style="width:auto;">
             <div class="editor-field" style="margin-top: 4px;">
                 @Html.Label("", "New Effective Date")
             </div>
@@ -57,26 +65,26 @@
                 @Html.EditorFor(model => model.PRICES_EFFDT, new { htmlAttributes = new { @class = "form-control ", id = "PRICES_EFFDT", @placeholder = "dd/mm/yyyy", maxlength = 10, onblur = "DocumentDateCHK(this)", autocomplete = "off" } })
             </div>
         </div>
-        <div class="col-lg-2">
+        <div class="col-lg-2" style="width:auto;">
             <div class="editor-label" style="margin-top: 6px;">
                 @Html.Label("", "New Material Job")
                 <b style="color:Red;">*</b>
             </div>
         </div>
-        <div class="col-lg-2">
+        <div class="col-md-1">
             <div class="editor-field">
                 @Html.EditorFor(model => model.PRICES_MTRLJOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PRICES_MTRLJOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialDetails", PageControllerName) + "','Material Job Details','PRICES_MTRLJOBCD','PRICES_MTRLJOBCD=MTRLJOBCD=1/PRICES_Mtrljobnm=Mtrljobnm=0')", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialDetails", PageControllerName) + "','Material Job Details','PRICES_MTRLJOBCD','PRICES_MTRLJOBCD=MTRLJOBCD=1/PRICES_Mtrljobnm=Mtrljobnm=0');", @placeholder = "Material Job Code", maxlength = 2 } })
                 <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetMaterialDetails", PageControllerName)','Material Job Details','PRICES_MTRLJOBCD','PRICES_MTRLJOBCD=MTRLJOBCD=1/PRICES_Mtrljobnm=Mtrljobnm=0')" />
             </div>
         </div>
-        <div class="col-lg-3">
+        <div class="col-md-3">
             <div class="editor-field">
                 @Html.EditorFor(model => model.PRICES_Mtrljobnm, new { htmlAttributes = new { @class = "form-control", id = "PRICES_Mtrljobnm", maxlength = 45, @title = "Only for View", @placeholder = "Material Job Name", @readonly = "readonly", tabindex = "-1" } })
             </div>
         </div>
         @if (Model.DefaultAction == "A" || Model.DefaultAction == "E")
         {
-            <div class="col-md-2">
+            <div class="col-md-2" style="width:auto;">
                 <div class="editor-field">
                     <input class="btn btn-primary" type="button" value="Get Data" style="margin-top: 4px;padding: 2px 7px 2px 5px;" onclick="fillPricesGrid();" />
                 </div>
@@ -84,7 +92,7 @@
         }
         @if (Model.DefaultAction == "E")
         {
-            <div class="col-md-2">
+            <div class="col-md-2" style="width:auto;">
                 <div class="editor-field">
                     <input class="btn btn-danger" type="button" value="Delete Data" style="margin-top: 4px;padding: 2px 7px 2px 5px;" onclick="DeletePriceList();" />
                 </div>
@@ -92,7 +100,7 @@
         }
         @if (Model.DefaultAction == "A" || Model.DefaultAction == "E")
         {
-            <div class="col-md-2">
+            <div class="col-md-2" style="width:auto;">
                 <div class="editor-field">
                     <input class="btn btn-success" type="button" value="Get All Data" style="margin-top: 4px;padding: 2px 7px 2px 5px;" onclick="fillPricesGrid('All');" />
                 </div>
@@ -119,12 +127,12 @@
                         {
                             <thead>
                                 <tr class="sticky-header">
-                                    @for (int i = 0; i < 8; i++)
+                                    @for (int i = 0; i < 10; i++)
                                     {
-                                        <th class="grid_th text-right" style="width:70px;">@Model.DTPRICES.Columns[i].Caption</th>
+                                        <th class="grid_th" style="width:70px;">@Model.DTPRICES.Columns[i].Caption</th>
                                         @*<th class="grid_th">@Model.DTPRICES.Columns[i].Caption</th>*@
                                     }
-                                    @for (int i = 8; i < Model.DTPRICES.Columns.Count; i++)
+                                    @for (int i = 10; i < Model.DTPRICES.Columns.Count; i++)
                                     {
                                         <th class="grid_th" style="width:50px;">@Model.DTPRICES.Columns[i].Caption <a title="Add first Cell Rate to all Size" onclick="SameRatetoallSize('@i')" style="float:right;cursor:pointer;color: mistyrose;">Same Rate(F8)</a></th>
                                     }
@@ -136,10 +144,10 @@
                                     <tr>
                                         @for (int j = 0; j < Model.DTPRICES.Columns.Count; j++)
                                         {
-                                            if (j < 8)
+                                            if (j < 10)
                                             {
                                                 <td>
-                                                    @Html.TextBoxFor(model => model.DTPRICES.Rows[i][j], new { @class = "atextBoxFor text-right", style = "background-color:lightgrey;", @Readonly = "Readonly" })
+                                                    @Html.TextBoxFor(model => model.DTPRICES.Rows[i][j], new { @class = "atextBoxFor", style = "background-color:lightgrey;", @Readonly = "Readonly" })
                                                 </td>
                                             }
                                             else

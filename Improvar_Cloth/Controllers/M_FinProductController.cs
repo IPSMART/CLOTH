@@ -221,6 +221,8 @@ namespace Improvar.Controllers
                                 MSITEMSLCD.Add(ITEMSIZE);
                             }
                             VE.MSITEMSLCD = MSITEMSLCD;
+                            VE.PRICES_MTRLJOBCD = "FS";
+                            VE.PRICES_Mtrljobnm = DB.M_MTRLJOBMST.Where(a => a.MTRLJOBCD == VE.PRICES_MTRLJOBCD).Select(a => a.MTRLJOBNM).FirstOrDefault();
 
                             //List<MSITEMBOX> ITEMBOX = new List<MSITEMBOX>();
                             //MSITEMBOX MIB = new MSITEMBOX();
@@ -496,7 +498,19 @@ namespace Improvar.Controllers
                 {
                     VE.PRICES_EFFDT = VE.DropDown_list1.First().value;
                     VE.PRICES_EFFDTDROP = VE.DropDown_list1.First().value;
+                    if (VE.PRICES_EFFDT.retStr() != "")
+                    {
+                        sql = "select distinct a.MTRLJOBCD,b.MTRLJOBNM from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST_PRICE a," + CommVar.CurSchema(UNQSNO) + ".M_MTRLJOBMST b where a.MTRLJOBCD=b.MTRLJOBCD(+) and barno in (" + barnosql + ") and a.effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy') order by EFFDT desc";
+                        DataTable dt1 = masterHelp.SQLquery(sql);
+
+                        VE.PRICES_MTRLJOBCDDROP = dt1.Rows[0]["MTRLJOBCD"].retStr();
+                        VE.PRICES_MtrljobnmDROP = dt1.Rows[0]["MTRLJOBNM"].retStr();
+
+                        VE.PRICES_MTRLJOBCD = dt1.Rows[0]["MTRLJOBCD"].retStr();
+                        VE.PRICES_Mtrljobnm = dt1.Rows[0]["MTRLJOBNM"].retStr();
+                    }
                     VE.DTPRICES = GetPrices(VE);
+
                 }
                 VE.UploadDOC = Cn.GetUploadImage(CommVar.CurSchema(UNQSNO).ToString(), Convert.ToInt32(sl.M_AUTONO));
 
@@ -691,10 +705,10 @@ namespace Improvar.Controllers
                 {
                     DataTable DTPRICES = (DataTable)TempData["DTPRICES"]; TempData.Keep();
                     string barno = DTPRICES.AsEnumerable().Select(a => a.Field<string>("barno")).ToArray().retSqlfromStrarray();
-                    sql = "delete from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST_PRICE where barno in (" + barno + ") and effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy') ";
+                    sql = "delete from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST_PRICE where barno in (" + barno + ") and effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy') and mtrljobcd='"+VE.PRICES_MTRLJOBCD + "' ";
                     OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
-                    sql = "delete from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST_PRICE where barno in (" + barno + ") and effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy') ";
+                    sql = "delete from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST_PRICE where barno in (" + barno + ") and effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy') and mtrljobcd='" + VE.PRICES_MTRLJOBCD + "' ";
                     OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
                     string barnosql = getmasterbarno(VE.M_SITEM.ITCD).retSqlformat();
@@ -703,6 +717,17 @@ namespace Improvar.Controllers
                     {
                         VE.PRICES_EFFDT = VE.DropDown_list1.First().value;
                         VE.PRICES_EFFDTDROP = VE.DropDown_list1.First().value;
+                        if (VE.PRICES_EFFDT.retStr() != "")
+                        {
+                            sql = "select distinct a.MTRLJOBCD,b.MTRLJOBNM from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST_PRICE a," + CommVar.CurSchema(UNQSNO) + ".M_MTRLJOBMST b where a.MTRLJOBCD=b.MTRLJOBCD(+) and barno in (" + barnosql + ") and a.effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy') order by EFFDT desc";
+                            DataTable dt1 = masterHelp.SQLquery(sql);
+
+                            VE.PRICES_MTRLJOBCDDROP = dt1.Rows[0]["MTRLJOBCD"].retStr();
+                            VE.PRICES_MtrljobnmDROP = dt1.Rows[0]["MTRLJOBNM"].retStr();
+
+                            VE.PRICES_MTRLJOBCD = dt1.Rows[0]["MTRLJOBCD"].retStr();
+                            VE.PRICES_Mtrljobnm = dt1.Rows[0]["MTRLJOBNM"].retStr();
+                        }
                         VE.DTPRICES = GetPrices(VE);
                     }
 
@@ -738,10 +763,11 @@ namespace Improvar.Controllers
             try
             {
                 string sql = "";
-                sql += " select a.rate,prccd,SIZECD,COLRCD,to_char(a.effdt,'dd/mm/yyyy')effdt from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST_PRICE a," + CommVar.CurSchema(UNQSNO) + ".T_BATCHmst b ";
-                sql += "where a.barno=b.barno and b.itcd='" + VE.M_SITEM.ITCD + "' ";
-                if (Tag != "All") sql += "and a.effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy')  ";
-                sql += "order by EFFDT desc ";
+                sql += " select a.rate,prccd,SIZECD,COLRCD,to_char(a.effdt,'dd/mm/yyyy')effdt,a.mtrljobcd,c.mtrljobnm ";
+                sql += "from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST_PRICE a," + CommVar.CurSchema(UNQSNO) + ".T_BATCHmst b," + CommVar.CurSchema(UNQSNO) + ".M_MTRLJOBMST c ";
+                sql += "where a.barno=b.barno and a.mtrljobcd=c.mtrljobcd(+) and b.itcd='" + VE.M_SITEM.ITCD + "' ";
+                if (Tag != "All") sql += "and a.effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy') and a.mtrljobcd='" + VE.PRICES_MTRLJOBCD + "'  ";
+                sql += "order by a.EFFDT desc,mtrljobcd   ";
                 DataTable dt_prcrt = masterHelp.SQLquery(sql);
                 ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
                 var M_PRCLST = (from p in DBF.M_PRCLST
@@ -754,6 +780,8 @@ namespace Improvar.Controllers
                 DataColumn column;
 
                 column = dt.Columns.Add("effdt", typeof(string)); column.Caption = "Effective Date";
+                column = dt.Columns.Add("mtrljobcd", typeof(string)); column.Caption = "Material Job Code";
+                column = dt.Columns.Add("mtrljobnm", typeof(string)); column.Caption = "Material Job Name";
                 column = dt.Columns.Add("COLRCD", typeof(string)); column.Caption = "COLRCD";
                 column = dt.Columns.Add("COLRNM", typeof(string)); column.Caption = "COLRNM";
                 column = dt.Columns.Add("CLRBARCODE", typeof(string)); column.Caption = "CLRBARCODE";
@@ -767,18 +795,23 @@ namespace Improvar.Controllers
                     column = dt.Columns.Add(plist.PRCCD, typeof(string)); column.Caption = plist.PRCNM;
                 }
 
-                List<string> effdt = new List<string>();
+                Dictionary<string, Tuple<string, string>> effdt =
+                    new Dictionary<string, Tuple<string, string>>();
                 if (Tag == "All")
                 {
-                    for (int i = 0; i <= VE.DropDown_list1.Count - 1; i++)
+                    DataView dv = new DataView(dt_prcrt);
+                    string[] arr = { "effdt", "mtrljobcd", "mtrljobnm" };
+                    DataTable dt1 = dv.ToTable(true, arr);
+
+                    for (int i = 0; i <= dt1.Rows.Count - 1; i++)
                     {
-                        effdt.Add(VE.DropDown_list1[i].value);
+                        effdt.Add(dt1.Rows[i]["effdt"].retDateStr(), Tuple.Create(dt1.Rows[i]["mtrljobcd"].retStr(), dt1.Rows[i]["mtrljobnm"].retStr()));
                     }
 
                 }
                 else
                 {
-                    effdt.Add(VE.PRICES_EFFDTDROP);
+                    effdt.Add(VE.PRICES_EFFDT, Tuple.Create(VE.PRICES_MTRLJOBCD, VE.PRICES_Mtrljobnm));
                 }
                 foreach (MSITEMBARCODE bar in VE.MSITEMBARCODE)
                 {
@@ -789,7 +822,7 @@ namespace Improvar.Controllers
                             dt.Rows.Add("");
                             int rNo = dt.Rows.Count - 1;
 
-                            dt.Rows[rNo]["effdt"] = e.retStr();
+                            dt.Rows[rNo]["effdt"] = e.Key.retStr();
                             dt.Rows[rNo]["SIZECD"] = bar.SIZECD.retStr();
                             dt.Rows[rNo]["SIZENM"] = bar.SIZENM;
                             dt.Rows[rNo]["SZBARCODE"] = bar.SZBARCODE;
@@ -797,12 +830,15 @@ namespace Improvar.Controllers
                             dt.Rows[rNo]["COLRNM"] = bar.COLRNM;
                             dt.Rows[rNo]["CLRBARCODE"] = bar.CLRBARCODE;
                             dt.Rows[rNo]["BARNO"] = bar.BARNO;
+                            dt.Rows[rNo]["mtrljobcd"] = e.Value.Item1;
+                            dt.Rows[rNo]["mtrljobnm"] = e.Value.Item2;
+
                             if (dt_prcrt != null && dt_prcrt.Rows.Count > 0)
                             {
                                 foreach (var plist in M_PRCLST)
                                 {
                                     string rate = (from DataRow dr in dt_prcrt.Rows
-                                                   where dr["sizecd"].retStr() == bar.SIZECD.retStr() && dr["colrcd"].retStr() == bar.COLRCD.retStr() && dr["prccd"].retStr() == plist.PRCCD.retStr() && dr["effdt"].retStr() == e.retStr()
+                                                   where dr["sizecd"].retStr() == bar.SIZECD.retStr() && dr["colrcd"].retStr() == bar.COLRCD.retStr() && dr["prccd"].retStr() == plist.PRCCD.retStr() && dr["effdt"].retStr() == e.Key.retStr() && dr["mtrljobcd"].retStr() == e.Value.Item1.retStr()
                                                    select dr["rate"].retStr()).FirstOrDefault();
                                     dt.Rows[rNo][plist.PRCCD] = rate;
                                 }
@@ -1795,8 +1831,9 @@ namespace Improvar.Controllers
                             if (VE.PRICES_EFFDT.retStr() != "")
                             {
                                 DateTime PRICES_EFFDT = Convert.ToDateTime(VE.PRICES_EFFDT);
-                                DB.T_BATCHMST_PRICE.Where(x => x.EFFDT == PRICES_EFFDT && arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
-                                DB.T_BATCHMST_PRICE.RemoveRange(DB.T_BATCHMST_PRICE.Where(x => x.EFFDT == PRICES_EFFDT && arrbarno.Contains(x.BARNO)));
+                                string PRICES_MTRLJOBCD = VE.PRICES_MTRLJOBCD;
+                                DB.T_BATCHMST_PRICE.Where(x => x.EFFDT == PRICES_EFFDT && x.MTRLJOBCD == PRICES_MTRLJOBCD && arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
+                                DB.T_BATCHMST_PRICE.RemoveRange(DB.T_BATCHMST_PRICE.Where(x => x.EFFDT == PRICES_EFFDT && x.MTRLJOBCD == PRICES_MTRLJOBCD && arrbarno.Contains(x.BARNO)));
 
                                 //DB.T_BATCHMST_PRICE.Where(x => x.EFFDT == PRICES_EFFDT && arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
                                 //DB.T_BATCHMST_PRICE.RemoveRange(DB.T_BATCHMST_PRICE.Where(x => x.EFFDT == PRICES_EFFDT && arrbarno.Contains(x.BARNO)));
@@ -1994,13 +2031,13 @@ namespace Improvar.Controllers
                         for (int i = 0; i <= prcRows.Length - 1; i++)
                         {
                             var prcCols = prcRows[i].Split(',');
-                            for (int j = 8; j < prcCols.Length; j++)
+                            for (int j = 10; j < prcCols.Length; j++)
                             {
-                                string colorbarno = prcCols[3];// prcCols[2];
-                                string sizebarno = prcCols[6];// prcCols[5];
-                                string colorcd = prcCols[1];// prcCols[0];
-                                string sizecd = prcCols[4];//prcCols[3];
-                                string barno = prcCols[7];// prcCols[6];
+                                string colorbarno = prcCols[5];// prcCols[2];
+                                string sizebarno = prcCols[8];// prcCols[5];
+                                string colorcd = prcCols[3];// prcCols[0];
+                                string sizecd = prcCols[6];//prcCols[3];
+                                string barno = prcCols[9];// prcCols[6];
                                 var varcode = VE.MSITEMBARCODE.Where(d => d.SIZECD.retStr() == sizecd && d.COLRCD.retStr() == colorcd).FirstOrDefault();
                                 if (varcode == null)
                                 {
@@ -2013,6 +2050,7 @@ namespace Improvar.Controllers
                                 MIP.DTAG = MSITEM.DTAG;
                                 MIP.CLCD = MSITEM.CLCD;
                                 MIP.EFFDT = VE.PRICES_EFFDT != null ? Convert.ToDateTime(VE.PRICES_EFFDT) : System.DateTime.Now.Date;
+                                MIP.MTRLJOBCD = VE.PRICES_MTRLJOBCD;
                                 MIP.PRCCD = PRCCD;
                                 if (VE.MSITEMBARCODE[i].BARNO.retStr() != "")
                                 {
@@ -2207,12 +2245,12 @@ namespace Improvar.Controllers
                 Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
                 string dbname = CommVar.CurSchema(UNQSNO).ToString();
                 string dbname1 = CommVar.FinSchema(UNQSNO).ToString();
-                string query = "SELECT distinct A.STYLENO, A.ITNM, A.ITCD, B.ITGRPNM, F.BRANDNM, A.HSNCODE, G.UOMCD, G.UOMNM, h.collcd, h.collnm,i.prccd,i.rate,i.effdt ";
+                string query = "SELECT distinct A.STYLENO, A.ITNM, A.ITCD, B.ITGRPNM, F.BRANDNM, A.HSNCODE, G.UOMCD, G.UOMNM, h.collcd, h.collnm,i.prccd,i.rate,i.effdt,i.mtrljobcd,i.mtrljobnm ";
                 query = query + "FROM " + dbname + ".M_SITEM A, " + dbname + ".M_GROUP B, ";
                 query = query + dbname + ".M_CNTRL_HDR E, " + dbname + ".M_BRAND F, " + dbname1 + ".M_UOM G, " + dbname + ".M_COLLECTION h, ";
 
-                query += "(select a.rate,prccd,SIZECD,COLRCD,to_char(a.effdt,'dd/mm/yyyy')effdt,b.itcd from " + dbname + ".T_BATCHMST_PRICE a," + dbname + ".T_BATCHmst b ";
-                query += "where a.barno=b.barno  ";
+                query += "(select a.rate,prccd,SIZECD,COLRCD,to_char(a.effdt,'dd/mm/yyyy')effdt,b.itcd,a.mtrljobcd,c.mtrljobnm from " + dbname + ".T_BATCHMST_PRICE a," + dbname + ".T_BATCHmst b," + dbname + ".M_MTRLJOBMST c ";
+                query += "where a.barno=b.barno and a.mtrljobcd=c.mtrljobcd(+) ";
                 query += "and a.effdt = (select max(effdt) from " + dbname + ".T_BATCHMST_PRICE where barno=a.barno)  ";
                 query += ") i ";
 
@@ -2222,8 +2260,8 @@ namespace Improvar.Controllers
                 if (itgrpcd.retStr() != "") query += "and B.itgrpcd in(" + itgrpcd + ") ";
                 if (selitcd.retStr() != "") query += "and a.itcd in (" + selitcd + ") ";
                 if (collcd.retStr() != "") query += "and h.collcd in (" + collcd + ") ";
-                query = query + "GROUP BY A.STYLENO, A.ITNM, A.ITCD, B.ITGRPNM, F.BRANDNM, A.HSNCODE, G.UOMCD, G.UOMNM, h.collcd, h.collnm,i.prccd,i.rate,i.effdt ";
-                query = query + "ORDER BY B.ITGRPNM, A.STYLENO,a.itcd ";
+                query = query + "GROUP BY A.STYLENO, A.ITNM, A.ITCD, B.ITGRPNM, F.BRANDNM, A.HSNCODE, G.UOMCD, G.UOMNM, h.collcd, h.collnm,i.prccd,i.rate,i.effdt,i.mtrljobcd,i.mtrljobnm ";
+                query = query + "ORDER BY B.ITGRPNM, A.STYLENO,a.itcd,i.mtrljobcd,i.mtrljobnm ";
                 DataTable tbl = masterHelp.SQLquery(query);
                 if (tbl.Rows.Count == 0) return Content("No Records");
 
@@ -2251,6 +2289,8 @@ namespace Improvar.Controllers
                 HC.GetPrintHeader(IR, "brandnm", "string", "c,15", "Brand Name");
                 HC.GetPrintHeader(IR, "hsnsaccd", "string", "c,8", "HSN;Code");
                 HC.GetPrintHeader(IR, "collnm", "string", "c,20", "Collection Name");
+                HC.GetPrintHeader(IR, "mtrljobcd", "string", "c,10", "Material Job;Code");
+                HC.GetPrintHeader(IR, "mtrljobnm", "string", "c,10", "Material Job;Name");
                 HC.GetPrintHeader(IR, "lasteffdt", "string", "c,10", "Last;Effective Date");
 
                 foreach (var plist in M_PRCLST)
@@ -2282,8 +2322,10 @@ namespace Improvar.Controllers
                     dr["Flag"] = " class='grid_td'";
 
                     dr["lasteffdt"] = tbl.Rows[i]["effdt"];
-                    string itcd = tbl.Rows[i]["itcd"].retStr();
-                    while (tbl.Rows[i]["itcd"].retStr() == itcd)
+                    dr["mtrljobcd"] = tbl.Rows[i]["mtrljobcd"];
+                    dr["mtrljobnm"] = tbl.Rows[i]["mtrljobnm"];
+                    string itcd = tbl.Rows[i]["itcd"].retStr() + tbl.Rows[i]["mtrljobcd"].retStr();
+                    while (tbl.Rows[i]["itcd"].retStr() + tbl.Rows[i]["mtrljobcd"].retStr() == itcd)
                     {
                         string colnm = tbl.Rows[i]["prccd"].retStr();
                         if (colnm != "")
@@ -3039,6 +3081,57 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        public ActionResult GetPriceMaterialDetails(string val, string Code)
+        {
+            try
+            {
+                var UNQSNO = Cn.getQueryStringUNQSNO();
+                string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scm = CommVar.CurSchema(UNQSNO);
+                string sql = "";
+                string valsrch = val.ToUpper().Trim();
+                string effdt = Code.Split(Convert.ToChar(Cn.GCS()))[0];
+                string itcd = Code.Split(Convert.ToChar(Cn.GCS()))[1];
+                sql = "";
+                sql += "select distinct a.MTRLJOBCD,b.MTRLJOBNM,b.MTBARCODE ";
+                sql += "from " + scm + ".T_BATCHMST_PRICE  a, " + scm + ".M_MTRLJOBMST  b," + scm + ".M_CNTRL_HDR c," + scm + ".T_BATCHMST d ";
+                sql += "where a.MTRLJOBCD=b.MTRLJOBCD(+) and b.M_AUTONO=c.M_AUTONO(+) and a.barno=d.barno(+) and c.INACTIVE_TAG = 'N' ";
+                if (valsrch.retStr() != "") sql += "and ( upper(a.MTRLJOBCD) like '%" + valsrch + "%' or upper(b.MTRLJOBNM) like '%" + valsrch + "%' ) ";
+                if (effdt.retStr() != "") sql += "and a.effdt = to_date('" + effdt + "','dd/mm/yyyy') ";
+                if (itcd.retStr() != "") sql += "and d.itcd = '"+ itcd + "' ";
+                sql += "order by a.MTRLJOBCD,b.MTRLJOBNM";
+                DataTable tbl = masterHelp.SQLquery(sql);
+                if (val.retStr() == "" || tbl.Rows.Count > 1)
+                {
+                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                    for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                    {
+                        SB.Append("<tr><td>" + tbl.Rows[i]["MTRLJOBNM"] + "</td><td>" + tbl.Rows[i]["MTRLJOBCD"] + " </td></tr>");
+                    }
+                    var hdr = "Material Job Name" + Cn.GCS() + "Material Job code";
+                    return PartialView("_Help2", masterHelp.Generate_help(hdr, SB.ToString()));
+                }
+                else
+                {
+                    if (tbl.Rows.Count > 0)
+                    {
+                        string str = masterHelp.ToReturnFieldValues("", tbl);
+                        return Content(str);
+                    }
+                    else
+                    {
+                        return Content("Invalid Material Job Code ! Please Enter a Valid Material Job Code !!");
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+
+
 
 
     }
