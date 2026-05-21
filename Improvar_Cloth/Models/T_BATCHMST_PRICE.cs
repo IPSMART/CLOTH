@@ -39,6 +39,8 @@ namespace Improvar.Models
         public string AUTONO { get; set; }
 
         public double? RATE { get; set; }
+        [Key]
+        [Column(Order = 3)]
         [StringLength(2)]
         public string MTRLJOBCD { get; set; }
     }
