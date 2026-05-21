@@ -705,7 +705,7 @@ namespace Improvar.Controllers
                 {
                     DataTable DTPRICES = (DataTable)TempData["DTPRICES"]; TempData.Keep();
                     string barno = DTPRICES.AsEnumerable().Select(a => a.Field<string>("barno")).ToArray().retSqlfromStrarray();
-                    sql = "delete from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST_PRICE where barno in (" + barno + ") and effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy') and mtrljobcd='"+VE.PRICES_MTRLJOBCD + "' ";
+                    sql = "delete from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST_PRICE where barno in (" + barno + ") and effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy') and mtrljobcd='" + VE.PRICES_MTRLJOBCD + "' ";
                     OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
                     sql = "delete from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST_PRICE where barno in (" + barno + ") and effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy') and mtrljobcd='" + VE.PRICES_MTRLJOBCD + "' ";
@@ -795,8 +795,8 @@ namespace Improvar.Controllers
                     column = dt.Columns.Add(plist.PRCCD, typeof(string)); column.Caption = plist.PRCNM;
                 }
 
-                Dictionary<string, Tuple<string, string>> effdt =
-                    new Dictionary<string, Tuple<string, string>>();
+                Dictionary<string, Tuple<string, string, string>> effdt =
+                    new Dictionary<string, Tuple<string, string, string>>();
                 if (Tag == "All")
                 {
                     DataView dv = new DataView(dt_prcrt);
@@ -805,13 +805,13 @@ namespace Improvar.Controllers
 
                     for (int i = 0; i <= dt1.Rows.Count - 1; i++)
                     {
-                        effdt.Add(dt1.Rows[i]["effdt"].retDateStr(), Tuple.Create(dt1.Rows[i]["mtrljobcd"].retStr(), dt1.Rows[i]["mtrljobnm"].retStr()));
+                        effdt.Add(dt1.Rows[i]["effdt"].retDateStr() + dt1.Rows[i]["mtrljobcd"].retStr(), Tuple.Create(dt1.Rows[i]["mtrljobcd"].retStr(), dt1.Rows[i]["mtrljobnm"].retStr(), dt1.Rows[i]["effdt"].retDateStr()));
                     }
 
                 }
                 else
                 {
-                    effdt.Add(VE.PRICES_EFFDT, Tuple.Create(VE.PRICES_MTRLJOBCD, VE.PRICES_Mtrljobnm));
+                    effdt.Add(VE.PRICES_EFFDT + VE.PRICES_MTRLJOBCD, Tuple.Create(VE.PRICES_MTRLJOBCD, VE.PRICES_Mtrljobnm, VE.PRICES_EFFDT));
                 }
                 foreach (MSITEMBARCODE bar in VE.MSITEMBARCODE)
                 {
@@ -822,7 +822,7 @@ namespace Improvar.Controllers
                             dt.Rows.Add("");
                             int rNo = dt.Rows.Count - 1;
 
-                            dt.Rows[rNo]["effdt"] = e.Key.retStr();
+                            dt.Rows[rNo]["effdt"] = e.Value.Item3.retStr();
                             dt.Rows[rNo]["SIZECD"] = bar.SIZECD.retStr();
                             dt.Rows[rNo]["SIZENM"] = bar.SIZENM;
                             dt.Rows[rNo]["SZBARCODE"] = bar.SZBARCODE;
@@ -838,7 +838,7 @@ namespace Improvar.Controllers
                                 foreach (var plist in M_PRCLST)
                                 {
                                     string rate = (from DataRow dr in dt_prcrt.Rows
-                                                   where dr["sizecd"].retStr() == bar.SIZECD.retStr() && dr["colrcd"].retStr() == bar.COLRCD.retStr() && dr["prccd"].retStr() == plist.PRCCD.retStr() && dr["effdt"].retStr() == e.Key.retStr() && dr["mtrljobcd"].retStr() == e.Value.Item1.retStr()
+                                                   where dr["sizecd"].retStr() == bar.SIZECD.retStr() && dr["colrcd"].retStr() == bar.COLRCD.retStr() && dr["prccd"].retStr() == plist.PRCCD.retStr() && dr["effdt"].retStr() == e.Value.Item3.retStr() && dr["mtrljobcd"].retStr() == e.Value.Item1.retStr()
                                                    select dr["rate"].retStr()).FirstOrDefault();
                                     dt.Rows[rNo][plist.PRCCD] = rate;
                                 }
@@ -3097,7 +3097,7 @@ namespace Improvar.Controllers
                 sql += "where a.MTRLJOBCD=b.MTRLJOBCD(+) and b.M_AUTONO=c.M_AUTONO(+) and a.barno=d.barno(+) and c.INACTIVE_TAG = 'N' ";
                 if (valsrch.retStr() != "") sql += "and ( upper(a.MTRLJOBCD) like '%" + valsrch + "%' or upper(b.MTRLJOBNM) like '%" + valsrch + "%' ) ";
                 if (effdt.retStr() != "") sql += "and a.effdt = to_date('" + effdt + "','dd/mm/yyyy') ";
-                if (itcd.retStr() != "") sql += "and d.itcd = '"+ itcd + "' ";
+                if (itcd.retStr() != "") sql += "and d.itcd = '" + itcd + "' ";
                 sql += "order by a.MTRLJOBCD,b.MTRLJOBNM";
                 DataTable tbl = masterHelp.SQLquery(sql);
                 if (val.retStr() == "" || tbl.Rows.Count > 1)
