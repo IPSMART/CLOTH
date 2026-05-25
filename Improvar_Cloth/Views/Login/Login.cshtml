@@ -51,14 +51,18 @@
                         <h3>
                             @Module.Module_Name
                         </h3>
-                        <h6><span class="glyphicon glyphicon-log-in"></span>
+                        <h6>
+                            <span class="glyphicon glyphicon-log-in"></span>
                             Welcome to IP-SMART
+                        </h6>
+                        <h6>
+                            @HttpContext.Current.Request.Url
                         </h6>
                     </center>
                 </div>
                 <div class="col-lg-6">
                     <label><b>User ID</b></label>
-                    @Html.EditorFor(model => model.UserName, new { htmlAttributes = new { id = "UserName", @class = "ttext TEXT", placeholder = "Enter User ID", required = "required",autofocus= "autofocus", autocomplete = "off", onkeyup = "toUpper(UserName)" } })
+                    @Html.EditorFor(model => model.UserName, new { htmlAttributes = new { id = "UserName", @class = "ttext TEXT", placeholder = "Enter User ID", required = "required", autofocus = "autofocus", autocomplete = "off", onkeyup = "toUpper(UserName)" } })
                     <label><b>Password</b></label>
                     @Html.PasswordFor(model => model.Password, new { value = Model.Password, @class = "passview1 blocks1", placeholder = "Enter Password", id = "Password", required = "required" })
                     <img src="~/Image/pass_eye_close.png" name="pa2" id="eye" style="cursor:pointer" class="passview2 blocks1" onclick="ShowHide();">
