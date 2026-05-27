@@ -264,8 +264,8 @@ namespace Improvar.Controllers
                                     string str = "";
                                     str += " select distinct b.doccd, b.docno, b.docdt, b.autono, ";
                                     str += " b.usr_id sb_madeby_id, c.user_name sb_madeby_name, b.usr_entdt sb_madeby_dt ";
-                                    str += " from " + CommVar.CurSchema(UNQSNO) + ".t_txndtl a, " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr b, user_appl c ";
-                                    str += " where a.autono = b.autono and a.AGDOCNO = '" + sl.AUTONO + "' and b.usr_id = c.user_id(+) ";
+                                    str += " from " + CommVar.CurSchema(UNQSNO) + ".t_batchdtl a, " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr b, user_appl c ";
+                                    str += " where a.autono = b.autono and a.ordautono = '" + sl.AUTONO + "' and b.usr_id = c.user_id(+) ";
                                     DataTable dtbl = Master_Help.SQLquery(str);
                                     VE.TSORDDTL_SEARCHPANEL = (from DataRow dr1 in dtbl.Rows
                                                                select new TSORDDTL_SEARCHPANEL()
