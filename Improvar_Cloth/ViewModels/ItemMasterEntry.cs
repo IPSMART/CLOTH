@@ -61,5 +61,6 @@ namespace Improvar.ViewModels
         public string PRICES_MtrljobnmDROP { get; set; }
         public string PRICES_MTRLJOBCD { get; set; }
         public string PRICES_Mtrljobnm { get; set; }
+        public string Last_PRICES_MTRLJOBCD { get; set; }
     }
 }

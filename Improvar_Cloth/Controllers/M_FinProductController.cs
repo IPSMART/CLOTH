@@ -508,6 +508,7 @@ namespace Improvar.Controllers
 
                         VE.PRICES_MTRLJOBCD = dt1.Rows[0]["MTRLJOBCD"].retStr();
                         VE.PRICES_Mtrljobnm = dt1.Rows[0]["MTRLJOBNM"].retStr();
+                        VE.Last_PRICES_MTRLJOBCD = dt1.Rows[0]["MTRLJOBCD"].retStr();
                     }
                     VE.DTPRICES = GetPrices(VE);
 
@@ -711,6 +712,10 @@ namespace Improvar.Controllers
                     sql = "delete from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST_PRICE where barno in (" + barno + ") and effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy') and mtrljobcd='" + VE.PRICES_MTRLJOBCD + "' ";
                     OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
+                    ModelState.Clear();
+                    OraTrans.Commit();
+                    OraTrans.Dispose();
+
                     string barnosql = getmasterbarno(VE.M_SITEM.ITCD).retSqlformat();
                     VE.DropDown_list1 = Price_Effdt(VE, barnosql);
                     if (VE.DropDown_list1.Count > 0)
@@ -731,9 +736,7 @@ namespace Improvar.Controllers
                         VE.DTPRICES = GetPrices(VE);
                     }
 
-                    ModelState.Clear();
-                    OraTrans.Commit();
-                    OraTrans.Dispose();
+
                     VE.DefaultView = true;
                     return PartialView("_M_FinProduct_Prices", VE);
                 }
@@ -1827,17 +1830,31 @@ namespace Improvar.Controllers
 
                             DB.M_SITEM_MEASURE.Where(x => x.ITCD == VE.M_SITEM.ITCD).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_SITEM_MEASURE.RemoveRange(DB.M_SITEM_MEASURE.Where(x => x.ITCD == VE.M_SITEM.ITCD));
-
-                            if (VE.PRICES_EFFDT.retStr() != "")
+                            if (VE.STRPRICES.retStr() != "")
                             {
-                                DateTime PRICES_EFFDT = Convert.ToDateTime(VE.PRICES_EFFDT);
-                                string PRICES_MTRLJOBCD = VE.PRICES_MTRLJOBCD;
-                                DB.T_BATCHMST_PRICE.Where(x => x.EFFDT == PRICES_EFFDT && x.MTRLJOBCD == PRICES_MTRLJOBCD && arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
-                                DB.T_BATCHMST_PRICE.RemoveRange(DB.T_BATCHMST_PRICE.Where(x => x.EFFDT == PRICES_EFFDT && x.MTRLJOBCD == PRICES_MTRLJOBCD && arrbarno.Contains(x.BARNO)));
+                                var prcRows1 = VE.STRPRICES.retStr().Split('~');
+                                for (int i = 0; i <= prcRows1.Length - 1; i++)
+                                {
+                                    var prcCols = prcRows1[i].Split(',');
+                                    DateTime PRICES_EFFDT = Convert.ToDateTime(prcCols[0].retStr());
+                                    string PRICES_MTRLJOBCD = prcCols[1].retStr();
+                                    string PRICES_BARNO = prcCols[9].retStr();
 
-                                //DB.T_BATCHMST_PRICE.Where(x => x.EFFDT == PRICES_EFFDT && arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
-                                //DB.T_BATCHMST_PRICE.RemoveRange(DB.T_BATCHMST_PRICE.Where(x => x.EFFDT == PRICES_EFFDT && arrbarno.Contains(x.BARNO)));
+                                    DB.T_BATCHMST_PRICE.Where(x => x.EFFDT == PRICES_EFFDT && x.MTRLJOBCD == PRICES_MTRLJOBCD && x.BARNO == PRICES_BARNO).ToList().ForEach(x => { x.DTAG = "E"; });
+                                    DB.T_BATCHMST_PRICE.RemoveRange(DB.T_BATCHMST_PRICE.Where(x => x.EFFDT == PRICES_EFFDT && x.MTRLJOBCD == PRICES_MTRLJOBCD && x.BARNO == PRICES_BARNO));
+
+                                }
                             }
+                            //if (VE.PRICES_EFFDT.retStr() != "")
+                            //{
+                            //    DateTime PRICES_EFFDT = Convert.ToDateTime(VE.PRICES_EFFDT);
+                            //    string PRICES_MTRLJOBCD = VE.PRICES_MTRLJOBCD;
+                            //    DB.T_BATCHMST_PRICE.Where(x => x.EFFDT == PRICES_EFFDT && x.MTRLJOBCD == PRICES_MTRLJOBCD && arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
+                            //    DB.T_BATCHMST_PRICE.RemoveRange(DB.T_BATCHMST_PRICE.Where(x => x.EFFDT == PRICES_EFFDT && x.MTRLJOBCD == PRICES_MTRLJOBCD && arrbarno.Contains(x.BARNO)));
+
+                            //    //DB.T_BATCHMST_PRICE.Where(x => x.EFFDT == PRICES_EFFDT && arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
+                            //    //DB.T_BATCHMST_PRICE.RemoveRange(DB.T_BATCHMST_PRICE.Where(x => x.EFFDT == PRICES_EFFDT && arrbarno.Contains(x.BARNO)));
+                            //}
                             DB.T_BATCH_IMG_HDR_LINK.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.T_BATCH_IMG_HDR_LINK.RemoveRange(DB.T_BATCH_IMG_HDR_LINK.Where(x => arrbarno.Contains(x.BARNO)));
                             DB.SaveChanges();
@@ -2033,6 +2050,8 @@ namespace Improvar.Controllers
                             var prcCols = prcRows[i].Split(',');
                             for (int j = 10; j < prcCols.Length; j++)
                             {
+                                string effdt = prcCols[0];
+                                string mtrljobcd = prcCols[1];
                                 string colorbarno = prcCols[5];// prcCols[2];
                                 string sizebarno = prcCols[8];// prcCols[5];
                                 string colorcd = prcCols[3];// prcCols[0];
@@ -2049,16 +2068,16 @@ namespace Improvar.Controllers
                                 MIP.EMD_NO = MSITEM.EMD_NO;
                                 MIP.DTAG = MSITEM.DTAG;
                                 MIP.CLCD = MSITEM.CLCD;
-                                MIP.EFFDT = VE.PRICES_EFFDT != null ? Convert.ToDateTime(VE.PRICES_EFFDT) : System.DateTime.Now.Date;
-                                MIP.MTRLJOBCD = VE.PRICES_MTRLJOBCD;
+                                MIP.EFFDT = effdt.retStr() != "" ? Convert.ToDateTime(effdt) : System.DateTime.Now.Date;
+                                MIP.MTRLJOBCD = mtrljobcd;
                                 MIP.PRCCD = PRCCD;
-                                if (VE.MSITEMBARCODE[i].BARNO.retStr() != "")
+                                if (varcode.BARNO.retStr() != "")
                                 {
-                                    MIP.BARNO = VE.MSITEMBARCODE[i].BARNO.retStr();
+                                    MIP.BARNO = varcode.BARNO.retStr();
                                 }
                                 else
                                 {
-                                    MIP.BARNO = salesfunc.GenerateBARNO(MSITEM.ITCD, VE.MSITEMBARCODE[i].CLRBARCODE.retStr(), VE.MSITEMBARCODE[i].SZBARCODE);
+                                    MIP.BARNO = salesfunc.GenerateBARNO(MSITEM.ITCD, varcode.CLRBARCODE.retStr(), varcode.SZBARCODE);
                                 }
                                 //if (i == 0)
                                 //{

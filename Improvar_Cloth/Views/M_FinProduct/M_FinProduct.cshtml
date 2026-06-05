@@ -736,9 +736,13 @@
         var effdt = $("#PRICES_EFFDTDROP").val();
         var mtrljobcd = $("#PRICES_MTRLJOBCDDROP").val();
         var mtrljobnm = $("#PRICES_MtrljobnmDROP").val();
+        $("#PRICES_MTRLJOBCDDROP").val("");
+        $("#PRICES_MtrljobnmDROP").val("");
         $("#PRICES_EFFDT").val(effdt);
-        $("#PRICES_MTRLJOBCD").val(mtrljobcd);
-        $("#PRICES_Mtrljobnm").val(mtrljobnm);
+        $("#PRICES_MTRLJOBCD").val("");
+        $("#PRICES_Mtrljobnm").val("");
+        $("#Last_PRICES_MTRLJOBCD").val("");
+        PriceGridHide();
     }
 </script>
 <script>
@@ -1039,6 +1043,139 @@
         $("#form").submit();
     }
 
+</script>
+<script>
+    function PriceGridHide() {
+        $("#PriceGrig").html('');
+    }
+    function ChkDocumentDateCHK(dtfld) {
+        DocumentDateCHK(dtfld);
+        PriceGridHide();
+    }
+    function GetNewMaterialJob(id) {
+        if ("@Model.DefaultAction" != "V") {
+            debugger;
+            if (id == "") {
+                ClearAllTextBoxes("PRICES_MTRLJOBCD,PRICES_Mtrljobnm");
+                PriceGridHide();
+            }
+            else {
+                var linkcd = $("#fabitGrpcd").val();
+                $.ajax({
+                    type: 'POST',
+                    beforesend: $("#WaitingMode").show(),
+                    url: "@Url.Action("GetMaterialDetails", PageControllerName)",
+                    data: {
+                        val: id
+                    },
+                    success: function (result) {
+                    var MSG = result.indexOf('#helpDIV');
+                    if (MSG >= 0) {
+                        ClearAllTextBoxes("PRICES_MTRLJOBCD,PRICES_Mtrljobnm");
+                        $('#SearchFldValue').val("PRICES_MTRLJOBCD");
+                        $('#helpDIV').html(result);
+                        $('#ReferanceFieldID').val("PRICES_MTRLJOBCD/PRICES_Mtrljobnm");
+                        $('#ReferanceColumn').val("1/0");
+                        $('#helpDIV_Header').html("Material Job Details");
+                    }
+                    else {
+                        var MSG = result.indexOf(String.fromCharCode(181));
+                        if (MSG >= 0) {
+                            $("#PRICES_MTRLJOBCD").val(returncolvalue(result, "MTRLJOBCD"));
+                            $("#PRICES_Mtrljobnm").val(returncolvalue(result, "Mtrljobnm"));
+                            var value = modify_check();
+                            if (value == "true") {
+                                PriceGridHide();
+                            }
+                        }
+                        else {
+                            $('#helpDIV').html("");
+                            msgInfo("" + result + " !");
+                            ClearAllTextBoxes("PRICES_MTRLJOBCD,PRICES_Mtrljobnm");
+                            PriceGridHide();
+                            message_value = "PRICES_MTRLJOBCD";
+                        }
+                    }
+                    $("#WaitingMode").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+    }
+    function modify_check() {
+        debugger;
+        var PRICES_MTRLJOBCD = $("#PRICES_MTRLJOBCD").val();
+        var Last_PRICES_MTRLJOBCD = $("#Last_PRICES_MTRLJOBCD").val();
+        if (Last_PRICES_MTRLJOBCD != PRICES_MTRLJOBCD) {
+            Last_PRICES_MTRLJOBCD = PRICES_MTRLJOBCD;
+            $("#Last_PRICES_MTRLJOBCD").val(Last_PRICES_MTRLJOBCD);
+            return "true";
+        }
+        else {
+            return "false";
+        }
+
+    }
+    function GetMaterialJob(id) {
+        if ("@Model.DefaultAction" != "V") {
+            debugger;
+            if (id == "") {
+                ClearAllTextBoxes("PRICES_MTRLJOBCDDROP,PRICES_MtrljobnmDROP,PRICES_MTRLJOBCD,PRICES_Mtrljobnm,Last_PRICES_MTRLJOBCD");
+                PriceGridHide();
+            }
+            else {
+                var linkcd = $("#PRICES_EFFDTDROP").val() + String.fromCharCode(181) + $("#ITCD").val();
+                $.ajax({
+                    type: 'POST',
+                    beforesend: $("#WaitingMode").show(),
+                    url: "@Url.Action("GetPriceMaterialDetails", PageControllerName)",
+                    data: "&Code=" + linkcd + "&val=" + id,
+                success: function (result) {
+                    var MSG = result.indexOf('#helpDIV');
+                    if (MSG >= 0) {
+                        ClearAllTextBoxes("PRICES_MTRLJOBCDDROP,PRICES_MtrljobnmDROP,PRICES_MTRLJOBCD,PRICES_Mtrljobnm,Last_PRICES_MTRLJOBCD");
+                        $('#SearchFldValue').val("PRICES_MTRLJOBCDDROP");
+                        $('#helpDIV').html(result);
+                        $('#ReferanceFieldID').val("PRICES_MTRLJOBCDDROP/PRICES_MtrljobnmDROP");
+                        $('#ReferanceColumn').val("1/0");
+                        $('#helpDIV_Header').html("Material Job Details");
+                    }
+                    else {
+                        var MSG = result.indexOf(String.fromCharCode(181));
+                        if (MSG >= 0) {
+                            $("#PRICES_MTRLJOBCDDROP").val(returncolvalue(result, "MTRLJOBCD"));
+                            $("#PRICES_MtrljobnmDROP").val(returncolvalue(result, "Mtrljobnm"));
+                            $("#PRICES_MTRLJOBCD").val(returncolvalue(result, "MTRLJOBCD"));
+                            $("#PRICES_Mtrljobnm").val(returncolvalue(result, "Mtrljobnm"));
+                            var value = modify_check();
+                            if (value == "true") {
+                                PriceGridHide();
+                            }
+                        }
+                        else {
+                            $('#helpDIV').html("");
+                            msgInfo("" + result + " !");
+                            ClearAllTextBoxes("PRICES_MTRLJOBCDDROP,PRICES_MtrljobnmDROP,PRICES_MTRLJOBCD,PRICES_Mtrljobnm,Last_PRICES_MTRLJOBCD");
+                            PriceGridHide();
+                            message_value = "PRICES_MTRLJOBCDDROP";
+                        }
+                    }
+                    $("#WaitingMode").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+    }
 </script>
 @using (Html.BeginForm("M_FinProduct", "M_FinProduct", FormMethod.Post, new {id = "form", enctype = "multipart/form-data" }))
 {

@@ -40,7 +40,7 @@
             <div class="editor-field">
                 @if (Model.DefaultAction == "E")
                 {
-                @Html.EditorFor(model => model.PRICES_MTRLJOBCDDROP, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PRICES_MTRLJOBCDDROP", onkeydown = "GetHelpBlur('" + @Url.Action("GetPriceMaterialDetails", PageControllerName) + "','Material Job Details','PRICES_MTRLJOBCDDROP','PRICES_MTRLJOBCDDROP=MTRLJOBCD=1/PRICES_MtrljobnmDROP=Mtrljobnm=0/PRICES_MTRLJOBCD=MTRLJOBCD=1/PRICES_Mtrljobnm=Mtrljobnm=0','PRICES_EFFDTDROP/ITCD')", onblur = "GetHelpBlur('" + @Url.Action("GetPriceMaterialDetails", PageControllerName) + "','Material Job Details','PRICES_MTRLJOBCDDROP','PRICES_MTRLJOBCDDROP=MTRLJOBCD=1/PRICES_MtrljobnmDROP=Mtrljobnm=0/PRICES_MTRLJOBCD=MTRLJOBCD=1/PRICES_Mtrljobnm=Mtrljobnm=0','PRICES_EFFDTDROP/ITCD');", @placeholder = "Material Job Code", maxlength = 2 } })
+                @Html.EditorFor(model => model.PRICES_MTRLJOBCDDROP, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PRICES_MTRLJOBCDDROP", onkeydown = "GetHelpBlur('" + @Url.Action("GetPriceMaterialDetails", PageControllerName) + "','Material Job Details','PRICES_MTRLJOBCDDROP','PRICES_MTRLJOBCDDROP=MTRLJOBCD=1/PRICES_MtrljobnmDROP=Mtrljobnm=0/PRICES_MTRLJOBCD=MTRLJOBCD=1/PRICES_Mtrljobnm=Mtrljobnm=0','PRICES_EFFDTDROP/ITCD')", onblur = "GetMaterialJob(this.value);", @placeholder = "Material Job Code", maxlength = 2 } })
                 <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPriceMaterialDetails", PageControllerName)','Material Job Details','PRICES_MTRLJOBCDDROP','PRICES_MTRLJOBCDDROP=MTRLJOBCD=1/PRICES_MtrljobnmDROP=Mtrljobnm=0/PRICES_MTRLJOBCD=MTRLJOBCD=1/PRICES_Mtrljobnm=Mtrljobnm=0','PRICES_EFFDTDROP/ITCD')" />
                 }
                 else
@@ -62,7 +62,7 @@
         </div>
         <div class="col-md-4">
             <div class="editor-field">
-                @Html.EditorFor(model => model.PRICES_EFFDT, new { htmlAttributes = new { @class = "form-control ", id = "PRICES_EFFDT", @placeholder = "dd/mm/yyyy", maxlength = 10, onblur = "DocumentDateCHK(this)", autocomplete = "off" } })
+                @Html.EditorFor(model => model.PRICES_EFFDT, new { htmlAttributes = new { @class = "form-control ", id = "PRICES_EFFDT", @placeholder = "dd/mm/yyyy", maxlength = 10, onchange = "ChkDocumentDateCHK(this)", autocomplete = "off" } })
             </div>
         </div>
         <div class="col-lg-2" style="width:auto;">
@@ -73,8 +73,11 @@
         </div>
         <div class="col-md-1">
             <div class="editor-field">
-                @Html.EditorFor(model => model.PRICES_MTRLJOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PRICES_MTRLJOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialDetails", PageControllerName) + "','Material Job Details','PRICES_MTRLJOBCD','PRICES_MTRLJOBCD=MTRLJOBCD=1/PRICES_Mtrljobnm=Mtrljobnm=0')", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialDetails", PageControllerName) + "','Material Job Details','PRICES_MTRLJOBCD','PRICES_MTRLJOBCD=MTRLJOBCD=1/PRICES_Mtrljobnm=Mtrljobnm=0');", @placeholder = "Material Job Code", maxlength = 2 } })
+                @Html.EditorFor(model => model.PRICES_MTRLJOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PRICES_MTRLJOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialDetails", PageControllerName) + "','Material Job Details','PRICES_MTRLJOBCD','PRICES_MTRLJOBCD=MTRLJOBCD=1/PRICES_Mtrljobnm=Mtrljobnm=0')", onblur = "GetNewMaterialJob(this.value);", @placeholder = "Material Job Code", maxlength = 2 } })
                 <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetMaterialDetails", PageControllerName)','Material Job Details','PRICES_MTRLJOBCD','PRICES_MTRLJOBCD=MTRLJOBCD=1/PRICES_Mtrljobnm=Mtrljobnm=0')" />
+                @Html.HiddenFor(model => model.Last_PRICES_MTRLJOBCD, new { id = "Last_PRICES_MTRLJOBCD" })
+
+
             </div>
         </div>
         <div class="col-md-3">
@@ -138,7 +141,7 @@
                                     }
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="PriceGrig">
                                 @for (int i = 0; i < Model.DTPRICES.Rows.Count; i++)
                                 {
                                     <tr>
