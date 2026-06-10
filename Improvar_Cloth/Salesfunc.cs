@@ -1004,6 +1004,7 @@ namespace Improvar
 
             if (Phystk == true)
             {
+                #region
                 sql = "";
 
 
@@ -1119,14 +1120,15 @@ namespace Improvar
                 if (ShowOnlyFavitem == true) sql += "and nvl(d.favitem, 'N') = 'Y' ";
                 if (skipNegetivStock == true) sql += " and nvl(a.balqnty, 0)> 0 " + Environment.NewLine;
                 if (itcd.retStr() != "") sql += "and a.itcd in (" + itcd + ") " + Environment.NewLine;
-
+                #endregion
             }
             else
             {
                 sql = "";
 
 
-                sql += "select a.gocd,m.gonm, (case when a.mtrljobcd is null and e.itgrptype = 'C' then 'PL' when a.mtrljobcd is null and e.itgrptype <> 'C' then 'FS' else a.mtrljobcd end) mtrljobcd, a.stktype, a.barno, a.itcd, a.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, " + Environment.NewLine;
+                //sql += "select a.gocd,m.gonm, (case when a.mtrljobcd is null and e.itgrptype = 'C' then 'PL' when a.mtrljobcd is null and e.itgrptype <> 'C' then 'FS' else a.mtrljobcd end) mtrljobcd, a.stktype, a.barno, a.itcd, a.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, " + Environment.NewLine;
+                sql += "select a.gocd,m.gonm, a.mtrljobcd, a.stktype, a.barno, a.itcd, a.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, " + Environment.NewLine;
                 sql += "c.slcd, g.slnm, h.docdt, h.docno,h.autono,p.doctag, b.prccd, b.effdt,q.rate rprate, e.bargentype, " + Environment.NewLine;
                 sql += "d.itnm,d.convqtypunit,d.convuomcd,nvl(d.negstock,e.negstock)negstock, d.styleno, d.styleno||' '||d.itnm itstyle,c.fabitcd, n.itnm fabitnm, d.itgrpcd, e.itgrpnm,e.salglcd,e.purglcd,e.salretglcd,e.purretglcd, f.colrnm,f.clrbarcode, d.prodgrpcd, z.prodgrpgstper, y.barimagecount, y.barimage, " + Environment.NewLine;
                 sql += "(case nvl(c.commonuniqbar,e.bargentype) when 'E' then nvl(c.hsncode,nvl(d.hsncode,e.hsncode)) else nvl(d.hsncode,e.hsncode) end) hsncode, " + Environment.NewLine;
@@ -1145,7 +1147,7 @@ namespace Improvar
                 sql += "( " + Environment.NewLine;
                 if (BatchExist == true)
                 {
-                    sql += "select b.gocd, b.mtrljobcd, nvl(b.stktype,'F') stktype, a.barno, a.itcd, b.partcd, a.colrcd, a.sizecd," + (ShowShade == true ? "b." : "a.") + "shade, a.cutlength, a.dia, b.balqnty, b.balnos from " + Environment.NewLine;
+                    sql += "select b.gocd, (case when b.mtrljobcd is null and e.itgrptype = 'C' then 'PL' when b.mtrljobcd is null and e.itgrptype <> 'C' then 'FS' else b.mtrljobcd end) mtrljobcd,a.barno||(case when b.mtrljobcd is null and e.itgrptype = 'C' then 'PL' when b.mtrljobcd is null and e.itgrptype <> 'C' then 'FS' else b.mtrljobcd end)barnomtrljobcd, nvl(b.stktype,'F') stktype, a.barno, a.itcd, b.partcd, a.colrcd, a.sizecd," + (ShowShade == true ? "b." : "a.") + "shade, a.cutlength, a.dia, b.balqnty, b.balnos from " + Environment.NewLine;
 
                     sql += "( select a.barno, a.itcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia from " + Environment.NewLine;
                     sql += scm + ".t_batchmst a " + Environment.NewLine;
@@ -1234,13 +1236,13 @@ namespace Improvar
                         sql += "group by a.gocd, a.mtrljobcd, a.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, " + (ShowShade == true ? "a." : "b.") + "shade, b.cutlength, b.dia " + Environment.NewLine;
                     }
                     sql += ") group by gocd, mtrljobcd, stktype, barno, partcd" + (ShowShade == true ? ",shade" : "") + " " + Environment.NewLine;
-                    sql += " ) b " + Environment.NewLine;
-                    sql += "where a.barno=b.barno(+) " + Environment.NewLine;
+                    sql += " ) b, " + scm + ".m_sitem d, " + scm + ".m_group e " + Environment.NewLine;
+                    sql += "where a.barno=b.barno(+) and a.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) " + Environment.NewLine;
                     if (shownilstock == false) sql += "and nvl(b.balqnty,0) <> 0 " + Environment.NewLine;
                 }
                 else
                 {
-                    sql += "select a.gocd, a.mtrljobcd, nvl(a.stktype,'F') stktype, a.barno, a.itcd, a.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, sum(a.balqnty)balqnty, sum(a.balnos)balnos from " + Environment.NewLine;
+                    sql += "select a.gocd, (case when a.mtrljobcd is null and e.itgrptype = 'C' then 'PL' when a.mtrljobcd is null and e.itgrptype <> 'C' then 'FS' else a.mtrljobcd end) mtrljobcd,a.barno||(case when a.mtrljobcd is null and e.itgrptype = 'C' then 'PL' when a.mtrljobcd is null and e.itgrptype <> 'C' then 'FS' else a.mtrljobcd end)barnomtrljobcd, nvl(a.stktype,'F') stktype, a.barno, a.itcd, a.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, sum(a.balqnty)balqnty, sum(a.balnos)balnos from " + Environment.NewLine;
 
 
                     sql += "( " + Environment.NewLine;
@@ -1320,8 +1322,9 @@ namespace Improvar
                         if (IncludeBaleStock == false) sql += "and g.autono is null " + Environment.NewLine;
                         sql += "group by a.gocd, a.mtrljobcd, a.stktype, a.barno, a.itcd, a.partcd, a.colrcd, a.sizecd " + Environment.NewLine;
                     }
-                    sql += ")a " + Environment.NewLine;
-                    if (shownilstock == false) sql += "where nvl(a.balqnty,0) <> 0 " + Environment.NewLine;
+                    sql += ")a, " + scm + ".m_sitem d, " + scm + ".m_group e " + Environment.NewLine;
+                    sql += "where a.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) ";
+                    if (shownilstock == false) sql += "and nvl(a.balqnty,0) <> 0 " + Environment.NewLine;
                     sql += "group by a.gocd, a.mtrljobcd, nvl(a.stktype,'F') , a.barno, a.itcd, a.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia " + Environment.NewLine;
                 }
                 sql += ") a, " + Environment.NewLine;
@@ -1336,7 +1339,7 @@ namespace Improvar
                             prccd = "RP"; sqlals = "q"; break;
 
                     }
-                    sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate,a.mtrljobcd from " + Environment.NewLine;
+                    sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate,a.mtrljobcd,a.barno||a.mtrljobcd barnomtrljobcd from " + Environment.NewLine;
                     sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate,a.mtrljobcd from " + Environment.NewLine;
                     sql += "(select a.barno, a.prccd, a.effdt,a.mtrljobcd, " + Environment.NewLine;
                     sql += "row_number() over (partition by a.barno, a.prccd,a.mtrljobcd order by a.effdt desc) as rn " + Environment.NewLine;
@@ -1425,7 +1428,7 @@ namespace Improvar
                 sql += "" + scm + ".t_batchmst c, " + scm + ".m_sitem d, " + scm + ".m_group e, " + scm + ".m_color f, " + Environment.NewLine;
                 sql += "" + scmf + ".m_subleg g, " + scm + ".t_cntrl_hdr h, " + Environment.NewLine;
                 sql += scm + ".m_mtrljobmst i, " + scm + ".m_parts j, " + scm + ".m_stktype k, " + scm + ".m_size l," + scmf + ".m_godown m, " + scm + ".m_sitem n, " + scm + ".m_cntrl_hdr o, " + scm + ".t_txn p " + Environment.NewLine;
-                sql += "where a.barno=c.barno(+) and a.barno=b.barno(+) and (case when a.mtrljobcd is null and e.itgrptype = 'C' then 'PL' when a.mtrljobcd is null and e.itgrptype <> 'C' then 'FS' else a.mtrljobcd end)=b.mtrljobcd and a.barno=q.barno(+) and (case when a.mtrljobcd is null and e.itgrptype = 'C' then 'PL' when a.mtrljobcd is null and e.itgrptype <> 'C' then 'FS' else a.mtrljobcd end)=q.mtrljobcd and a.barno=r.barno(+) and d.prodgrpcd=z.prodgrpcd(+) and a.barno=y.barno(+) and " + Environment.NewLine;
+                sql += "where a.barno=c.barno(+) and a.barnomtrljobcd=b.barnomtrljobcd(+)  and a.barnomtrljobcd=q.barnomtrljobcd(+) and a.barno=r.barno(+) and d.prodgrpcd=z.prodgrpcd(+) and a.barno=y.barno(+) and " + Environment.NewLine;
                 sql += "a.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) and d.fabitcd=n.itcd(+) and " + Environment.NewLine; //c.fabitcd=n.itcd(+) 
                 sql += "a.barno=x.barno(+) and " + Environment.NewLine;
                 if (stylelike.retStr() != "")
