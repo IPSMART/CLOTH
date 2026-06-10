@@ -176,11 +176,12 @@ namespace Improvar.Controllers
                     if (FC.AllKeys.Contains("slcdgrpcdvalue")) { selslcdgrpcd = CommFunc.retSqlformat(FC["slcdgrpcdvalue"].ToString()); fld = "parentcd"; }
                     if (FC.AllKeys.Contains("agslcdvalue")) agslcdvalue = CommFunc.retSqlformat(FC["agslcdvalue"].ToString());
 
-                    query = "Select distinct a.SLCD,a.SLNM,a.FULLNAME,a.PARTYCD,a.add1,a.add2,a.add3,a.add4,a.add5,a.add6,a.add7,a.STATE,a.SLAREA,a.PANNO, b.agslcd, z.slnm agslnm,y.cperson, ";
+                    query = "Select distinct a.SLCD,a.SLNM,a.FULLNAME,a.PARTYCD,a.add1,a.add2,a.add3,a.add4,a.add5,a.add6,a.add7,a.STATE,a.statecd,a.SLAREA,a.PANNO, b.agslcd, z.slnm agslnm,y.cperson, ";
                     query += "a.GSTNO,a.ADHAARNO,a.MSMENO,a.REGMOBILE,a.REGEMAILID,a.PARTYNM,nvl(a.AUTOREMINDEROFF,'N') AUTOREMINDEROFF,s.parentcd, s.parentnm,t.USR_ENTDT,a.TCSAPPL,a.TOT194Q,a.DISTRICT from  ";
 
-                    query += "(Select distinct a.m_autono,a.SLCD,a.SLNM,a.FULLNAME,a.PARTYCD,a.add1,a.add2,a.add3,a.add4,a.add5,a.add6,a.add7,a.STATE,a.SLAREA,a.PANNO,a.GSTNO,a.ADHAARNO,a.MSMENO,a.REGMOBILE,a.REGEMAILID,b.PARTYNM,nvl(a.AUTOREMINDEROFF,'N')AUTOREMINDEROFF,a.TCSAPPL,a.TOT194Q,a.DISTRICT ";
-                    query += " from " + dbname + ".m_subleg a," + dbname + ".M_PARTYGRP b," + dbname + ".m_subleg_link c where a.PARTYCD=b.PARTYCD(+) and a.slcd=c.slcd(+)  ";
+                    query += "(Select distinct a.m_autono,a.SLCD,a.SLNM,a.FULLNAME,a.PARTYCD,a.add1,a.add2,a.add3,a.add4,a.add5,a.add6,a.add7,a.STATE,a.statecd,a.SLAREA,a.PANNO,a.GSTNO,a.ADHAARNO,a.MSMENO,a.REGMOBILE,a.REGEMAILID,b.PARTYNM,nvl(a.AUTOREMINDEROFF,'N')AUTOREMINDEROFF,a.TCSAPPL,a.TOT194Q,a.DISTRICT ";
+                    query += " from " + dbname + ".m_subleg a," + dbname + ".M_PARTYGRP b," + dbname + ".m_subleg_link c " + Environment.NewLine;
+                    query += "where a.PARTYCD=b.PARTYCD(+) and a.slcd=c.slcd(+)  " + Environment.NewLine;
                     if (linkcd != "") query += " and c.linkcd in(" + linkcd + ") " + Environment.NewLine;
                     query += ") a , ";
 
@@ -217,7 +218,7 @@ namespace Improvar.Controllers
                     if (agslcdvalue != "") query += " and b.agslcd in (" + agslcdvalue + ") " + Environment.NewLine;
                     if (slcd.retStr() != "") query += " and a.slcd in (" + slcd + ") ";
                     if (district.retStr() != "") query += " and a.DISTRICT in (" + district + ") ";
-                    if (state.retStr() != "") query += " and a.state in (" + state + ") ";
+                    if (state.retStr() != "") query += " and a.statecd in (" + state + ") ";
 
                     if (selslcdgrpcd.retStr() != "") query += " order by s.parentnm,a.SLNM "; else query += " order by a.SLNM ";
                     tbl = MasterHelp.SQLquery(query);

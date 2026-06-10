@@ -295,8 +295,8 @@ namespace Improvar
                       select new DropDown_list_State()
                       {
                           text = dr["statenm"].ToString(),
-                          value = dr["statenm"].ToString(),
-                      }).ToList();
+                          value = dr["statecd"].ToString(),
+                      }).OrderBy(dr => dr.text).ToList();
             return sllist;
         }
         public List<DropDown_list_ITEM> GetItcdforSelection(string itgrpcd = "")
