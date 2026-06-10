@@ -83,7 +83,7 @@ namespace Improvar.Controllers
                             str += masterHelp.ToReturnFieldValues("", bardet);
 
                             string barno = str.retCompValue("BARNO").retStr();
-                            DataTable pricedet = Sales_func.GetLastPriceFrmMaster(barno);
+                            DataTable pricedet = Sales_func.GetLastPriceFrmMaster(barno, "'FS'");
                             if (pricedet != null && pricedet.Rows.Count > 0)
                             {
                                 double rprate = (from DataRow dr in pricedet.Rows where dr["prccd"].retStr() == "RP" select dr["rate"].retDbl()).FirstOrDefault();

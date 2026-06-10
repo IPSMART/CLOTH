@@ -27,6 +27,7 @@
                             <th class="" style="width:118px;">Docno</th>
                             <th class="" style="width:177px;">Party Name</th>
                             <th class="" style="width:89px;">City</th>
+                            <th class="" style="width:63px;">Material Job</th>
                             <th class="" style="width:73px;text-align:right;">Quantity</th>
                             <th class="" style="width:73px;text-align:right;">Rate</th>
                             <th class="" style="width:62px;">Disc Type</th>
@@ -53,6 +54,9 @@
                                     </td>
                                     <td class="">
                                         @Html.TextBoxFor(model => Model.RateHistoryGrid[i].CITY, new { id = "RateHistory_CITY_" + i, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.RateHistoryGrid[i].MTRLJOBCD, new { id = "RateHistory_MTRLJOBCD_" + i, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
                                     </td>
                                     <td class="">
                                         @Html.TextBoxFor(model => Model.RateHistoryGrid[i].QNTY, new { id = "RateHistory_QNTY_" + i, style = "text-align:right;", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })

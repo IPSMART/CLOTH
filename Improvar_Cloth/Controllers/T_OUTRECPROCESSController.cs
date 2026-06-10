@@ -4912,6 +4912,7 @@ namespace Improvar.Controllers
                                  CITY = dr["CITY"].ToString(),
                                  SCMDISCTYPE = dr["scmdiscrate"].retDbl() == 0 ? "" : dr["SCMDISCTYPE"].ToString(),
                                  SCMDISCRATE = dr["scmdiscrate"].retDbl() == 0 ? "" : dr["scmdiscrate"].retStr(),
+                                 MTRLJOBCD = dr["MTRLJOBCD"].ToString(),
                              }).ToList();
 
                 if (TAG == "GRID")

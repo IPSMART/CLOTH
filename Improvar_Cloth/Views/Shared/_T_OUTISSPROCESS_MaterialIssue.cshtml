@@ -191,7 +191,7 @@
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].UOM, new { id = "B_UOM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_@i" title="Rate History" onclick="RateHistoryDetails('@i')" data-toggle="modal" data-target="#RateHistoryModal">Show</button>
+                                            <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_@i" title="Rate History" onclick="RateHistoryDetails('B_ITCD_@i','B_ITSTYLE_@i','POPUP')" data-toggle="modal" data-target="#RateHistoryModal">Show</button>
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "GetGstPer(" + i + ",'#B_');RateUpdate(" + i + ", '#B_');HasChangeBarSale();" } })

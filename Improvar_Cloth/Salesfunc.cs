@@ -241,7 +241,7 @@ namespace Improvar
             sql += "d.slcd||nvl(d.linecd,'') repslcd, i.slnm||decode(k.linenm,null,'',' ['||k.linenm||']') repslnm, ";
             sql += "e.docno, e.docdt, d.itcd, f.styleno, f.itnm, f.itgrpcd, g.itgrpnm,g.bargentype, f.uomcd, j.itnm fabitnm, ";
             sql += "d.sizecd, d.partcd, d.colrcd,  h.colrnm, d.cutlength, d.dia, d.shade, d.ordautono, d.ordslno, d.barno, m.commonuniqbar, d.linecd, l.print_seq, ";
-            sql += "a.balqnty,nvl(d.RATE,0)RATE, a.balnos,d.itremark,d.proguniqno,d.sample,l.sizenm,n.docno ORDDOCNO,d.makestyleno,a.stktype,m.BATCHNO,''recdocno,''recslnm,f.brandcd,p.brandnm,0 pcsperbox,''sizecdgrp,0 pcsperset,d.mtrljobcd from ";
+            sql += "a.balqnty,nvl(d.RATE,0)RATE, a.balnos,d.itremark,d.proguniqno,d.sample,l.sizenm,n.docno ORDDOCNO,d.makestyleno,a.stktype,m.BATCHNO,''recdocno,''recslnm,f.brandcd,p.brandnm,0 pcsperbox,''sizecdgrp,0 pcsperset,d.mtrljobcd,x.jobrt from ";
 
             sql += "(select a.progautono, a.progslno, a.progautono||a.progslno progautoslno,o.stktype,o.txnslno, ";
             sql += "sum(case a.stkdrcr when 'C' then a.qnty when 'D' then a.qnty*-1 end) balqnty, ";
@@ -260,9 +260,15 @@ namespace Improvar
 
             sql += scm + ".t_progmast d, " + scm + ".t_cntrl_hdr e, ";
             sql += scm + ".m_sitem f, " + scm + ".m_group g, " + scm + ".m_color h, " + scmf + ".m_subleg i, " + scm + ".m_sitem j, ";
-            sql += scm + ".m_linemast k, " + scm + ".m_size l, " + scm + ".t_batchmst m," + scm + ".t_cntrl_hdr n," + scm + ".m_brand p ";
+            sql += scm + ".m_linemast k, " + scm + ".m_size l, " + scm + ".t_batchmst m," + scm + ".t_cntrl_hdr n," + scm + ".m_brand p, ";
+
+            sql += "(select a.slcd, b.slnm, nvl(b.slarea,b.district) slarea, a.pdesign, max(a.jobrt) jobrt,a.itcd,a.slcd||a.itcd slitcd ";
+            sql += "from " + scm + ".m_sitem_slcd a, " + scmf + ".m_subleg b ";
+            sql += "where a.slcd = b.slcd(+)  ";
+            sql += "group by a.slcd, b.slnm, a.pdesign, b.slarea, b.district,a.itcd)x ";
+
             sql += "where a.progautono=d.autono(+) and a.progslno=d.slno(+) and a.progautono=e.autono(+) and d.barno=m.barno(+) and ";
-            sql += "d.itcd=f.itcd(+) and f.itgrpcd=g.itgrpcd(+) and d.colrcd=h.colrcd(+) and d.slcd=i.slcd(+) and d.ordautono=n.autono(+)and f.brandcd=p.brandcd(+) and ";
+            sql += "d.itcd=f.itcd(+) and f.itgrpcd=g.itgrpcd(+) and d.colrcd=h.colrcd(+) and d.slcd=i.slcd(+) and d.ordautono=n.autono(+)and f.brandcd=p.brandcd(+) and d.slcd||d.itcd=x.slitcd(+) and ";
             if (progfromdt.retStr() != "") sql += "e.docdt >= to_date('" + progfromdt + "', 'dd/mm/yyyy') and ";
             if (slcd.retStr() != "") sql += "d.slcd in (" + slcd + ") and ";
             if (linecd.retStr() != "") sql += "d.linecd in (" + linecd + ") and ";
@@ -1330,13 +1336,15 @@ namespace Improvar
                             prccd = "RP"; sqlals = "q"; break;
 
                     }
-                    sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate from " + Environment.NewLine;
-                    sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from " + Environment.NewLine;
-                    sql += "(select a.barno, a.prccd, a.effdt, " + Environment.NewLine;
-                    sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn " + Environment.NewLine;
-                    sql += "from " + scm + ".t_batchmst_price a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + tdt + "','dd/mm/yyyy') ) " + Environment.NewLine;
+                    sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate,a.mtrljobcd from " + Environment.NewLine;
+                    sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate,a.mtrljobcd from " + Environment.NewLine;
+                    sql += "(select a.barno, a.prccd, a.effdt,a.mtrljobcd, " + Environment.NewLine;
+                    sql += "row_number() over (partition by a.barno, a.prccd,a.mtrljobcd order by a.effdt desc) as rn " + Environment.NewLine;
+                    sql += "from " + scm + ".t_batchmst_price a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + tdt + "','dd/mm/yyyy') " + Environment.NewLine;
+                    if (mtrljobcd.retStr() != "") sql += "and a.mtrljobcd in (" + mtrljobcd + ") " + Environment.NewLine;
+                    sql += ") " + Environment.NewLine;
                     sql += "a, " + scm + ".t_batchmst_price b, " + scm + ".t_batchmst c " + Environment.NewLine;
-                    sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.rn=1 and a.barno=c.barno(+) " + Environment.NewLine;
+                    sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.mtrljobcd=b.mtrljobcd(+) and a.rn=1 and a.barno=c.barno(+) " + Environment.NewLine;
                     sql += ") a where prccd='" + prccd + "' " + Environment.NewLine;
                     sql += ") " + sqlals;
                     if (x != 2) sql += ", ";
@@ -1417,7 +1425,7 @@ namespace Improvar
                 sql += "" + scm + ".t_batchmst c, " + scm + ".m_sitem d, " + scm + ".m_group e, " + scm + ".m_color f, " + Environment.NewLine;
                 sql += "" + scmf + ".m_subleg g, " + scm + ".t_cntrl_hdr h, " + Environment.NewLine;
                 sql += scm + ".m_mtrljobmst i, " + scm + ".m_parts j, " + scm + ".m_stktype k, " + scm + ".m_size l," + scmf + ".m_godown m, " + scm + ".m_sitem n, " + scm + ".m_cntrl_hdr o, " + scm + ".t_txn p " + Environment.NewLine;
-                sql += "where a.barno=c.barno(+) and a.barno=b.barno(+) and a.barno=q.barno(+) and a.barno=r.barno(+) and d.prodgrpcd=z.prodgrpcd(+) and a.barno=y.barno(+) and " + Environment.NewLine;
+                sql += "where a.barno=c.barno(+) and a.barno=b.barno(+) and (case when a.mtrljobcd is null and e.itgrptype = 'C' then 'PL' when a.mtrljobcd is null and e.itgrptype <> 'C' then 'FS' else a.mtrljobcd end)=b.mtrljobcd and a.barno=q.barno(+) and (case when a.mtrljobcd is null and e.itgrptype = 'C' then 'PL' when a.mtrljobcd is null and e.itgrptype <> 'C' then 'FS' else a.mtrljobcd end)=q.mtrljobcd and a.barno=r.barno(+) and d.prodgrpcd=z.prodgrpcd(+) and a.barno=y.barno(+) and " + Environment.NewLine;
                 sql += "a.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) and d.fabitcd=n.itcd(+) and " + Environment.NewLine; //c.fabitcd=n.itcd(+) 
                 sql += "a.barno=x.barno(+) and " + Environment.NewLine;
                 if (stylelike.retStr() != "")
@@ -1579,7 +1587,7 @@ namespace Improvar
 
             sql = "";
 
-            sql += "select a.gocd, a.mtrljobcd, a.stktype, a.barno, a.itcd, a.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, " + Environment.NewLine;
+            sql += "select a.gocd, nvl(a.mtrljobcd,b.mtrljobcd)mtrljobcd, a.stktype, a.barno, a.itcd, a.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, " + Environment.NewLine;
             sql += "c.slcd, g.slnm, h.docdt, h.docno, b.prccd, b.effdt,  e.bargentype, d.styleno||' '||d.itnm itstyle,c.fabitcd, n.itnm fabitnm, " + Environment.NewLine;
             sql += "d.itnm,d.convqtypunit,d.convuomcd,nvl(d.negstock,e.negstock)negstock, d.styleno, d.itgrpcd, e.itgrpnm,e.salglcd,e.purglcd,e.salretglcd,e.purretglcd, f.colrnm,d.prodgrpcd, z.prodgrpgstper, y.barimagecount, y.barimage, " + Environment.NewLine;
             sql += "(case nvl(c.commonuniqbar,e.bargentype) when 'E' then nvl(c.hsncode,nvl(d.hsncode,e.hsncode)) else nvl(d.hsncode,e.hsncode) end) hsncode, " + Environment.NewLine;
@@ -1596,7 +1604,7 @@ namespace Improvar
             sql += "( " + Environment.NewLine;
             if (menupara != "PB" || barno != "")
             {
-                sql += "select distinct '' gocd, '' mtrljobcd, '' stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, '' shade, 0 cutlength, 0 dia, 0 balqnty, 0 balnos " + Environment.NewLine;
+                sql += "select distinct '' gocd, a.mtrljobcd, '' stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, '' shade, 0 cutlength, 0 dia, 0 balqnty, 0 balnos " + Environment.NewLine;
                 sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_cntrl_hdr c " + Environment.NewLine;
                 sql += "where a.barno=b.barno(+) and a.autono=c.autono(+) and " + Environment.NewLine;
                 sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' and a.stkdrcr in ('D','C') and " + Environment.NewLine;
@@ -1625,13 +1633,15 @@ namespace Improvar
             sql += ") a, " + Environment.NewLine;
 
 
-            sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate from " + Environment.NewLine;
-            sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from " + Environment.NewLine;
-            sql += "(select a.barno, a.prccd, a.effdt, " + Environment.NewLine;
-            sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn " + Environment.NewLine;
-            sql += "from " + scm + ".t_batchmst_price a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + tdt + "','dd/mm/yyyy') ) " + Environment.NewLine;
+            sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate,a.mtrljobcd from " + Environment.NewLine;
+            sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate,a.mtrljobcd from " + Environment.NewLine;
+            sql += "(select a.barno, a.prccd, a.effdt,a.mtrljobcd, " + Environment.NewLine;
+            sql += "row_number() over (partition by a.barno, a.prccd,a.mtrljobcd order by a.effdt desc) as rn " + Environment.NewLine;
+            sql += "from " + scm + ".t_batchmst_price a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + tdt + "','dd/mm/yyyy') " + Environment.NewLine;
+            if (mtrljobcd.retStr() != "") sql += "and a.mtrljobcd in (" + mtrljobcd + ") " + Environment.NewLine;
+            sql += ") " + Environment.NewLine;
             sql += "a, " + scm + ".t_batchmst_price b, " + scm + ".t_batchmst c " + Environment.NewLine;
-            sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.rn=1 and a.barno=c.barno(+) " + Environment.NewLine;
+            sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.mtrljobcd=b.mtrljobcd(+) and a.rn=1 and a.barno=c.barno(+) " + Environment.NewLine;
             sql += ") a where prccd='" + prccd + "') b, " + Environment.NewLine;
 
             if (slcdfrrt.retStr() != "")
@@ -1672,6 +1682,10 @@ namespace Improvar
             sql += scm + ".m_mtrljobmst i, " + scm + ".m_parts j, " + scm + ".m_stktype k , " + scm + ".m_size l, " + scmf + ".m_uom m, " + scm + ".m_sitem n " + Environment.NewLine;
             sql += "where a.barno=c.barno(+) and a.barno=b.barno(+) and d.prodgrpcd=z.prodgrpcd(+) and a.barno=y.barno(+) and " + Environment.NewLine;
             sql += "a.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) and " + Environment.NewLine;
+            if (menupara != "PB" || barno != "")
+            {
+                sql += "a.mtrljobcd=b.mtrljobcd(+) and " + Environment.NewLine;
+            }
             if (stylelike.retStr() != "")
             {
                 if (exactbarno == true)
@@ -2156,10 +2170,10 @@ namespace Improvar
             string scm_prevyr = CommVar.LastYearSchema(UNQSNO), scmf_prevyr = CommVar.FinSchemaPrevYr(UNQSNO);
             string sql = "";
             sql = "select a.slcd, a.autono, a.docno, a.docdt, a.qnty, a.rate, a.slnm, a.city, ";
-            sql += "a.scmdiscrate, a.scmdisctype,a.pcstype from (  ";
+            sql += "a.scmdiscrate, a.scmdisctype,a.pcstype,a.mtrljobcd from (  ";
 
             sql += "select a.slcd, a.autono, d.docno, d.docdt, sum(nvl(f.qnty,0)) qnty, b.rate, e.slnm, e.district city, ";
-            sql += "(case when nvl(b.listdiscper,0)=0 then nvl(b.scmdiscrate,0) else nvl(b.listdiscper,0) end) scmdiscrate, b.scmdisctype,f.pcstype  ";
+            sql += "(case when nvl(b.listdiscper,0)=0 then nvl(b.scmdiscrate,0) else nvl(b.listdiscper,0) end) scmdiscrate, b.scmdisctype,f.pcstype,b.mtrljobcd  ";
             sql += "from " + scm + ".t_txn a," + scm + ".t_txndtl b," + scm + ".m_doctype c," + scm + ".t_cntrl_hdr d ," + scmf + ".m_subleg e," + scm + ".T_BATCHDTL f," + scm + ".M_SITEM g  ";
             sql += "where a.autono=b.autono and a.autono=d.autono and a.doccd=c.doccd(+) and a.slcd=e.slcd and a.autono=f.autono  and b.itcd=g.itcd(+) and b.slno=f.txnslno and d.compcd='" + COM + "'  ";
             if (itcd.retStr() != "") sql += " and b.itcd in(" + itcd + ") ";
@@ -2169,14 +2183,14 @@ namespace Improvar
             sql += "  and c.doctype in (" + doctype + ") ";
             if (fdt != "") sql += "and d.docdt >= to_date('" + fdt + "','dd/mm/yyyy') ";
             if (tdt != "") sql += "and d.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
-            sql += "  group by a.slcd, a.autono, d.docno, d.docdt, b.rate, e.slnm, e.district,(case when nvl(b.listdiscper,0)=0 then nvl(b.scmdiscrate,0) else nvl(b.listdiscper,0) end) , b.scmdisctype,f.pcstype ";
+            sql += "  group by a.slcd, a.autono, d.docno, d.docdt, b.rate, e.slnm, e.district,(case when nvl(b.listdiscper,0)=0 then nvl(b.scmdiscrate,0) else nvl(b.listdiscper,0) end) , b.scmdisctype,f.pcstype,b.mtrljobcd ";
             //sql += "order by d.docdt,d.docno desc ";
 
             if (CommVar.LastYearSchema(UNQSNO) != "")
             {
                 sql += "union all ";
                 sql += "select a.slcd, a.autono, d.docno, d.docdt, sum(nvl(f.qnty,0)) qnty, b.rate, e.slnm, e.district city, ";
-                sql += "(case when nvl(b.listdiscper,0)=0 then nvl(b.scmdiscrate,0) else nvl(b.listdiscper,0) end) scmdiscrate, b.scmdisctype,f.pcstype  ";
+                sql += "(case when nvl(b.listdiscper,0)=0 then nvl(b.scmdiscrate,0) else nvl(b.listdiscper,0) end) scmdiscrate, b.scmdisctype,f.pcstype,b.mtrljobcd  ";
                 sql += "from " + scm_prevyr + ".t_txn a," + scm_prevyr + ".t_txndtl b," + scm_prevyr + ".m_doctype c," + scm_prevyr + ".t_cntrl_hdr d ," + scmf_prevyr + ".m_subleg e," + scm_prevyr + ".T_BATCHDTL f," + scm_prevyr + ".M_SITEM g  ";
                 sql += "where a.autono=b.autono and a.autono=d.autono and a.doccd=c.doccd(+) and a.slcd=e.slcd and a.autono=f.autono  and b.itcd=g.itcd(+) and b.slno=f.txnslno and d.compcd='" + COM + "'  ";
                 if (itcd.retStr() != "") sql += " and b.itcd in(" + itcd + ") ";
@@ -2186,7 +2200,7 @@ namespace Improvar
                 sql += "  and c.doctype in (" + doctype + ") ";
                 if (fdt != "") sql += "and d.docdt >= to_date('" + fdt + "','dd/mm/yyyy') ";
                 if (tdt != "") sql += "and d.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
-                sql += "  group by a.slcd, a.autono, d.docno, d.docdt, b.rate, e.slnm, e.district,(case when nvl(b.listdiscper,0)=0 then nvl(b.scmdiscrate,0) else nvl(b.listdiscper,0) end) , b.scmdisctype,f.pcstype ";
+                sql += "  group by a.slcd, a.autono, d.docno, d.docdt, b.rate, e.slnm, e.district,(case when nvl(b.listdiscper,0)=0 then nvl(b.scmdiscrate,0) else nvl(b.listdiscper,0) end) , b.scmdisctype,f.pcstype,b.mtrljobcd ";
 
             }
             sql += " )a order by (a.docdt)desc,(a.docno) desc ";
@@ -2854,7 +2868,7 @@ namespace Improvar
                 return ItemDet;
             }
         }
-        public string CreatePricelist(string BARNO, string EFFDT, double CPRate, double WPRate, double RPRate)
+        public string CreatePricelist(string BARNO, string EFFDT, double CPRate, double WPRate, double RPRate, string mtrljobcd = "FS")
         {
             try
             {
@@ -2874,6 +2888,7 @@ namespace Improvar
                     {
                         MIP.PRCCD = "CP";
                         MIP.RATE = CPRate;
+                        MIP.MTRLJOBCD = mtrljobcd;
                         dbsql = masterHelpFa.RetModeltoSql(MIP, "A", CommVar.CurSchema(UNQSNO));
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                     }
@@ -2881,6 +2896,7 @@ namespace Improvar
                     {
                         MIP.PRCCD = "WP";
                         MIP.RATE = WPRate;
+                        MIP.MTRLJOBCD = mtrljobcd;
                         dbsql = masterHelpFa.RetModeltoSql(MIP, "A", CommVar.CurSchema(UNQSNO));
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                     }
@@ -2888,6 +2904,7 @@ namespace Improvar
                     {
                         MIP.PRCCD = "RP";
                         MIP.RATE = RPRate;
+                        MIP.MTRLJOBCD = mtrljobcd;
                         dbsql = masterHelpFa.RetModeltoSql(MIP, "A", CommVar.CurSchema(UNQSNO));
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                     }
@@ -3598,7 +3615,7 @@ namespace Improvar
                 while (ig <= varGodown.Count - 1)
                 {
                     strgocd = varGodown[ig].GOCD;
-                    string data = "itgocd = '" + strmtrljobcd + stritcd + strbarno + strgocd + "'" + (ShowShade == true ? (rsitem.Rows[it]["shade"].retStr().Trim() == ""?"and trim(shade) is null ":"and shade='" + rsitem.Rows[it]["shade"].ToString() + "'") : "") + "";
+                    string data = "itgocd = '" + strmtrljobcd + stritcd + strbarno + strgocd + "'" + (ShowShade == true ? (rsitem.Rows[it]["shade"].retStr().Trim() == "" ? "and trim(shade) is null " : "and shade='" + rsitem.Rows[it]["shade"].ToString() + "'") : "") + "";
                     if (stritcd == "F10001769" && strmtrljobcd == "FS" && strbarno == "10001769" && strgocd == "38G")
                     {
                     }
@@ -4166,24 +4183,28 @@ namespace Improvar
             return "";
         }
 
-        public DataTable GetLastPriceFrmMaster(string barno)
+        public DataTable GetLastPriceFrmMaster(string barno, string mtrljobcd)
         {
             string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
             string scm_prevyr = CommVar.LastYearSchema(UNQSNO), scmf_prevyr = CommVar.FinSchemaPrevYr(UNQSNO);
             string sql = "";
-            sql += " select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate, b.prcnm from ";
-            sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate ";
-            sql += "from(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate ";
-            sql += "from(select a.barno, a.prccd, a.effdt, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn ";
-            sql += "from " + scm + ".T_BATCHMST_PRICE a where nvl(a.rate, 0) <> 0 ) a, ";
+            sql += " select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate, b.prcnm,a.mtrljobcd from ";
+            sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate,a.mtrljobcd ";
+            sql += "from(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate,a.mtrljobcd ";
+            sql += "from(select a.barno, a.prccd, a.effdt,a.mtrljobcd, row_number() over(partition by a.barno, a.prccd,a.mtrljobcd order by a.effdt desc) as rn ";
+            sql += "from " + scm + ".T_BATCHMST_PRICE a where nvl(a.rate, 0) <> 0 ";
+            if (mtrljobcd.retStr() != "") sql += "and a.mtrljobcd in (" + mtrljobcd + ") ";
+            sql += ") a, ";
             sql += "" + scm + ".T_BATCHMST_PRICE b, " + scm + ".T_BATCHmst c where a.barno = b.barno(+) and a.prccd = b.prccd(+) and ";
-            sql += "a.effdt = b.effdt(+) and a.barno = c.barno(+) and a.rn = 1 ";
+            sql += "a.effdt = b.effdt(+) and a.mtrljobcd=b.mtrljobcd(+) and a.barno = c.barno(+) and a.rn = 1 ";
             sql += "union all ";
-            sql += "select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate ";
-            sql += "from(select a.barno, a.prccd, a.effdt, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn ";
-            sql += "from " + scm + ".t_batchmst_price a where nvl(a.rate, 0) <> 0 ) a, ";
+            sql += "select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate,a.mtrljobcd ";
+            sql += "from(select a.barno, a.prccd, a.effdt,a.mtrljobcd, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn ";
+            sql += "from " + scm + ".t_batchmst_price a where nvl(a.rate, 0) <> 0 ";
+            if (mtrljobcd.retStr() != "") sql += "and a.mtrljobcd in (" + mtrljobcd + ") ";
+            sql += ") a, ";
             sql += "" + scm + ".t_batchmst_price b, " + scm + ".t_batchmst c, " + scm + ".T_BATCHmst d where a.barno = b.barno(+) and ";
-            sql += "a.prccd = b.prccd(+) and a.effdt = b.effdt(+) and a.barno = c.barno(+) and a.barno = d.barno(+) and d.barno is null) a ";
+            sql += "a.prccd = b.prccd(+) and a.effdt = b.effdt(+) and a.mtrljobcd=b.mtrljobcd(+) and a.barno = c.barno(+) and a.barno = d.barno(+) and d.barno is null) a ";
             sql += ") a, ";
             sql += "" + scmf + ".m_prclst b ";
             sql += "where a.prccd = b.prccd(+) and upper(a.barno) = '" + barno.ToUpper() + "' ";

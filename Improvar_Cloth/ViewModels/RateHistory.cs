@@ -26,5 +26,6 @@ namespace Improvar.Models
         public string RATE { get; set; }
         public string SCMDISCTYPE { get; set; }
         public string SCMDISCRATE { get; set; }
+        public string MTRLJOBCD { get; set; }
     }
 }

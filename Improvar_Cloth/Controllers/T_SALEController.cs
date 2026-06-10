@@ -1075,7 +1075,7 @@ namespace Improvar.Controllers
                 DataTable stockdata = new DataTable();
                 string BARNO = (from a in VE.TBATCHDTL select a.BARNO).ToArray().retSqlfromStrarray();
                 string ITCD = (from a in VE.TBATCHDTL select a.ITCD).ToArray().retSqlfromStrarray();
-                //string MTRLJOBCD = (from a in VE.TBATCHDTL select a.MTRLJOBCD).ToArray().retSqlfromStrarray();
+                string MTRLJOBCD = (from a in VE.TBATCHDTL select a.MTRLJOBCD).ToArray().retSqlfromStrarray();
                 string ITGRPCD = (from a in VE.TBATCHDTL select a.ITGRPCD).ToArray().retSqlfromStrarray();
                 string BARNO_ = "", ITCD_ = "", ITGRPCD_ = "";
                 if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
@@ -1108,7 +1108,7 @@ namespace Improvar.Controllers
                     }
 
                     allprodgrpgstper_data = salesfunc.GetBarHelp(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retStr(), BARNO_, ITCD_.retStr(), "", "", ITGRPCD_, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr(), "", "", true, false, VE.MENU_PARA, "", "", false, false, true, "", false);
-                    stockdata = salesfunc.GetStock(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retSqlformat(), BARNO_, ITCD_.retStr(), "", TXN.AUTONO.retSqlformat(), ITGRPCD_, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, true, "", true);
+                    stockdata = salesfunc.GetStock(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retSqlformat(), BARNO_, ITCD_.retStr(), MTRLJOBCD, TXN.AUTONO.retSqlformat(), ITGRPCD_, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, true, "", true);
 
 
                     if (BARNO.Length > 1000)
@@ -1132,7 +1132,7 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    allprodgrpgstper_data = salesfunc.GetStock(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), "", TXN.AUTONO.retSqlformat(), ITGRPCD, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, true, "", true);
+                    allprodgrpgstper_data = salesfunc.GetStock(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD, TXN.AUTONO.retSqlformat(), ITGRPCD, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, true, "", true);
                 }
                 DataTable syscnfgdata = salesfunc.GetSyscnfgData(TXN.DOCDT.retDateStr());
                 var chk_child = ChildRecordCheck(TXN.AUTONO);  //modify by mithun
@@ -1143,7 +1143,7 @@ namespace Improvar.Controllers
                     v.GSTPER = VE.TTXNDTL.Where(a => a.SLNO == v.TXNSLNO).Sum(b => b.IGSTPER + b.CGSTPER + b.SGSTPER).retDbl();
                     if (allprodgrpgstper_data != null && allprodgrpgstper_data.Rows.Count > 0)
                     {
-                        var DATA = allprodgrpgstper_data.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and itgrpcd = '" + v.ITGRPCD + "' ");
+                        var DATA = allprodgrpgstper_data.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and itgrpcd = '" + v.ITGRPCD + "' and mtrljobcd='" + v.MTRLJOBCD + "' ");
                         if (DATA.Count() > 0)
                         {
                             DataTable tax_data = DATA.CopyToDataTable();
@@ -1205,7 +1205,7 @@ namespace Improvar.Controllers
                     //if purchase stock det
                     if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                     {
-                        var stkDATA = stockdata.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and itgrpcd = '" + v.ITGRPCD + "' ");
+                        var stkDATA = stockdata.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and itgrpcd = '" + v.ITGRPCD + "' and mtrljobcd='" + v.MTRLJOBCD + "' ");
                         if (stkDATA != null && stkDATA.Count() > 0)
                         {
                             v.BALSTOCK = stkDATA[0]["BALQNTY"].retDbl();
@@ -3381,7 +3381,7 @@ namespace Improvar.Controllers
                 return ex.Message;
             }
         }
-        public ActionResult GetRateHistoryDetails(string SLCD, string PARTYCD, string ITCD, string ITNM, string TAG, string BARNO)
+        public ActionResult GetRateHistoryDetails(string SLCD, string PARTYCD, string ITCD, string ITNM, string TAG, string BARNO, string MTRLJOBCD)
         {
             try
             {
@@ -3390,7 +3390,7 @@ namespace Improvar.Controllers
                 Cn.getQueryString(VE);
                 string doctype = "'" + VE.DOC_CODE.retStr() + "'" + ",'SRET','PROF'";
                 var DTRateHistory = salesfunc.GetRateHistory(SLCD.retStr().retSqlformat(), PARTYCD.retStr().retSqlformat(), doctype, ITCD.retStr().retSqlformat());
-                DataTable dt = salesfunc.GetLastPriceFrmMaster(BARNO);
+                DataTable dt = salesfunc.GetLastPriceFrmMaster(BARNO, MTRLJOBCD.retSqlformat());
                 var doctP = (from DataRow dr in DTRateHistory.Rows
                              select new RateHistoryGrid()
                              {
@@ -3404,6 +3404,7 @@ namespace Improvar.Controllers
                                  CITY = dr["CITY"].ToString(),
                                  SCMDISCTYPE = dr["scmdiscrate"].retDbl() == 0 ? "" : dr["SCMDISCTYPE"].ToString(),
                                  SCMDISCRATE = dr["scmdiscrate"].retDbl() == 0 ? "" : dr["scmdiscrate"].retStr(),
+                                 MTRLJOBCD = dr["MTRLJOBCD"].ToString(),
                              }).ToList();
 
                 if (TAG == "GRID")
@@ -3418,6 +3419,7 @@ namespace Improvar.Controllers
                             ViewBag.MASTERRATE += dt.Rows[p]["prccd"].retStr() + " : " + dt.Rows[p]["rate"].retStr();
                         }
                         ViewBag.MASTERRATE += "]";
+                        ViewBag.MASTERRATE += " (Material : " + MTRLJOBCD + ")";
                     }
                     VE.RateHistoryGrid = doctP.Take(5).ToList();
                     ModelState.Clear();
@@ -8125,7 +8127,7 @@ namespace Improvar.Controllers
                     string ContentFlg = "";
                     var schnm = CommVar.CurSchema(UNQSNO);
 
-                    sql = "update " + schnm + ". T_TXNOTH set DOCREM='" + VE.T_TXNOTH.DOCREM + "'  "
+                    sql = "update " + schnm + ".T_TXNOTH set DOCREM = '" + VE.T_TXNOTH.DOCREM + "', PAYTERMS = '" + VE.T_TXNOTH.PAYTERMS + "'  "
                     + " where  AUTONO='" + VE.T_TXN.AUTONO + "'   ";
                     OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 

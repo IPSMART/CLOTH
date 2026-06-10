@@ -1332,7 +1332,7 @@
         tr += '        <input tabindex="-1" class=" atextBoxFor" id="B_UOM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].UOM" readonly="readonly" type="text" value="' + UOM + '">';
         tr += '    </td>';
         tr += '    <td class="">';
-        tr += '        <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_"' + rowindex + ' title="Rate History" onclick="RateHistoryDetails(' + rowindex + ')" data-toggle="modal" data-target="#RateHistoryModal">Show</button>';
+        tr += '        <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_"' + rowindex + ' title="Rate History" onclick="RateHistoryDetails(\'B_ITCD_' + rowindex + '\', \'B_ITSTYLE_' + rowindex + '\', \'POPUP\')" data-toggle="modal" data-target="#RateHistoryModal">Show</button>';
         tr += '    </td>';
         tr += '    <td class="" title="' + RATE + '">';
         tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].RATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="Sale_GetGstPer(' + rowindex + ',\'#B_\');RateUpdate(' + rowindex + ',\'#B_\');HasChangeBarSale();" value="' + RATE + '" >';

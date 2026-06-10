@@ -6,9 +6,9 @@
         @Html.ValidationSummary(true)
         <div class="grid_title" style="height:15px;">
             @*<div class="col-md-10">
-                <input type="text" id="search_part" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_SALE_RateHistoryGrid');" />
-                <img src="~/Image/search.png" title="Help" />
-            </div>*@
+                    <input type="text" id="search_part" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_SALE_RateHistoryGrid');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>*@
             <center style="font-size: 11px;color: darkmagenta; border: 1px inset;">
                 <b>Rate History</b>
                 <b><span style="font-variant:petite-caps;color: red;">Item :- </span></b>
@@ -28,6 +28,7 @@
                             <th class="" style="width:118px;">Docno</th>
                             <th class="" style="width:177px;">Party Name</th>
                             <th class="" style="width:89px;">City</th>
+                            <th class="" style="width:63px;">Material Job</th>
                             <th class="" style="width:73px;text-align:right;">Quantity</th>
                             <th class="" style="width:73px;text-align:right;">Rate</th>
                             <th class="" style="width:62px;">Disc Type</th>
@@ -54,6 +55,9 @@
                                     </td>
                                     <td class="">
                                         @Html.TextBoxFor(model => Model.RateHistoryGrid[i].CITY, new { id = "RateHistory_CITY_" + i, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.RateHistoryGrid[i].MTRLJOBCD, new { id = "RateHistory_MTRLJOBCD_" + i, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
                                     </td>
                                     <td class="">
                                         @Html.TextBoxFor(model => Model.RateHistoryGrid[i].QNTY, new { id = "RateHistory_QNTY_" + i, style = "text-align:right;", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })

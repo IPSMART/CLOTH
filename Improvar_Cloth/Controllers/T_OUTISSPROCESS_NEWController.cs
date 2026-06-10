@@ -2085,6 +2085,7 @@ namespace Improvar.Controllers
                                  SLCD = dr["SLCD"].ToString(),
                                  SLNM = dr["SLNM"].ToString(),
                                  CITY = dr["CITY"].ToString(),
+                                 MTRLJOBCD = dr["MTRLJOBCD"].ToString(),
                              }).ToList();
                 RH.RateHistoryGrid = doctP;
                 ModelState.Clear();

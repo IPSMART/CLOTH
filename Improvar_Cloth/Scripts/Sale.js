@@ -111,7 +111,7 @@ function GetBarnoDetails(id, HelpFrom) {
                                 changeBARGENTYPE();
                                 var value = modify_check();
                                 if (value == "true") {
-                                    RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID', 'BARCODE');
+                                    RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID', 'BARCODE', 'MTRLJOBCD');
                                 }
                                 //if ((HelpFrom == "Bar") && (MENU_PARA == "SBDIR" || MENU_PARA == "SBPCK" || MENU_PARA == "PR" || MENU_PARA == "SBPOS") && ($("#QNTY").val() != "")) {
                                 if ((HelpFrom == "Bar") && (MENU_PARA == "SBDIR" || MENU_PARA == "ISS" || MENU_PARA == "PI" || MENU_PARA == "SBPCK" || MENU_PARA == "PR" || MENU_PARA == "SBPOS") && ($("#QNTY").val() != "")) {
@@ -167,7 +167,7 @@ function GetBarnoDetails(id, HelpFrom) {
             $("#Barnohelpopen").val("Y");
             var value = modify_check();
             if (value == "true") {
-                RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID', 'BARCODE');
+                RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID', 'BARCODE', 'MTRLJOBCD');
             }
         }
     }
@@ -559,7 +559,7 @@ function FillBarcodeArea(str, Table, i) {
     if (event.key == "F8" || str == "") {
         var value = modify_check();
         if (value == "true") {
-            RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID', 'BARCODE');
+            RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID', 'BARCODE', 'MTRLJOBCD');
         }
     }
     if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR") && ModuleCode == "SALESSAREE") {
@@ -3702,22 +3702,26 @@ function SelectPendOrder(btnid) {
 
 
 
-function RateHistoryDetails(ITCDId, ITNMId, TAG, BARNOId) {
+function RateHistoryDetails(ITCDId, ITNMId, TAG, BARNOId,MTRLJOBCDId) {
     debugger;
     SLCD = $("#SLCD").val();
     PARTYCD = $("#PARTYCD").val();
     ITCD = $("#" + ITCDId).val();
     ITNM = $("#" + ITNMId).val();
+    MTRLJOBCD = $("#" + MTRLJOBCDId).val();
     var BARNO = "";
     if (BARNOId != "" && BARNOId != "undefined") {
         BARNO = $("#" + BARNOId).val();
+    }
+    if (PARTYCD == undefined) {
+        PARTYCD = "";
     }
 
     $.ajax({
         type: 'get',
         beforesend: $("#WaitingMode").show(),
         url: $("#UrlRateHistory").val(),//GetRateHistoryDetails
-        data: "SLCD=" + SLCD + "&PARTYCD=" + PARTYCD + "&ITCD=" + ITCD + "&ITNM=" + ITNM + "&TAG=" + TAG + "&BARNO=" + BARNO,
+        data: "SLCD=" + SLCD + "&PARTYCD=" + PARTYCD + "&ITCD=" + ITCD + "&ITNM=" + ITNM + "&TAG=" + TAG + "&BARNO=" + BARNO + "&MTRLJOBCD=" + MTRLJOBCD,
         success: function (result) {
             $("#WaitingMode").hide();
             if (TAG == "GRID") {
@@ -4132,7 +4136,7 @@ function GetItcd(id) {
                         }
                         var value = modify_check();
                         if (value == "true") {
-                            RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID', 'BARCODE');
+                            RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID', 'BARCODE', 'MTRLJOBCD');
                         }
                         if (ModuleCode.indexOf("SALESCLOTH") != -1) {
                             if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") {
