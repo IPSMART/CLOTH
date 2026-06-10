@@ -624,14 +624,20 @@ namespace Improvar.Controllers
             {
                 var UNQSNO = Cn.getQueryStringUNQSNO();
                 string scm = CommVar.FinSchema(UNQSNO);
-                string sql = "select j.SLCD,j.SLNM,j.GSTNO,j.SLAREA,j.DISTRICT,j.PIN,j.STATE from " + scm + ".M_SUBLEG j ," + scm + ".M_CNTRL_HDR o where j.M_AUTONO=o.M_AUTONO   ";
+                string cscm = CommVar.CommSchema();
+                string sql = "select j.SLCD,j.SLNM,j.GSTNO,j.SLAREA,j.DISTRICT,j.PIN,j.STATE,p.LINKCD, q.LINKNM ";
+                sql += "from " + scm + ".M_SUBLEG j ," + scm + ".M_CNTRL_HDR o, " + scm + ".M_SUBLEG_LINK p, " + cscm + ".MS_LINK q " ;
+                sql+= "where j.M_AUTONO=o.M_AUTONO and j.SLCD = p.SLCD(+) and p.LINKCD = q.LINKCD(+) ";
                 if (SRC_FLAG.retStr() != "") sql += "and (upper(j.slcd) like '%" + SRC_FLAG.retStr().ToUpper() + "%' or upper(j.slnm) like '%" + SRC_FLAG.retStr().ToUpper() + "%'or upper(j.GSTNO) like '%" + SRC_FLAG.retStr().ToUpper() + "%') ";
                 DataTable MDT = masterHelp.SQLquery(sql);
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
-                var hdr = "Sub Ledger Code" + Cn.GCS() + "Sub Ledger Name" + Cn.GCS() + "GST" + Cn.GCS() + "District" + Cn.GCS() + "Area" + Cn.GCS() + "PIN" + Cn.GCS() + "State";
+                var hdr = "Sub Ledger Code" + Cn.GCS() + "Sub Ledger Name" + Cn.GCS() + "GST" + Cn.GCS() + "District" + Cn.GCS() + "Area" + Cn.GCS() + "PIN" +
+                    Cn.GCS() + "State" + Cn.GCS() + "Type";
                 for (int j = 0; j <= MDT.Rows.Count - 1; j++)
                 {
-                    SB.Append("<tr><td>" + MDT.Rows[j]["SLCD"].retStr() + "</td><td>" + MDT.Rows[j]["SLNM"].retStr() + " </td><td> " + MDT.Rows[j]["GSTNO"].retStr() + "</td><td>" + MDT.Rows[j]["DISTRICT"].retStr() + " </td><td> " + MDT.Rows[j]["SLAREA"].retStr() + "</td><td> " + MDT.Rows[j]["PIN"].retStr() + "</td><td> " + MDT.Rows[j]["STATE"].retStr() + "</td></tr>");
+                    SB.Append("<tr><td>" + MDT.Rows[j]["SLCD"].retStr() + "</td><td>" + MDT.Rows[j]["SLNM"].retStr() + " </td><td> " + MDT.Rows[j]["GSTNO"].retStr() + "</td><td>" 
+                    + MDT.Rows[j]["DISTRICT"].retStr() + " </td><td> " + MDT.Rows[j]["SLAREA"].retStr() + "</td><td> " + MDT.Rows[j]["PIN"].retStr() + "</td><td> "
+                    + MDT.Rows[j]["STATE"].retStr() + "</td><td> " + MDT.Rows[j]["LINKNM"].retStr() + "</td></tr>");
                 }
                 return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), "0"));
             }

@@ -64,6 +64,9 @@ namespace Improvar.Controllers
                     VE.DropDown_list_District = DropDownHelp.GetDistrictforSelection();
                     VE.DISTRICT = MasterHelp.ComboFill("district", VE.DropDown_list_District, 0, 1);
 
+                    VE.DropDown_list_State = DropDownHelp.GetStateforSelection();
+                    VE.STATE = MasterHelp.ComboFill("state", VE.DropDown_list_State, 0, 1);
+
                     VE.DropDown_list_AGSLCD = DropDownHelp.GetAgSlcdforSelection();
                     VE.Agslnm = MasterHelp.ComboFill("agslcd", VE.DropDown_list_AGSLCD, 0, 1);
 
@@ -117,7 +120,7 @@ namespace Improvar.Controllers
                 string com = CommVar.Compcd(UNQSNO);
                 string loc = CommVar.Loccd(UNQSNO);
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-                string slcd = "", sql = "", linkcd = "", district = "";
+                string slcd = "", sql = "", linkcd = "", district = "",state = "";
                 string scmf = CommVar.FinSchema(UNQSNO), LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO);
 
                 if (FC.AllKeys.Contains("itgrpcdvalue")) selitgrpcd = CommFunc.retSqlformat(FC["itgrpcdvalue"].ToString());
@@ -133,6 +136,10 @@ namespace Improvar.Controllers
                 if (FC.AllKeys.Contains("districtvalue"))
                 {
                     district = FC["districtvalue"].ToString().retSqlformat();
+                }
+                if (FC.AllKeys.Contains("statevalue"))
+                {
+                    state = FC["statevalue"].ToString().retSqlformat();
                 }
                 DataTable tbl;
                 string query = "";
@@ -172,7 +179,7 @@ namespace Improvar.Controllers
                     query = "Select distinct a.SLCD,a.SLNM,a.FULLNAME,a.PARTYCD,a.add1,a.add2,a.add3,a.add4,a.add5,a.add6,a.add7,a.STATE,a.SLAREA,a.PANNO, b.agslcd, z.slnm agslnm,y.cperson, ";
                     query += "a.GSTNO,a.ADHAARNO,a.MSMENO,a.REGMOBILE,a.REGEMAILID,a.PARTYNM,nvl(a.AUTOREMINDEROFF,'N') AUTOREMINDEROFF,s.parentcd, s.parentnm,t.USR_ENTDT,a.TCSAPPL,a.TOT194Q,a.DISTRICT from  ";
 
-                    query += "(Select distinct a.m_autono,a.SLCD,a.SLNM,a.FULLNAME,a.PARTYCD,a.add1,a.add2,a.add3,a.add4,a.add5,a.add6,a.add7,a.STATE,a.SLAREA,a.PANNO,a.GSTNO,a.ADHAARNO,a.MSMENO,a.REGMOBILE,a.REGEMAILID,b.PARTYNM,nvl(a.AUTOREMINDEROFF,'N')AUTOREMINDEROFF,a.TCSAPPL,a.TOT194Q,a.DISTRICT  ";
+                    query += "(Select distinct a.m_autono,a.SLCD,a.SLNM,a.FULLNAME,a.PARTYCD,a.add1,a.add2,a.add3,a.add4,a.add5,a.add6,a.add7,a.STATE,a.SLAREA,a.PANNO,a.GSTNO,a.ADHAARNO,a.MSMENO,a.REGMOBILE,a.REGEMAILID,b.PARTYNM,nvl(a.AUTOREMINDEROFF,'N')AUTOREMINDEROFF,a.TCSAPPL,a.TOT194Q,a.DISTRICT ";
                     query += " from " + dbname + ".m_subleg a," + dbname + ".M_PARTYGRP b," + dbname + ".m_subleg_link c where a.PARTYCD=b.PARTYCD(+) and a.slcd=c.slcd(+)  ";
                     if (linkcd != "") query += " and c.linkcd in(" + linkcd + ") " + Environment.NewLine;
                     query += ") a , ";
@@ -210,6 +217,7 @@ namespace Improvar.Controllers
                     if (agslcdvalue != "") query += " and b.agslcd in (" + agslcdvalue + ") " + Environment.NewLine;
                     if (slcd.retStr() != "") query += " and a.slcd in (" + slcd + ") ";
                     if (district.retStr() != "") query += " and a.DISTRICT in (" + district + ") ";
+                    if (state.retStr() != "") query += " and a.state in (" + state + ") ";
 
                     if (selslcdgrpcd.retStr() != "") query += " order by s.parentnm,a.SLNM "; else query += " order by a.SLNM ";
                     tbl = MasterHelp.SQLquery(query);

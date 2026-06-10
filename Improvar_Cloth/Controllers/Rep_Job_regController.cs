@@ -64,6 +64,7 @@ namespace Improvar.Controllers
                     VE.JOBCD = VE.MENU_PARA;
                     VE.Checkbox2 = true;
                     VE.DefaultView = true;
+                    if (CommVar.ClientCode(UNQSNO) == "ANKN") VE.Checkbox3 = true;
                     return View(VE);
                 }
             }
@@ -115,7 +116,7 @@ namespace Improvar.Controllers
                     sql += "where a.autono = b.autono(+) and " + Environment.NewLine;
                     sql += "b.compcd = '" + COM + "' and nvl(b.cancel, 'N') = 'N' and " + Environment.NewLine;
                     if (jobslcd != "") sql += "a.slcd in(" + jobslcd + ") and " + Environment.NewLine;
-                    if (itcd != "") sql += "a.itcd in(" + itcd + ") and " + Environment.NewLine;                    
+                    if (itcd != "") sql += "a.itcd in(" + itcd + ") and " + Environment.NewLine;
                     if (fdt != "") sql += "b.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and " + Environment.NewLine;
                     if (loccd.retStr() != "")
                     {
@@ -495,7 +496,6 @@ namespace Improvar.Controllers
                         {
                             doctype = "'OJWI','OJWR'";
                         }
-
                     }
                     else if (JOBCD == "DY")
                     {
@@ -561,7 +561,7 @@ namespace Improvar.Controllers
                     if (fdt != "") sql += "c.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and " + Environment.NewLine;
                     if (loccd.retStr() != "")
                     {
-                        sql += "e.loccd in (" + loccd + ") and ";
+                        sql += "c.loccd in (" + loccd + ") and ";
                     }
                     sql += "c.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy')  " + Environment.NewLine;
                     sql += "order by c.docdt,c.docno,slnm,d.slcd,e.styleno||' '||e.itnm,a.itcd  " + Environment.NewLine;
@@ -578,29 +578,37 @@ namespace Improvar.Controllers
                     HC.GetPrintHeader(IR, "doccd", "string", "c,5", "Doc;Code");
                     HC.GetPrintHeader(IR, "docdt", "string", "d,10:dd/mm/yy", ";Doc Date");
                     HC.GetPrintHeader(IR, "docno", "string", "c,18", ";Doc No");
-                    HC.GetPrintHeader(IR, "prefdt", "string", "d,10:dd/mm/yy", "Party;Bill Date");
-                    HC.GetPrintHeader(IR, "prefno", "string", "c,18", "Party;Bill No");
+                    if (ReportType == "REGISTER" && RegisterType == "Receive")
+                    {
+                        HC.GetPrintHeader(IR, "prefdt", "string", "d,10:dd/mm/yy", "Party;Bill Date");
+                        HC.GetPrintHeader(IR, "prefno", "string", "c,18", "Party;Bill No");
+                    }                
                     HC.GetPrintHeader(IR, "slnm", "string", "c,20", "Party;Name");
-                    HC.GetPrintHeader(IR, "slarea", "string", "c,10", "Area");
-                    HC.GetPrintHeader(IR, "gstno", "string", "c,15", "GST No.");
+                    if (ReportType != "REGISTER")
+                    {
+                        HC.GetPrintHeader(IR, "slarea", "string", "c,10", "Area");
+                        HC.GetPrintHeader(IR, "gstno", "string", "c,15", "GST No.");
+                    }
                     HC.GetPrintHeader(IR, "itnm", "string", "c,35", "Item;Name");
                     HC.GetPrintHeader(IR, "hsncode", "string", "c,8", "HSN/SAC");
                     HC.GetPrintHeader(IR, "uomcd", "string", "c,2", "Uom");
                     HC.GetPrintHeader(IR, "nos", "double", "n,5", "Nos");
                     HC.GetPrintHeader(IR, "qnty", "double", "n,12,3", "Qnty");
-                    HC.GetPrintHeader(IR, "rate", "double", "n,10,2", "Rate");
-                    HC.GetPrintHeader(IR, "amt", "double", "n,12,2", "Basic;Amount");
-                    HC.GetPrintHeader(IR, "taxableval", "double", "n,12,2", "Taxable;Value");
-                    HC.GetPrintHeader(IR, "igstper", "double", "n,5,3", "IGST;%");
-                    HC.GetPrintHeader(IR, "igstamt", "double", "n,10,2", "IGST;Amt");
-                    HC.GetPrintHeader(IR, "cgstper", "double", "n,5,3", "CGST;%");
-                    HC.GetPrintHeader(IR, "cgstamt", "double", "n,10,2", "CGST;Amt");
-                    HC.GetPrintHeader(IR, "sgstper", "double", "n,5,3", "SGST;%");
-                    HC.GetPrintHeader(IR, "sgstamt", "double", "n,10,2", "SGST;Amt");
-                    HC.GetPrintHeader(IR, "tcsamt", "double", "n,10,2", "TCS;Amt");
-                    HC.GetPrintHeader(IR, "roamt", "double", "n,6,2", "R/Off;Amt");
-                    HC.GetPrintHeader(IR, "blamt", "double", "n,12,2", ";Bill Value");
-
+                    if (showValue == true)
+                    {
+                        HC.GetPrintHeader(IR, "rate", "double", "n,10,2", "Rate");
+                        HC.GetPrintHeader(IR, "amt", "double", "n,12,2", "Basic;Amount");
+                        HC.GetPrintHeader(IR, "taxableval", "double", "n,12,2", "Taxable;Value");
+                        HC.GetPrintHeader(IR, "igstper", "double", "n,5,3", "IGST;%");
+                        HC.GetPrintHeader(IR, "igstamt", "double", "n,10,2", "IGST;Amt");
+                        HC.GetPrintHeader(IR, "cgstper", "double", "n,5,3", "CGST;%");
+                        HC.GetPrintHeader(IR, "cgstamt", "double", "n,10,2", "CGST;Amt");
+                        HC.GetPrintHeader(IR, "sgstper", "double", "n,5,3", "SGST;%");
+                        HC.GetPrintHeader(IR, "sgstamt", "double", "n,10,2", "SGST;Amt");
+                        HC.GetPrintHeader(IR, "tcsamt", "double", "n,10,2", "TCS;Amt");
+                        HC.GetPrintHeader(IR, "roamt", "double", "n,6,2", "R/Off;Amt");
+                        HC.GetPrintHeader(IR, "blamt", "double", "n,12,2", ";Bill Value");
+                    }
 
                     Int32 rNo = 0; Int32 i = 0; Int32 maxR = 0;
                     i = 0; maxR = maintbl.Rows.Count - 1;
@@ -620,17 +628,25 @@ namespace Improvar.Controllers
                         IR.Rows[rNo]["docdt"] = maintbl.Rows[i]["docdt"].retDateStr();
                         IR.Rows[rNo]["docno"] = maintbl.Rows[i]["docno"].retStr() + cancrem;
                         IR.Rows[rNo]["slnm"] = maintbl.Rows[i]["slnm"].retStr();
-                        IR.Rows[rNo]["slarea"] = maintbl.Rows[i]["area"].retStr();
-                        IR.Rows[rNo]["gstno"] = maintbl.Rows[i]["gstno"].retStr();
-                        IR.Rows[rNo]["tcsamt"] = maintbl.Rows[i]["tcsamt"].retDbl();
-                        IR.Rows[rNo]["roamt"] = maintbl.Rows[i]["roffamt"].retDbl() * mult;
-                        IR.Rows[rNo]["blamt"] = maintbl.Rows[i]["billval"].retDbl() * mult;
-                        IR.Rows[rNo]["igstper"] = maintbl.Rows[i]["igstper"].retDbl();
-                        IR.Rows[rNo]["cgstper"] = maintbl.Rows[i]["cgstper"].retDbl();
-                        IR.Rows[rNo]["sgstper"] = maintbl.Rows[i]["sgstper"].retDbl();
-                        IR.Rows[rNo]["prefno"] = maintbl.Rows[i]["prefno"].retStr();
-                        IR.Rows[rNo]["prefdt"] = maintbl.Rows[i]["prefdt"].retDateStr();
-
+                        if (ReportType != "REGISTER")
+                        {
+                            IR.Rows[rNo]["slarea"] = maintbl.Rows[i]["area"].retStr();
+                            IR.Rows[rNo]["gstno"] = maintbl.Rows[i]["gstno"].retStr();
+                        }
+                        if (showValue == true)
+                        {
+                            IR.Rows[rNo]["tcsamt"] = maintbl.Rows[i]["tcsamt"].retDbl();
+                            IR.Rows[rNo]["roamt"] = maintbl.Rows[i]["roffamt"].retDbl() * mult;
+                            IR.Rows[rNo]["blamt"] = maintbl.Rows[i]["billval"].retDbl() * mult;
+                            IR.Rows[rNo]["igstper"] = maintbl.Rows[i]["igstper"].retDbl();
+                            IR.Rows[rNo]["cgstper"] = maintbl.Rows[i]["cgstper"].retDbl();
+                            IR.Rows[rNo]["sgstper"] = maintbl.Rows[i]["sgstper"].retDbl();                            
+                        }
+                        if (ReportType == "REGISTER" && RegisterType == "Receive")
+                        {
+                            IR.Rows[rNo]["prefno"] = maintbl.Rows[i]["prefno"].retStr();
+                            IR.Rows[rNo]["prefdt"] = maintbl.Rows[i]["prefdt"].retDateStr();
+                        }
                         string autono = maintbl.Rows[i]["autono"].ToString();
                         istore = i;
                         double nos = 0, qnty = 0, amt = 0, taxableval = 0, igstamt = 0, cgstamt = 0, sgstamt = 0;
@@ -651,12 +667,14 @@ namespace Improvar.Controllers
 
                         IR.Rows[rNo]["nos"] = (nos * mult);
                         IR.Rows[rNo]["qnty"] = (qnty * mult);
-                        IR.Rows[rNo]["amt"] = (amt * mult);
-                        IR.Rows[rNo]["taxableval"] = (taxableval * mult);
-                        IR.Rows[rNo]["igstamt"] = (igstamt * mult);
-                        IR.Rows[rNo]["cgstamt"] = (cgstamt * mult);
-                        IR.Rows[rNo]["sgstamt"] = (sgstamt * mult);
-
+                        if (showValue == true)
+                        {
+                            IR.Rows[rNo]["amt"] = (amt * mult);
+                            IR.Rows[rNo]["taxableval"] = (taxableval * mult);
+                            IR.Rows[rNo]["igstamt"] = (igstamt * mult);
+                            IR.Rows[rNo]["cgstamt"] = (cgstamt * mult);
+                            IR.Rows[rNo]["sgstamt"] = (sgstamt * mult);
+                        }
                         i = istore;
                         while (maintbl.Rows[i]["autono"].ToString() == autono)
                         {
@@ -668,16 +686,18 @@ namespace Improvar.Controllers
                             IR.Rows[rNo]["uomcd"] = maintbl.Rows[i]["uomcd"].retStr();
                             IR.Rows[rNo]["nos"] = (maintbl.Rows[i]["nos"].retDbl() * mult);
                             IR.Rows[rNo]["qnty"] = (maintbl.Rows[i]["qnty"].retDbl() * mult);
-                            IR.Rows[rNo]["rate"] = (maintbl.Rows[i]["rate"].retDbl() * mult);
-                            IR.Rows[rNo]["amt"] = (maintbl.Rows[i]["basicamt"].retDbl() * mult);
-                            IR.Rows[rNo]["taxableval"] = (maintbl.Rows[i]["taxableval"].retDbl() * mult);
-                            IR.Rows[rNo]["igstper"] = maintbl.Rows[i]["igstper"].retDbl();
-                            IR.Rows[rNo]["igstamt"] = (maintbl.Rows[i]["igstamt"].retDbl() * mult);
-                            IR.Rows[rNo]["cgstper"] = maintbl.Rows[i]["cgstper"].retDbl();
-                            IR.Rows[rNo]["cgstamt"] = (maintbl.Rows[i]["cgstamt"].retDbl() * mult);
-                            IR.Rows[rNo]["sgstper"] = maintbl.Rows[i]["sgstper"].retDbl();
-                            IR.Rows[rNo]["sgstamt"] = (maintbl.Rows[i]["sgstamt"].retDbl() * mult);
-
+                            if (showValue == true)
+                            {
+                                IR.Rows[rNo]["rate"] = (maintbl.Rows[i]["rate"].retDbl() * mult);
+                                IR.Rows[rNo]["amt"] = (maintbl.Rows[i]["basicamt"].retDbl() * mult);
+                                IR.Rows[rNo]["taxableval"] = (maintbl.Rows[i]["taxableval"].retDbl() * mult);
+                                IR.Rows[rNo]["igstper"] = maintbl.Rows[i]["igstper"].retDbl();
+                                IR.Rows[rNo]["igstamt"] = (maintbl.Rows[i]["igstamt"].retDbl() * mult);
+                                IR.Rows[rNo]["cgstper"] = maintbl.Rows[i]["cgstper"].retDbl();
+                                IR.Rows[rNo]["cgstamt"] = (maintbl.Rows[i]["cgstamt"].retDbl() * mult);
+                                IR.Rows[rNo]["sgstper"] = maintbl.Rows[i]["sgstper"].retDbl();
+                                IR.Rows[rNo]["sgstamt"] = (maintbl.Rows[i]["sgstamt"].retDbl() * mult);
+                            }
                             i++;
                             if (i > maxR) break;
                         }

@@ -282,6 +282,23 @@ namespace Improvar
                       }).ToList();
             return sllist;
         }
+        public List<DropDown_list_State> GetStateforSelection(string grpcd = "")
+        {
+            List<DropDown_list_State> sllist = new List<DropDown_list_State>();
+            string sql = "", scm = CommVar.CommSchema();
+
+            sql += "select distinct a.statecd, a.statenm ";
+            sql += "from " + scm + ".ms_state a ";
+            DataTable tbl = MasterHelp.SQLquery(sql);
+
+            sllist = (from DataRow dr in tbl.Rows
+                      select new DropDown_list_State()
+                      {
+                          text = dr["statenm"].ToString(),
+                          value = dr["statenm"].ToString(),
+                      }).ToList();
+            return sllist;
+        }
         public List<DropDown_list_ITEM> GetItcdforSelection(string itgrpcd = "")
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
