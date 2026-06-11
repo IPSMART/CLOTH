@@ -395,7 +395,7 @@ namespace Improvar.Controllers
                                         {
                                             bool recoexistbatchprice = false;
 
-                                            sql = "select barno from " + newschema + ".t_batchmst_price where barno='" + tbl.Rows[i]["barno"].ToString() + "' and prccd = '" + v.PRCCD + "' and effdt =  to_date('" + v.EFFDT.retDateStr() + "','dd/mm/yyyy')";
+                                            sql = "select barno from " + newschema + ".t_batchmst_price where barno='" + tbl.Rows[i]["barno"].ToString() + "' and prccd = '" + v.PRCCD + "' and mtrljobcd='" + v.MTRLJOBCD + "' and effdt =  to_date('" + v.EFFDT.retDateStr() + "','dd/mm/yyyy')";
                                             OraCmd.CommandText = sql; var OraRecoBatchprice = OraCmd.ExecuteReader();
                                             if (OraRecoBatchprice.HasRows == false) recoexistbatchprice = false; else recoexistbatchprice = true; OraRecoBatchprice.Dispose();
 
@@ -2030,7 +2030,7 @@ namespace Improvar.Controllers
                     dbsql = "";
                     dbsql += " insert into " + newschema + ".t_batchmst_price  ";
                     dbsql += "select * from " + oldschema + ".t_batchmst_price ";
-                    dbsql += "where barno || prccd || effdt not in (select barno || prccd || effdt from " + newschema + ".t_batchmst_price) ";
+                    dbsql += "where barno || prccd || effdt||mtrljobcd not in (select barno || prccd || effdt||mtrljobcd from " + newschema + ".t_batchmst_price) ";
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
                     dbsql = "";
