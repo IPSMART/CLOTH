@@ -140,6 +140,7 @@ namespace Improvar.Controllers
                         RT.Add(RT5);
                         RT.Add(new DropDown_list1 { value = "PDWOQ", text = "Purchase Debit Note (W/O Qnty)" });
                         RT.Add(new DropDown_list1 { value = "PCWOQ", text = "Purchase Credit Note (W/O Qnty)" });
+                        RT.Add(new DropDown_list1 { value = "Job Bill", text = "Job Bill" });
                         VE.DropDown_list1 = RT;
                     }
                     //=========End Report Type===========//
@@ -348,6 +349,8 @@ namespace Improvar.Controllers
                             txntag = "'TO'"; break;
                         case "Job Bill raised to Party":
                             txntag = "'JB'"; break;
+                        case "Job Bill":
+                            txntag = "'JB'"; break;
                         default: txntag = ""; break;
 
                     }
@@ -356,174 +359,343 @@ namespace Improvar.Controllers
                 // }
 
                 string sql = "";
-                sql += " select a.autono, a.doccd, a.docno,a.doctag, a.cancel,a.docdt,a.agslcd, " + Environment.NewLine;
-                sql += "a.prefno, a.prefdt, a.slcd, a.slnm,a.slarea,a.agslnm,a.sagslnm,a.nm,a.mobile,a.gstno, a.district, " + Environment.NewLine;
-                if (dtlsumm == "E")
-                {
-                    sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then (case when a.rn = 1 then nvl(a.roamt, 0) else 0 end)*-1 else (case when a.rn = 1 then nvl(a.roamt, 0) else 0 end)end) roamt, " + Environment.NewLine;
-                    sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then (case when a.rn = 1 then nvl(a.tcsamt, 0) else 0 end)*-1 else (case when a.rn = 1 then nvl(a.tcsamt, 0) else 0 end)end) tcsamt, " + Environment.NewLine;
-                    sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then (case when a.rn = 1 then nvl(a.blamt, 0) else 0 end)*-1 else (case when a.rn = 1 then nvl(a.blamt, 0) else 0 end)end) blamt, " + Environment.NewLine;
-                    //sql += "(case when a.rn = 1 then nvl(a.roamt, 0) else 0 end)roamt, " + Environment.NewLine;
-                    //sql += "(case when a.rn = 1 then nvl(a.tcsamt, 0) else 0 end)tcsamt, " + Environment.NewLine;
-                    //sql += "(case when a.rn = 1 then nvl(a.blamt, 0) else 0 end)blamt, " + Environment.NewLine;
-                }
-                else
-                {
-                    sql += "a.roamt,a.blamt,a.tcsamt, " + Environment.NewLine;
-                }
-                sql += "a.slno,a.stkdrcr,a.itgrpnm, a.itcd, " + Environment.NewLine;
-                sql += "a.itnm,a.itstyle, a.itrem, a.hsncode,a.uomcd,a.uomnm, a.decimals, " + Environment.NewLine;
-                if (dtlsumm == "E")
-                {
-                    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.nos, 0) * -1 else nvl(a.nos, 0) end)nos," + Environment.NewLine;
-                    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.qnty, 0) * -1 else nvl(a.qnty, 0) end)qnty," + Environment.NewLine;
-                }
-                else {
-                    sql += " a.nos, a.qnty," + Environment.NewLine;
-                }
-                sql += " a.rate, " + Environment.NewLine;
-                if (dtlsumm == "E")
-                {
-                    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.amt, 0) * -1 else nvl(a.amt, 0) end)amt," + Environment.NewLine;
-                    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.scmdiscamt, 0) * -1 else nvl(a.scmdiscamt, 0) end)scmdiscamt," + Environment.NewLine;
-                    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.tddiscamt, 0) * -1 else nvl(a.tddiscamt, 0) end)tddiscamt," + Environment.NewLine;
-                    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.discamt, 0) * -1 else nvl(a.discamt, 0) end)discamt," + Environment.NewLine;
-                    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.TXBLVAL, 0) * -1 else nvl(a.TXBLVAL, 0) end)TXBLVAL," + Environment.NewLine;
-                }
-                else
-                {
-                    sql += " a.amt,a.scmdiscamt, a.tddiscamt, a.discamt,a.TXBLVAL, " + Environment.NewLine;
+                DataTable tbl = new DataTable();
 
-                }
-                sql += " a.conslcd, a.cslnm,a.cgstno, a.cdistrict, " + Environment.NewLine;
-                sql += "a.trslnm,a.lrno,a.lrdt,a.GRWT,a.TRWT,a.NTWT,a.ordrefno,a.ordrefdt," + Environment.NewLine;
-                if (dtlsumm == "E")
+                if (VE.TEXTBOX1.retStr() == "Job Bill")
                 {
-                    sql += "  a.igstper,(case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.igstamt, 0) * -1 else nvl(a.igstamt, 0) end)igstamt,a.cgstper," + Environment.NewLine;
-                    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.cgstamt, 0) * -1 else nvl(a.cgstamt, 0) end)cgstamt,a.sgstper," + Environment.NewLine;
-                    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.sgstamt, 0) * -1 else nvl(a.sgstamt, 0) end)sgstamt,a.cessper," + Environment.NewLine;
-                    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.cessamt, 0) * -1 else nvl(a.sgstamt, 0) end)cessamt," + Environment.NewLine;
-                    sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.blqnty, 0)*-1 else nvl(a.blqnty, 0) end)blqnty," + Environment.NewLine;
-                    sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.NETAMT, 0)*-1 else nvl(a.NETAMT, 0) end)NETAMT,a.gstper," + Environment.NewLine;
-                    sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.gstamt, 0)*-1 else nvl(a.gstamt, 0) end)gstamt," + Environment.NewLine;
-                }
-                else
-                {
-                    sql += "a.igstper,a.igstamt,a.cgstper,a.cgstamt,a.sgstper,a.sgstamt,a.cessper,a.cessamt,a.blqnty,a.NETAMT,a.gstper,a.gstamt," + Environment.NewLine;
-                }
-
-
-                sql += "a.ackno,a.ackdt,a.pageno,a.PAGESLNO,a.baleno,a.docrem,a.bltype  " + Environment.NewLine;
-                sql += "from ( " + Environment.NewLine;
-
-
-                sql += " select a.autono, a.doccd, a.docno,a.doctag, a.cancel,to_char(a.docdt,'DD/MM/YYYY')docdt,a.docdt tchdocdt,h.agslcd, " + Environment.NewLine;
-                sql += "  a.prefno, nvl(to_char(a.prefdt,'dd/mm/yyyy'),'')prefdt,a.prefdt prefdate, a.slcd, c.slnm,c.slarea,l.slnm agslnm,m.slnm sagslnm,nvl(i.nm,p.rtdebnm) nm,i.mobile,c.gstno, c.district, nvl(a.roamt, 0) roamt, " + Environment.NewLine;
-                sql += " nvl(a.tcsamt, 0) tcsamt, a.blamt, " + Environment.NewLine;
-                sql += "   b.slno,b.stkdrcr,o.itgrpnm, b.itcd, " + Environment.NewLine;
-                //query1 += "   b.itnm,b.itstyle, b.itrem, b.hsncode, b.uomcd, b.uomnm, b.decimals, b.nos, ";
-                sql += "   b.itnm,b.itstyle, b.itrem, b.hsncode,nvl(b.bluomcd,b.uomcd)uomcd, nvl(b.bluomnm,b.uomnm)uomnm, nvl(nullif(b.bldecimals,0),b.decimals) decimals, b.nos, " + Environment.NewLine;
-                sql += " nvl(nullif(b.blqnty,0),b.qnty)qnty, b.rate, b.amt,b.scmdiscamt, b.tddiscamt, b.discamt,b.TXBLVAL, g.conslcd, d.slnm cslnm, d.gstno cgstno, d.district cdistrict, " + Environment.NewLine;
-                //query1 += " b.qnty, b.rate, b.amt,b.scmdiscamt, b.tddiscamt, b.discamt,b.TXBLVAL, g.conslcd, d.slnm cslnm, d.gstno cgstno, d.district cdistrict, ";
-                sql += " e.slnm trslnm, f.lrno,nvl(to_char(f.lrdt,'dd/mm/yyyy'),'')lrdt,f.GRWT,f.TRWT,f.NTWT, '' ordrefno, to_char(nvl('', ''), 'dd/mm/yyyy') ordrefdt, b.igstper, b.igstamt, b.cgstper, " + Environment.NewLine;
-                sql += " b.cgstamt,b.sgstamt, b.cessper, b.cessamt,b.blqnty,b.NETAMT,b.sgstper,b.igstper+b.cgstper+b.sgstper gstper,b.igstamt + b.cgstamt + b.sgstamt gstamt,k.ackno,nvl(to_char(k.ackdt,'dd/mm/yyyy'),'')ackdt,b.pageno,b.PAGESLNO,b.baleno,h.docrem,h.bltype,  " + Environment.NewLine;
-                sql += "row_number() over(partition by a.autono order by b.slno)rn " + Environment.NewLine;
-                sql += " from ( " + Environment.NewLine;
-                sql += " select a.autono,a.doctag, b.doccd, b.docno, b.cancel, " + Environment.NewLine;
-                sql += "b.docdt, " + Environment.NewLine;
-                sql += "a.prefno, a.prefdt, a.slcd, a.roamt, a.tcsamt, a.blamt  " + Environment.NewLine;
-
-                sql += "from " + scm1 + ".t_txn a, " + scm1 + ".t_cntrl_hdr b, " + Environment.NewLine;
-                sql += " " + scmf + ".m_subleg c " + Environment.NewLine;
-                sql += "  where a.autono = b.autono and a.slcd = c.slcd(+) " + Environment.NewLine;
-                sql += "  and  b.compcd = '" + COM + "' " + Environment.NewLine;
-                if (selloccd == "") sql += " and b.loccd = '" + LOC + "'  " + Environment.NewLine; else sql += " and b.loccd in (" + selloccd + ")  " + Environment.NewLine;
-                if (GODOWN.retStr() != "") sql += "and  a.GOCD in('" + GODOWN + "')  " + Environment.NewLine;
-                if (repsorton == "bldt")
-                {
-                    if (fdt != "") sql += "and a.prefdt >= to_date('" + fdt + "','dd/mm/yyyy')  " + Environment.NewLine;
-                    if (tdt != "") sql += "and a.prefdt <= to_date('" + tdt + "','dd/mm/yyyy')   " + Environment.NewLine;
-                }
-                else
-                {
-                    if (fdt != "") sql += "and b.docdt >= to_date('" + fdt + "','dd/mm/yyyy')   " + Environment.NewLine;
-                    if (tdt != "") sql += "and b.docdt <= to_date('" + tdt + "','dd/mm/yyyy')   " + Environment.NewLine;
-                }
-                sql += "and a.doctag in (" + txntag + ") " + Environment.NewLine;
-                if (txntag == "'PI'" && VE.Checkbox11 == true) sql += "and b.cancel is null " + Environment.NewLine;
-                sql += " ) a,  " + Environment.NewLine;
-
-                sql += "(select distinct a.autono,a.stkdrcr, a.slno, a.itcd, a.itrem, " + Environment.NewLine;
-                sql += " b.itnm,b.styleno||' '||b.itnm itstyle,nvl(a.hsncode,b.hsncode) hsncode, b.uomcd, c.uomnm, c.decimals, " + Environment.NewLine;
-                sql += "  a.nos, a.qnty, a.rate, a.amt,a.scmdiscamt,a.tddiscamt,a.discamt,a.TXBLVAL,a.NETAMT,   " + Environment.NewLine;
-                sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,a.bluomcd,f.uomnm bluomnm,f.decimals bldecimals,a.pageno,a.pageslno,a.baleno  from " + scm1 + ".t_txndtl a, " + Environment.NewLine;
-                sql += "" + scm1 + ".m_sitem b, " + scmf + ".m_uom c, " + scm1 + ".t_batchdtl d, " + scm1 + ".t_batchmst e, " + scmf + ".m_uom f " + Environment.NewLine;
-                sql += " where a.itcd = b.itcd  and b.uomcd = c.uomcd and a.autono = d.autono(+) and a.slno=d.txnslno and d.barno = e.barno(+) and  a.bluomcd= f.uomcd(+) " + Environment.NewLine;
-                sql += " group by " + Environment.NewLine;
-                sql += " a.autono,a.stkdrcr, a.slno, a.itcd, a.itrem, " + Environment.NewLine;
-                sql += "  b.itnm, nvl(a.hsncode,b.hsncode), b.uomcd, c.uomnm, c.decimals, a.nos, a.qnty, a.rate, a.amt,a.scmdiscamt,  " + Environment.NewLine;
-                sql += " a.tddiscamt, a.discamt,a.TXBLVAL,a.NETAMT, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,a.bluomcd,f.uomnm,f.decimals,b.styleno||' '||b.itnm,a.pageno,a.PAGESLNO,a.baleno " + Environment.NewLine;
-                sql += " union " + Environment.NewLine;
-                sql += "select a.autono,";
-                //if (txntag == "SB" || txntag == "PR") { sql += "'C'"; } else { sql += "'D'"; }
-                sql += "(case when d.doctype in ('SBILD','SPSLP','SBCM','SBPOS','SBCMR','SPRM') then 'C' else 'D' end ) " + Environment.NewLine;
-                sql += " stkdrcr, a.slno + 1000 slno, a.amtcd itcd, '' itrem , b.amtnm itnm,b.amtnm itstyle ,a.hsncode,  " + Environment.NewLine;
-                sql += " 'OTH' uomcd, 'OTH' uomnm, 0 decimals, 0 nos, 0 qnty, a.amtrate rate, a.amt,0 scmdiscamt, 0 tddiscamt, 0 discamt,a.amt TXBLVAL,0 NETAMT, a.igstper, a.igstamt, " + Environment.NewLine;
-                sql += " a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,0 blqnty,'' bluomcd,''bluomnm,0 bldecimals,0 pageno,0 PAGESLNO,''baleno " + Environment.NewLine;
-                sql += " from " + scm1 + ".t_txnamt a, " + scm1 + ".m_amttype b, " + scm1 + ".t_cntrl_hdr c, " + scm1 + ".m_doctype d " + Environment.NewLine;
-                sql += " where a.amtcd = b.amtcd and a.autono=c.autono(+) and c.doccd=d.doccd(+) " + Environment.NewLine;
-                sql += " ) b, " + scmf + ".m_subleg c, " + scmf + ".m_subleg d, " + scmf + ".m_subleg e, " + scm1 + ".t_txntrans f, " + Environment.NewLine;
-                sql += "" + scm1 + ".t_txn g, " + scm1 + ".t_txnoth h ," + scm1 + ".t_txnmemo i ," + scm1 + ".m_doctype j," + scmf + ".t_txneinv k," + scmf + ".m_subleg l, " + Environment.NewLine;
-                sql += "" + scmf + ".m_subleg m ," + scm1 + ".m_sitem n," + scm1 + ".M_GROUP o, " + scmf + ".M_RETDEB p " + Environment.NewLine;
-                sql += "where a.autono = b.autono(+) and a.slcd = c.slcd and g.conslcd = d.slcd(+) and a.autono = f.autono(+) and h.agslcd = l.slcd(+)  and h.sagslcd = m.slcd(+) " + Environment.NewLine;
-                sql += "and f.translcd = e.slcd(+) and a.autono = f.autono(+) and a.autono = g.autono(+) and a.autono = h.autono(+) and  g.autono = i.autono(+) and a.doccd = j.doccd(+) and a.autono = k.autono(+) and b.itcd=n.itcd(+) and n.itgrpcd=o.itgrpcd(+) and i.rtdebcd=p.rtdebcd(+)" + Environment.NewLine;
-                //if (selslcd != "") sql += " and a.slcd in (" + selslcd + ") " + Environment.NewLine;
-                //if (unselslcd != "") sql += " and a.slcd not in (" + unselslcd + ") " + Environment.NewLine;
-                if (VE.MENU_PARA == "CM")
-                {
-                    if (selslcd != "") sql += " and nvl(i.nm,c.slnm) in (" + selslcd + ") " + Environment.NewLine;//only retail party respect filter
-                    if (unselslcd != "") sql += " and nvl(i.nm,c.slnm) not in (" + unselslcd + ") " + Environment.NewLine;
-                }
-                else
-                {
-                    if (selslcd != "") sql += " and a.slcd in (" + selslcd + ") " + Environment.NewLine;
-                    if (unselslcd != "") sql += " and a.slcd not in (" + unselslcd + ") " + Environment.NewLine;
-                }
-
-                if (selagslcd != "") sql += " and h.agslcd in (" + selagslcd + ") " + Environment.NewLine;
-                if (selSagslcd != "") sql += " and h.sagslcd in (" + selSagslcd + ") " + Environment.NewLine;               
-                if (bltype != "") sql += " and h.bltype in (" + bltype + ") " + Environment.NewLine;
-                if (doctype != "") sql += " and j.doctype in(" + doctype + ") " + Environment.NewLine;
-                if (selitcd.retStr() != "") sql += "and b.itcd in (" + selitcd + ") " + Environment.NewLine;
-                if (VE.Checkbox12 == true)
-                {
-                    sql += "and f.translcd is null and k.autono is not null " + Environment.NewLine;
-                }
-                sql += ") a " + Environment.NewLine;
-                if (dtlsumm == "E")
-                {
-                    sql += "where nvl(a.cancel,'N')='N' " + Environment.NewLine;
-                }
-                sql += "order by ";
-                if (repsorton == "partywise") { sql += "slcd,a.prefdate,prefno,a.tchdocdt,docno" + Environment.NewLine; }
-                else if (repsorton == "bldt") { sql += "a.prefdate,prefno" + Environment.NewLine; }
-                else { sql += "a.tchdocdt"; }
-                if (itmdtl == true)
-                {
-                    sql += " , docno, slno ";
-                }
-                else
-                {
+                    sql += " select a.autono, a.doccd, a.docno,a.doctag, a.cancel,a.docdt,a.agslcd, " + Environment.NewLine;
+                    sql += "a.prefno, a.prefdt, a.slcd, a.slnm,a.slarea,a.agslnm,a.sagslnm,a.nm,a.mobile,a.gstno, a.district, " + Environment.NewLine;
                     if (dtlsumm == "E")
                     {
-                        sql += " , docno,slno, igstper, cgstper, sgstper ";
+                        sql += " (case when a.doctag = 'SR' or a.doctag = 'PR' then (case when a.rn = 1 then nvl(a.roamt, 0) else 0 end)*-1 else (case when a.rn = 1 then nvl(a.roamt, 0) else 0 end)end) roamt, " + Environment.NewLine;
+                        sql += " '' tcsamt, " + Environment.NewLine;
+                        sql += " (case when a.doctag = 'SR' or a.doctag = 'PR' then (case when a.rn = 1 then nvl(a.blamt, 0) else 0 end)*-1 else (case when a.rn = 1 then nvl(a.blamt, 0) else 0 end)end) blamt, " + Environment.NewLine;
+                        sql += " (case when a.doctag = 'SR' or a.doctag = 'PR' then (case when a.rn = 1 then nvl(a.tdsamt, 0) else 0 end)*-1 else (case when a.rn = 1 then nvl(a.tdsamt, 0) else 0 end)end) tdsamt, " + Environment.NewLine;
+                    }
+                    else
+                    {
+                        sql += " a.roamt,a.blamt,a.tcsamt,a.tdsamt, " + Environment.NewLine;
+                    }
+                        sql += " a.slno,a.stkdrcr,a.itgrpnm, a.itcd, " + Environment.NewLine;
+                        sql += " a.itnm,a.itstyle, a.itrem, a.hsncode,a.uomcd,a.uomnm, a.decimals, " + Environment.NewLine;
+                    if (dtlsumm == "E")
+                    {
+                        sql += " (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.nos, 0) * -1 else nvl(a.nos, 0) end)nos," + Environment.NewLine;
+                        sql += " (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.qnty, 0) * -1 else nvl(a.qnty, 0) end)qnty," + Environment.NewLine;
                     }
                     else {
-                        sql += " , docno, igstper, cgstper, sgstper ";
+                        sql += " a.nos, a.qnty," + Environment.NewLine;
                     }
+                        sql += " a.rate, " + Environment.NewLine;
+                    if (dtlsumm == "E")
+                    {
+                        sql += " (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.amt, 0) * -1 else nvl(a.amt, 0) end)amt," + Environment.NewLine;
+                        sql += " (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.scmdiscamt, 0) * -1 else nvl(a.scmdiscamt, 0) end)scmdiscamt," + Environment.NewLine;
+                        sql += " (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.tddiscamt, 0) * -1 else nvl(a.tddiscamt, 0) end)tddiscamt," + Environment.NewLine;
+                        sql += " (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.discamt, 0) * -1 else nvl(a.discamt, 0) end)discamt," + Environment.NewLine;
+                        sql += " (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.TXBLVAL, 0) * -1 else nvl(a.TXBLVAL, 0) end)TXBLVAL," + Environment.NewLine;
+                    }
+                    else
+                    {
+                        sql += " a.amt,a.scmdiscamt, a.tddiscamt, a.discamt,a.TXBLVAL, " + Environment.NewLine;
+
+                    }
+                        sql += " a.conslcd, a.cslnm,a.cgstno, a.cdistrict, " + Environment.NewLine;
+                        sql += " a.trslnm,a.lrno,a.lrdt,a.GRWT,a.TRWT,a.NTWT,a.ordrefno,a.ordrefdt," + Environment.NewLine;
+                    if (dtlsumm == "E")
+                    {
+                        sql += " a.igstper,(case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.igstamt, 0) * -1 else nvl(a.igstamt, 0) end)igstamt,a.cgstper," + Environment.NewLine;
+                        sql += " (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.cgstamt, 0) * -1 else nvl(a.cgstamt, 0) end)cgstamt,a.sgstper," + Environment.NewLine;
+                        sql += " (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.sgstamt, 0) * -1 else nvl(a.sgstamt, 0) end)sgstamt,a.cessper," + Environment.NewLine;
+                        sql += " (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.cessamt, 0) * -1 else nvl(a.sgstamt, 0) end)cessamt," + Environment.NewLine;
+                        sql += " (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.blqnty, 0)*-1 else nvl(a.blqnty, 0) end)blqnty," + Environment.NewLine;
+                        sql += " (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.NETAMT, 0)*-1 else nvl(a.NETAMT, 0) end)NETAMT,a.gstper," + Environment.NewLine;
+                        sql += " (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.gstamt, 0)*-1 else nvl(a.gstamt, 0) end)gstamt," + Environment.NewLine;
+                    }
+                    else
+                    {
+                        sql += "a.igstper,a.igstamt,a.cgstper,a.cgstamt,a.sgstper,a.sgstamt,a.cessper,a.cessamt,a.blqnty,a.NETAMT,a.gstper,a.gstamt," + Environment.NewLine;
+                    }
+                    sql += " a.ackno,a.ackdt,a.pageno,a.PAGESLNO,a.baleno,a.docrem,a.bltype  " + Environment.NewLine;
+
+                    sql += " from ( " + Environment.NewLine;
+                    sql += " select a.autono, a.doccd, a.docno,a.doctag, a.cancel,to_char(a.docdt,'DD/MM/YYYY')docdt,a.docdt tchdocdt,h.agslcd, " + Environment.NewLine;
+                    sql += " a.prefno, nvl(to_char(a.prefdt,'dd/mm/yyyy'),'')prefdt,a.prefdt prefdate, a.slcd, c.slnm,c.slarea,l.slnm agslnm,m.slnm sagslnm,nvl(i.nm,p.rtdebnm) nm,i.mobile,c.gstno, c.district, nvl(a.roamt, 0) roamt, " + Environment.NewLine;
+                    sql += " nvl(a.tcsamt, 0) tcsamt, a.blamt,a.tdsamt, " + Environment.NewLine;
+                    sql += " b.slno,b.stkdrcr,o.itgrpnm, b.itcd, " + Environment.NewLine;
+                    //query1 += "   b.itnm,b.itstyle, b.itrem, b.hsncode, b.uomcd, b.uomnm, b.decimals, b.nos, ";
+                    sql += " b.itnm,b.itstyle, b.itrem, b.hsncode,a.uomcd, nvl(b.bluomnm,b.uomnm)uomnm, nvl(nullif(b.bldecimals,0),b.decimals) decimals, b.nos, " + Environment.NewLine;
+                    sql += " nvl(nullif(b.blqnty,0),b.bqnty)qnty, b.rate, b.amt,b.scmdiscamt, b.tddiscamt, b.discamt,b.TXBLVAL, g.conslcd, d.slnm cslnm, d.gstno cgstno, d.district cdistrict, " + Environment.NewLine;
+                    //query1 += " b.qnty, b.rate, b.amt,b.scmdiscamt, b.tddiscamt, b.discamt,b.TXBLVAL, g.conslcd, d.slnm cslnm, d.gstno cgstno, d.district cdistrict, ";
+                    sql += " e.slnm trslnm, f.lrno,nvl(to_char(f.lrdt,'dd/mm/yyyy'),'')lrdt,f.GRWT,f.TRWT,f.NTWT, '' ordrefno, to_char(nvl('', ''), 'dd/mm/yyyy') ordrefdt, b.igstper, b.igstamt, b.cgstper, " + Environment.NewLine;
+                    sql += " b.cgstamt,b.sgstamt, b.cessper, b.cessamt,b.blqnty,b.NETAMT,b.sgstper,b.igstper+b.cgstper+b.sgstper gstper,b.igstamt + b.cgstamt + b.sgstamt gstamt,k.ackno,nvl(to_char(k.ackdt,'dd/mm/yyyy'),'')ackdt,b.pageno,b.PAGESLNO,b.baleno,h.docrem,h.bltype,  " + Environment.NewLine;
+                    sql += " row_number() over(partition by a.autono order by b.slno)rn " + Environment.NewLine;
+
+                    sql += " from ( " + Environment.NewLine;
+                    sql += " select a.autono,a.doctag, b.doccd, b.docno, b.cancel, " + Environment.NewLine;
+                    sql += " b.docdt, " + Environment.NewLine;
+                    sql += " ''prefno, ''prefdt, a.slcd, a.roamt, ''tcsamt, a.blamt, a.tdsamt,a.uomcd  " + Environment.NewLine;
+
+                    sql += " from " + scm1 + ".T_JBILL a, " + scm1 + ".t_cntrl_hdr b, " + Environment.NewLine;
+                    sql += " " + scmf + ".m_subleg c " + Environment.NewLine;
+                    sql += " where a.autono = b.autono and a.slcd = c.slcd(+) " + Environment.NewLine;
+                    sql += " and  b.compcd = '" + COM + "' " + Environment.NewLine;
+                    if (selloccd == "") sql += " and b.loccd = '" + LOC + "'  " + Environment.NewLine; else sql += " and b.loccd in (" + selloccd + ")  " + Environment.NewLine;
+                    if (GODOWN.retStr() != "") sql += "and  a.GOCD in('" + GODOWN + "')  " + Environment.NewLine;
+                    if (repsorton == "bldt")
+                    {
+                        if (fdt != "") sql += "and a.prefdt >= to_date('" + fdt + "','dd/mm/yyyy')  " + Environment.NewLine;
+                        if (tdt != "") sql += "and a.prefdt <= to_date('" + tdt + "','dd/mm/yyyy')   " + Environment.NewLine;
+                    }
+                    else
+                    {
+                        if (fdt != "") sql += "and b.docdt >= to_date('" + fdt + "','dd/mm/yyyy')   " + Environment.NewLine;
+                        if (tdt != "") sql += "and b.docdt <= to_date('" + tdt + "','dd/mm/yyyy')   " + Environment.NewLine;
+                    }
+                    sql += "and a.doctag in (" + txntag + ") " + Environment.NewLine;
+                    if (txntag == "'PI'" && VE.Checkbox11 == true) sql += "and b.cancel is null " + Environment.NewLine;
+                    sql += " ) a,  " + Environment.NewLine;
+
+                    sql += "(select distinct a.autono,''stkdrcr, a.slno, a.itcd, a.itrem, " + Environment.NewLine;
+                    sql += "b.itnm,b.styleno || ' ' || b.itnm itstyle,''hsncode, b.uomcd, c.uomnm, c.decimals, " + Environment.NewLine;
+                    sql += "a.nos, a.bqnty, a.rate, a.amt,0scmdiscamt,0tddiscamt,a.discamt,a.TAXABLEVAL TXBLVAL,0NETAMT, " + Environment.NewLine;
+                    sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,0blqnty,''bluomcd,''bluomnm,0bldecimals,''pageno,''pageslno,''baleno " + Environment.NewLine;
+
+                    sql += "from " + scm1 + ".T_JBILLDTL a, " + scm1 + ".m_sitem b, " + scmf + ".m_uom c " + Environment.NewLine;
+                    sql += " where a.itcd = b.itcd  and b.uomcd = c.uomcd " + Environment.NewLine;
+                    //sql += "AND A.AUTONO = '2026ANKNKOLKSSJBBL0000000241' " + Environment.NewLine;
+                    sql += "group by " + Environment.NewLine;
+                    sql += "a.autono, a.slno, a.itcd, a.itrem,a.bqnty,a.TAXABLEVAL,  " + Environment.NewLine;
+                    sql += " b.itnm, b.uomcd, c.uomnm, c.decimals, a.nos,  a.rate, a.amt,   " + Environment.NewLine;
+                    sql += " a.discamt, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,b.styleno || ' ' || b.itnm " + Environment.NewLine;
+                    sql += " ) b, " + Environment.NewLine;
+
+                    sql += ""+ scmf + ".m_subleg c, " + scmf + ".m_subleg d, " + scmf + ".m_subleg e, " + scm1 + ".t_txntrans f, " + Environment.NewLine;
+                    sql += "" + scm1 + ".T_JBILL g, " + scm1 + ".t_txnoth h ," + scm1 + ".t_txnmemo i ," + scm1 + ".m_doctype j," + scmf + ".t_txneinv k," + scmf + ".m_subleg l, " + Environment.NewLine;
+                    sql += "" + scmf + ".m_subleg m ," + scm1 + ".m_sitem n," + scm1 + ".M_GROUP o, " + scmf + ".M_RETDEB p " + Environment.NewLine;
+                    sql += "where a.autono = b.autono(+) and a.slcd = c.slcd and g.conslcd = d.slcd(+) and a.autono = f.autono(+) and h.agslcd = l.slcd(+)  and h.sagslcd = m.slcd(+) " + Environment.NewLine;
+                    sql += "and f.translcd = e.slcd(+) and a.autono = f.autono(+) and a.autono = g.autono(+) and a.autono = h.autono(+) and  g.autono = i.autono(+) and a.doccd = j.doccd(+) and a.autono = k.autono(+) and b.itcd=n.itcd(+) and n.itgrpcd=o.itgrpcd(+) and i.rtdebcd=p.rtdebcd(+)" + Environment.NewLine;
+                    
+                    if (VE.MENU_PARA == "CM")
+                    {
+                        if (selslcd != "") sql += " and nvl(i.nm,c.slnm) in (" + selslcd + ") " + Environment.NewLine;//only retail party respect filter
+                        if (unselslcd != "") sql += " and nvl(i.nm,c.slnm) not in (" + unselslcd + ") " + Environment.NewLine;
+                    }
+                    else
+                    {
+                        if (selslcd != "") sql += " and a.slcd in (" + selslcd + ") " + Environment.NewLine;
+                        if (unselslcd != "") sql += " and a.slcd not in (" + unselslcd + ") " + Environment.NewLine;
+                    }
+
+                    if (selagslcd != "") sql += " and h.agslcd in (" + selagslcd + ") " + Environment.NewLine;
+                    if (selSagslcd != "") sql += " and h.sagslcd in (" + selSagslcd + ") " + Environment.NewLine;
+                    if (bltype != "") sql += " and h.bltype in (" + bltype + ") " + Environment.NewLine;
+                    if (doctype != "") sql += " and j.doctype in(" + doctype + ") " + Environment.NewLine;
+                    if (selitcd.retStr() != "") sql += "and b.itcd in (" + selitcd + ") " + Environment.NewLine;
+                    if (VE.Checkbox12 == true)
+                    {
+                        sql += "and f.translcd is null and k.autono is not null " + Environment.NewLine;
+                    }
+                    sql += ") a " + Environment.NewLine;
+                    if (dtlsumm == "E")
+                    {
+                        sql += "where nvl(a.cancel,'N')='N' " + Environment.NewLine;
+                    }
+                    sql += "order by ";
+                    if (repsorton == "partywise") { sql += "slcd,a.prefdate,prefno,a.tchdocdt,docno" + Environment.NewLine; }
+                    else if (repsorton == "bldt") { sql += "a.prefdate,prefno" + Environment.NewLine; }
+                    else { sql += "a.tchdocdt"; }
+                    if (itmdtl == true)
+                    {
+                        sql += " , docno, slno ";
+                    }
+                    else
+                    {
+                        if (dtlsumm == "E")
+                        {
+                            sql += " , docno,slno, igstper, cgstper, sgstper ";
+                        }
+                        else {
+                            sql += " , docno, igstper, cgstper, sgstper ";
+                        }
+                    }
+
+                    tbl = MasterHelp.SQLquery(sql);
+
+                }
+                else {
+                    #region
+                    sql += " select a.autono, a.doccd, a.docno,a.doctag, a.cancel,a.docdt,a.agslcd, " + Environment.NewLine;
+                    sql += "a.prefno, a.prefdt, a.slcd, a.slnm,a.slarea,a.agslnm,a.sagslnm,a.nm,a.mobile,a.gstno, a.district, " + Environment.NewLine;
+                    if (dtlsumm == "E")
+                    {
+                        sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then (case when a.rn = 1 then nvl(a.roamt, 0) else 0 end)*-1 else (case when a.rn = 1 then nvl(a.roamt, 0) else 0 end)end) roamt, " + Environment.NewLine;
+                        sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then (case when a.rn = 1 then nvl(a.tcsamt, 0) else 0 end)*-1 else (case when a.rn = 1 then nvl(a.tcsamt, 0) else 0 end)end) tcsamt, " + Environment.NewLine;
+                        sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then (case when a.rn = 1 then nvl(a.blamt, 0) else 0 end)*-1 else (case when a.rn = 1 then nvl(a.blamt, 0) else 0 end)end) blamt, " + Environment.NewLine;
+                        //sql += "(case when a.rn = 1 then nvl(a.roamt, 0) else 0 end)roamt, " + Environment.NewLine;
+                        //sql += "(case when a.rn = 1 then nvl(a.tcsamt, 0) else 0 end)tcsamt, " + Environment.NewLine;
+                        //sql += "(case when a.rn = 1 then nvl(a.blamt, 0) else 0 end)blamt, " + Environment.NewLine;
+                    }
+                    else
+                    {
+                        sql += "a.roamt,a.blamt,a.tcsamt, " + Environment.NewLine;
+                    }
+                    sql += "a.slno,a.stkdrcr,a.itgrpnm, a.itcd, " + Environment.NewLine;
+                    sql += "a.itnm,a.itstyle, a.itrem, a.hsncode,a.uomcd,a.uomnm, a.decimals, " + Environment.NewLine;
+                    if (dtlsumm == "E")
+                    {
+                        sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.nos, 0) * -1 else nvl(a.nos, 0) end)nos," + Environment.NewLine;
+                        sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.qnty, 0) * -1 else nvl(a.qnty, 0) end)qnty," + Environment.NewLine;
+                    }
+                    else {
+                        sql += " a.nos, a.qnty," + Environment.NewLine;
+                    }
+                    sql += " a.rate, " + Environment.NewLine;
+                    if (dtlsumm == "E")
+                    {
+                        sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.amt, 0) * -1 else nvl(a.amt, 0) end)amt," + Environment.NewLine;
+                        sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.scmdiscamt, 0) * -1 else nvl(a.scmdiscamt, 0) end)scmdiscamt," + Environment.NewLine;
+                        sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.tddiscamt, 0) * -1 else nvl(a.tddiscamt, 0) end)tddiscamt," + Environment.NewLine;
+                        sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.discamt, 0) * -1 else nvl(a.discamt, 0) end)discamt," + Environment.NewLine;
+                        sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.TXBLVAL, 0) * -1 else nvl(a.TXBLVAL, 0) end)TXBLVAL," + Environment.NewLine;
+                    }
+                    else
+                    {
+                        sql += " a.amt,a.scmdiscamt, a.tddiscamt, a.discamt,a.TXBLVAL, " + Environment.NewLine;
+
+                    }
+                    sql += " a.conslcd, a.cslnm,a.cgstno, a.cdistrict, " + Environment.NewLine;
+                    sql += "a.trslnm,a.lrno,a.lrdt,a.GRWT,a.TRWT,a.NTWT,a.ordrefno,a.ordrefdt," + Environment.NewLine;
+                    if (dtlsumm == "E")
+                    {
+                        sql += "  a.igstper,(case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.igstamt, 0) * -1 else nvl(a.igstamt, 0) end)igstamt,a.cgstper," + Environment.NewLine;
+                        sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.cgstamt, 0) * -1 else nvl(a.cgstamt, 0) end)cgstamt,a.sgstper," + Environment.NewLine;
+                        sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.sgstamt, 0) * -1 else nvl(a.sgstamt, 0) end)sgstamt,a.cessper," + Environment.NewLine;
+                        sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.cessamt, 0) * -1 else nvl(a.sgstamt, 0) end)cessamt," + Environment.NewLine;
+                        sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.blqnty, 0)*-1 else nvl(a.blqnty, 0) end)blqnty," + Environment.NewLine;
+                        sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.NETAMT, 0)*-1 else nvl(a.NETAMT, 0) end)NETAMT,a.gstper," + Environment.NewLine;
+                        sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.gstamt, 0)*-1 else nvl(a.gstamt, 0) end)gstamt," + Environment.NewLine;
+                    }
+                    else
+                    {
+                        sql += "a.igstper,a.igstamt,a.cgstper,a.cgstamt,a.sgstper,a.sgstamt,a.cessper,a.cessamt,a.blqnty,a.NETAMT,a.gstper,a.gstamt," + Environment.NewLine;
+                    }
+
+
+                    sql += "a.ackno,a.ackdt,a.pageno,a.PAGESLNO,a.baleno,a.docrem,a.bltype  " + Environment.NewLine;
+                    sql += "from ( " + Environment.NewLine;
+
+
+                    sql += " select a.autono, a.doccd, a.docno,a.doctag, a.cancel,to_char(a.docdt,'DD/MM/YYYY')docdt,a.docdt tchdocdt,h.agslcd, " + Environment.NewLine;
+                    sql += "  a.prefno, nvl(to_char(a.prefdt,'dd/mm/yyyy'),'')prefdt,a.prefdt prefdate, a.slcd, c.slnm,c.slarea,l.slnm agslnm,m.slnm sagslnm,nvl(i.nm,p.rtdebnm) nm,i.mobile,c.gstno, c.district, nvl(a.roamt, 0) roamt, " + Environment.NewLine;
+                    sql += " nvl(a.tcsamt, 0) tcsamt, a.blamt, " + Environment.NewLine;
+                    sql += "   b.slno,b.stkdrcr,o.itgrpnm, b.itcd, " + Environment.NewLine;
+                    //query1 += "   b.itnm,b.itstyle, b.itrem, b.hsncode, b.uomcd, b.uomnm, b.decimals, b.nos, ";
+                    sql += "   b.itnm,b.itstyle, b.itrem, b.hsncode,nvl(b.bluomcd,b.uomcd)uomcd, nvl(b.bluomnm,b.uomnm)uomnm, nvl(nullif(b.bldecimals,0),b.decimals) decimals, b.nos, " + Environment.NewLine;
+                    sql += " nvl(nullif(b.blqnty,0),b.qnty)qnty, b.rate, b.amt,b.scmdiscamt, b.tddiscamt, b.discamt,b.TXBLVAL, g.conslcd, d.slnm cslnm, d.gstno cgstno, d.district cdistrict, " + Environment.NewLine;
+                    //query1 += " b.qnty, b.rate, b.amt,b.scmdiscamt, b.tddiscamt, b.discamt,b.TXBLVAL, g.conslcd, d.slnm cslnm, d.gstno cgstno, d.district cdistrict, ";
+                    sql += " e.slnm trslnm, f.lrno,nvl(to_char(f.lrdt,'dd/mm/yyyy'),'')lrdt,f.GRWT,f.TRWT,f.NTWT, '' ordrefno, to_char(nvl('', ''), 'dd/mm/yyyy') ordrefdt, b.igstper, b.igstamt, b.cgstper, " + Environment.NewLine;
+                    sql += " b.cgstamt,b.sgstamt, b.cessper, b.cessamt,b.blqnty,b.NETAMT,b.sgstper,b.igstper+b.cgstper+b.sgstper gstper,b.igstamt + b.cgstamt + b.sgstamt gstamt,k.ackno,nvl(to_char(k.ackdt,'dd/mm/yyyy'),'')ackdt,b.pageno,b.PAGESLNO,b.baleno,h.docrem,h.bltype,  " + Environment.NewLine;
+                    sql += "row_number() over(partition by a.autono order by b.slno)rn " + Environment.NewLine;
+                    sql += " from ( " + Environment.NewLine;
+                    sql += " select a.autono,a.doctag, b.doccd, b.docno, b.cancel, " + Environment.NewLine;
+                    sql += "b.docdt, " + Environment.NewLine;
+                    sql += "a.prefno, a.prefdt, a.slcd, a.roamt, a.tcsamt, a.blamt  " + Environment.NewLine;
+
+                    sql += "from " + scm1 + ".t_txn a, " + scm1 + ".t_cntrl_hdr b, " + Environment.NewLine;
+                    sql += " " + scmf + ".m_subleg c " + Environment.NewLine;
+                    sql += "  where a.autono = b.autono and a.slcd = c.slcd(+) " + Environment.NewLine;
+                    sql += "  and  b.compcd = '" + COM + "' " + Environment.NewLine;
+                    if (selloccd == "") sql += " and b.loccd = '" + LOC + "'  " + Environment.NewLine; else sql += " and b.loccd in (" + selloccd + ")  " + Environment.NewLine;
+                    if (GODOWN.retStr() != "") sql += "and  a.GOCD in('" + GODOWN + "')  " + Environment.NewLine;
+                    if (repsorton == "bldt")
+                    {
+                        if (fdt != "") sql += "and a.prefdt >= to_date('" + fdt + "','dd/mm/yyyy')  " + Environment.NewLine;
+                        if (tdt != "") sql += "and a.prefdt <= to_date('" + tdt + "','dd/mm/yyyy')   " + Environment.NewLine;
+                    }
+                    else
+                    {
+                        if (fdt != "") sql += "and b.docdt >= to_date('" + fdt + "','dd/mm/yyyy')   " + Environment.NewLine;
+                        if (tdt != "") sql += "and b.docdt <= to_date('" + tdt + "','dd/mm/yyyy')   " + Environment.NewLine;
+                    }
+                    sql += "and a.doctag in (" + txntag + ") " + Environment.NewLine;
+                    if (txntag == "'PI'" && VE.Checkbox11 == true) sql += "and b.cancel is null " + Environment.NewLine;
+                    sql += " ) a,  " + Environment.NewLine;
+
+                    sql += "(select distinct a.autono,a.stkdrcr, a.slno, a.itcd, a.itrem, " + Environment.NewLine;
+                    sql += " b.itnm,b.styleno||' '||b.itnm itstyle,nvl(a.hsncode,b.hsncode) hsncode, b.uomcd, c.uomnm, c.decimals, " + Environment.NewLine;
+                    sql += "  a.nos, a.qnty, a.rate, a.amt,a.scmdiscamt,a.tddiscamt,a.discamt,a.TXBLVAL,a.NETAMT,   " + Environment.NewLine;
+                    sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,a.bluomcd,f.uomnm bluomnm,f.decimals bldecimals,a.pageno,a.pageslno,a.baleno  from " + scm1 + ".t_txndtl a, " + Environment.NewLine;
+                    sql += "" + scm1 + ".m_sitem b, " + scmf + ".m_uom c, " + scm1 + ".t_batchdtl d, " + scm1 + ".t_batchmst e, " + scmf + ".m_uom f " + Environment.NewLine;
+                    sql += " where a.itcd = b.itcd  and b.uomcd = c.uomcd and a.autono = d.autono(+) and a.slno=d.txnslno and d.barno = e.barno(+) and  a.bluomcd= f.uomcd(+) " + Environment.NewLine;
+                    sql += " group by " + Environment.NewLine;
+                    sql += " a.autono,a.stkdrcr, a.slno, a.itcd, a.itrem, " + Environment.NewLine;
+                    sql += "  b.itnm, nvl(a.hsncode,b.hsncode), b.uomcd, c.uomnm, c.decimals, a.nos, a.qnty, a.rate, a.amt,a.scmdiscamt,  " + Environment.NewLine;
+                    sql += " a.tddiscamt, a.discamt,a.TXBLVAL,a.NETAMT, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,a.bluomcd,f.uomnm,f.decimals,b.styleno||' '||b.itnm,a.pageno,a.PAGESLNO,a.baleno " + Environment.NewLine;
+                    sql += " union " + Environment.NewLine;
+                    sql += "select a.autono,";
+                    //if (txntag == "SB" || txntag == "PR") { sql += "'C'"; } else { sql += "'D'"; }
+                    sql += "(case when d.doctype in ('SBILD','SPSLP','SBCM','SBPOS','SBCMR','SPRM') then 'C' else 'D' end ) " + Environment.NewLine;
+                    sql += " stkdrcr, a.slno + 1000 slno, a.amtcd itcd, '' itrem , b.amtnm itnm,b.amtnm itstyle ,a.hsncode,  " + Environment.NewLine;
+                    sql += " 'OTH' uomcd, 'OTH' uomnm, 0 decimals, 0 nos, 0 qnty, a.amtrate rate, a.amt,0 scmdiscamt, 0 tddiscamt, 0 discamt,a.amt TXBLVAL,0 NETAMT, a.igstper, a.igstamt, " + Environment.NewLine;
+                    sql += " a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,0 blqnty,'' bluomcd,''bluomnm,0 bldecimals,0 pageno,0 PAGESLNO,''baleno " + Environment.NewLine;
+                    sql += " from " + scm1 + ".t_txnamt a, " + scm1 + ".m_amttype b, " + scm1 + ".t_cntrl_hdr c, " + scm1 + ".m_doctype d " + Environment.NewLine;
+                    sql += " where a.amtcd = b.amtcd and a.autono=c.autono(+) and c.doccd=d.doccd(+) " + Environment.NewLine;
+                    sql += " ) b, " + scmf + ".m_subleg c, " + scmf + ".m_subleg d, " + scmf + ".m_subleg e, " + scm1 + ".t_txntrans f, " + Environment.NewLine;
+                    sql += "" + scm1 + ".t_txn g, " + scm1 + ".t_txnoth h ," + scm1 + ".t_txnmemo i ," + scm1 + ".m_doctype j," + scmf + ".t_txneinv k," + scmf + ".m_subleg l, " + Environment.NewLine;
+                    sql += "" + scmf + ".m_subleg m ," + scm1 + ".m_sitem n," + scm1 + ".M_GROUP o, " + scmf + ".M_RETDEB p " + Environment.NewLine;
+                    sql += "where a.autono = b.autono(+) and a.slcd = c.slcd and g.conslcd = d.slcd(+) and a.autono = f.autono(+) and h.agslcd = l.slcd(+)  and h.sagslcd = m.slcd(+) " + Environment.NewLine;
+                    sql += "and f.translcd = e.slcd(+) and a.autono = f.autono(+) and a.autono = g.autono(+) and a.autono = h.autono(+) and  g.autono = i.autono(+) and a.doccd = j.doccd(+) and a.autono = k.autono(+) and b.itcd=n.itcd(+) and n.itgrpcd=o.itgrpcd(+) and i.rtdebcd=p.rtdebcd(+)" + Environment.NewLine;
+                    //if (selslcd != "") sql += " and a.slcd in (" + selslcd + ") " + Environment.NewLine;
+                    //if (unselslcd != "") sql += " and a.slcd not in (" + unselslcd + ") " + Environment.NewLine;
+                    if (VE.MENU_PARA == "CM")
+                    {
+                        if (selslcd != "") sql += " and nvl(i.nm,c.slnm) in (" + selslcd + ") " + Environment.NewLine;//only retail party respect filter
+                        if (unselslcd != "") sql += " and nvl(i.nm,c.slnm) not in (" + unselslcd + ") " + Environment.NewLine;
+                    }
+                    else
+                    {
+                        if (selslcd != "") sql += " and a.slcd in (" + selslcd + ") " + Environment.NewLine;
+                        if (unselslcd != "") sql += " and a.slcd not in (" + unselslcd + ") " + Environment.NewLine;
+                    }
+
+                    if (selagslcd != "") sql += " and h.agslcd in (" + selagslcd + ") " + Environment.NewLine;
+                    if (selSagslcd != "") sql += " and h.sagslcd in (" + selSagslcd + ") " + Environment.NewLine;
+                    if (bltype != "") sql += " and h.bltype in (" + bltype + ") " + Environment.NewLine;
+                    if (doctype != "") sql += " and j.doctype in(" + doctype + ") " + Environment.NewLine;
+                    if (selitcd.retStr() != "") sql += "and b.itcd in (" + selitcd + ") " + Environment.NewLine;
+                    if (VE.Checkbox12 == true)
+                    {
+                        sql += "and f.translcd is null and k.autono is not null " + Environment.NewLine;
+                    }
+                    sql += ") a " + Environment.NewLine;
+                    if (dtlsumm == "E")
+                    {
+                        sql += "where nvl(a.cancel,'N')='N' " + Environment.NewLine;
+                    }
+                    sql += "order by ";
+                    if (repsorton == "partywise") { sql += "slcd,a.prefdate,prefno,a.tchdocdt,docno" + Environment.NewLine; }
+                    else if (repsorton == "bldt") { sql += "a.prefdate,prefno" + Environment.NewLine; }
+                    else { sql += "a.tchdocdt"; }
+                    if (itmdtl == true)
+                    {
+                        sql += " , docno, slno ";
+                    }
+                    else
+                    {
+                        if (dtlsumm == "E")
+                        {
+                            sql += " , docno,slno, igstper, cgstper, sgstper ";
+                        }
+                        else {
+                            sql += " , docno, igstper, cgstper, sgstper ";
+                        }
+                    }
+
+                    tbl = MasterHelp.SQLquery(sql);
+                    #endregion
                 }
 
-                DataTable tbl = MasterHelp.SQLquery(sql);
                 if (tbl.Rows.Count == 0)
                 {
                     return RedirectToAction("NoRecords", "RPTViewer", new { errmsg = "Records not found !!" });
@@ -577,7 +749,7 @@ namespace Improvar.Controllers
                     string pghdr1 = "";
 
                     double tnos = 0; double tqnty = 0; double tbasamt = 0; double tdisc1 = 0; double tdisc2 = 0; double ttaxable = 0; double tgstamt = 0, tbqnty = 0;
-                    double tigstamt = 0; double tcgstamt = 0; double tsgstamt = 0; double troamt = 0; double ttcsamt = 0; double tblamt = 0; double tpayamt = 0;
+                    double tigstamt = 0; double tcgstamt = 0; double tsgstamt = 0; double troamt = 0; double ttcsamt = 0; double tblamt = 0, ttdsamt = 0; double tpayamt = 0;
                     string auto1 = "";
                     double dsc1 = 0; double dsc2 = 0;
                     bool bldtl = true, showpbill = false;
@@ -682,6 +854,7 @@ namespace Improvar.Controllers
                     }
 
                     HC.GetPrintHeader(IR, "blamt", "double", "n,12,2", ";Bill Value");
+                    if (VE.TEXTBOX1.retStr() == "Job Bill") HC.GetPrintHeader(IR, "tdsamt", "double", "n,12,2", ";TDS Value");
                     if (itmdtl == true && MSYSCNFG.MNTNBALE == "Y") HC.GetPrintHeader(IR, "baleno", "string", "c,15", "Bale. ;No");
                     if (itmdtl == true) HC.GetPrintHeader(IR, "pagenoslno", "string", "c,15", "Page No. /;Page Slno.");
                     HC.GetPrintHeader(IR, "ackno", "string", "c,15", "ACK. ;No");
@@ -843,11 +1016,13 @@ namespace Improvar.Controllers
                                     }
 
                                     dr["blamt"] = tbl.Rows[i]["blamt"].retDbl() * mult;
+                                    if (VE.TEXTBOX1.retStr() == "Job Bill") dr["tdsamt"] = tbl.Rows[i]["tdsamt"].retDbl() * mult;
                                     dr["ackno"] = tbl.Rows[i]["ackno"].retStr();
                                     dr["ackdt"] = tbl.Rows[i]["ackdt"].retDateStr();
                                     ttcsamt = ttcsamt + tbl.Rows[i]["tcsamt"].retDbl() * mult;
                                     troamt = troamt + tbl.Rows[i]["roamt"].retDbl() * mult;
                                     tblamt = tblamt + tbl.Rows[i]["blamt"].retDbl() * mult;
+                                    if (VE.TEXTBOX1.retStr() == "Job Bill") ttdsamt = ttdsamt + tbl.Rows[i]["tdsamt"].retDbl() * mult;
                                     //if (VE.TEXTBOX1 == "Sales Cash Memo") tpayamt = tpayamt + a.Sum(b => b.payamt).retDbl();
                                     //tpayamt = tpayamt + tbl.Rows[i]["payamt"].retDbl();
                                 }
@@ -980,6 +1155,7 @@ namespace Improvar.Controllers
                     IR.Rows[rNo]["tcsamt"] = ttcsamt;
                     IR.Rows[rNo]["roamt"] = troamt;
                     IR.Rows[rNo]["blamt"] = tblamt;
+                    if (VE.TEXTBOX1.retStr() == "Job Bill") IR.Rows[rNo]["tdsamt"] = ttdsamt;
                     //if (VE.TEXTBOX1 == "Sales Cash Memo") IR.Rows[rNo]["payamt"] = tpayamt;
                     if (VE.TEXTBOX1 == "Sales Cash Memo")
                     {
