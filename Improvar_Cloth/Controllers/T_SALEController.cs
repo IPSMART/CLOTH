@@ -6233,7 +6233,7 @@ namespace Improvar.Controllers
                                 }
                                 bool pricedataexist = false;
 
-                                sql = "Select BARNO from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST_PRICE where barno='" + barno + "' and effdt =to_date('" + TTXN.DOCDT.retDateStr() + "','dd/mm/yyyy') ";
+                                sql = "Select BARNO from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST_PRICE where barno='" + barno + "' and effdt =to_date('" + TTXN.DOCDT.retDateStr() + "','dd/mm/yyyy') and mtrljobcd='" + VE.TBATCHDTL[i].MTRLJOBCD + "' ";
                                 OraCmd.CommandText = sql;
                                 using (var OraReco = OraCmd.ExecuteReader())
                                 {
@@ -6254,6 +6254,7 @@ namespace Improvar.Controllers
                                     TBATCHMSTPRICE.EFFDT = Convert.ToDateTime(TTXN.DOCDT);
                                     TBATCHMSTPRICE.AUTONO = TTXN.AUTONO;
                                     TBATCHMSTPRICE.RATE = VE.TBATCHDTL[i].RATE;
+                                    TBATCHMSTPRICE.MTRLJOBCD = VE.TBATCHDTL[i].MTRLJOBCD;
 
                                     dbsql = masterHelp.RetModeltoSql(TBATCHMSTPRICE);
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
@@ -6271,6 +6272,7 @@ namespace Improvar.Controllers
                                         TBATCHMSTPRICE1.EFFDT = Convert.ToDateTime(TTXN.DOCDT);
                                         TBATCHMSTPRICE1.AUTONO = TTXN.AUTONO;
                                         TBATCHMSTPRICE1.RATE = VE.TBATCHDTL[i].WPRATE;
+                                        TBATCHMSTPRICE1.MTRLJOBCD = VE.TBATCHDTL[i].MTRLJOBCD;
 
                                         dbsql = masterHelp.RetModeltoSql(TBATCHMSTPRICE1);
                                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
@@ -6289,6 +6291,7 @@ namespace Improvar.Controllers
                                         TBATCHMSTPRICE2.EFFDT = Convert.ToDateTime(TTXN.DOCDT);
                                         TBATCHMSTPRICE2.AUTONO = TTXN.AUTONO;
                                         TBATCHMSTPRICE2.RATE = VE.TBATCHDTL[i].RPRATE;
+                                        TBATCHMSTPRICE2.MTRLJOBCD = VE.TBATCHDTL[i].MTRLJOBCD;
 
                                         dbsql = masterHelp.RetModeltoSql(TBATCHMSTPRICE2);
                                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
@@ -7915,34 +7918,35 @@ namespace Improvar.Controllers
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
                         string barno = VE.TBATCHDTL[i].BARNO.retStr();
+                        string mtrljobcd = VE.TBATCHDTL[i].MTRLJOBCD.retStr();
                         if (VE.TBATCHDTL[i].WPRATE.retDbl() != 0)
                         {
 
-                            var T_BATCHMST_PRICE = DB1.T_BATCHMST_PRICE.Where(x => x.BARNO == barno && x.AUTONO == VE.T_TXN.AUTONO && x.PRCCD == "WP").ToList();
+                            var T_BATCHMST_PRICE = DB1.T_BATCHMST_PRICE.Where(x => x.BARNO == barno && x.AUTONO == VE.T_TXN.AUTONO && x.PRCCD == "WP" && x.MTRLJOBCD == mtrljobcd).ToList();
                             if (T_BATCHMST_PRICE.Any())
                             {
                                 sql = "update " + schnm + ".T_BATCHMST_PRICE set RATE =" + VE.TBATCHDTL[i].WPRATE + " "
-                                        + " where BARNO='" + VE.TBATCHDTL[i].BARNO + "' and AUTONO='" + VE.T_TXN.AUTONO + "' and PRCCD='WP' and EFFDT=to_date('" + VE.T_TXN.DOCDT.retDateStr() + "','dd/mm/yyyy')  ";
+                                        + " where BARNO='" + VE.TBATCHDTL[i].BARNO + "' and AUTONO='" + VE.T_TXN.AUTONO + "' and PRCCD='WP' and EFFDT=to_date('" + VE.T_TXN.DOCDT.retDateStr() + "','dd/mm/yyyy') and MTRLJOBCD='" + mtrljobcd + "' ";
                                 OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
                             }
                             else
                             {
-                                sql = "insert into " + schnm + ".T_BATCHMST_PRICE  (EMD_NO, CLCD, DTAG, TTAG, BARNO,PRCCD, EFFDT, AUTONO, RATE) Values (" + EMD_NO + ", '" + CLCD + "', 'E', NULL, '" + VE.TBATCHDTL[i].BARNO + "','WP', TO_DATE('" + VE.T_TXN.DOCDT.retDateStr() + "','dd/mm/yyyy'), '" + VE.T_TXN.AUTONO + "', " + VE.TBATCHDTL[i].WPRATE + ")";
+                                sql = "insert into " + schnm + ".T_BATCHMST_PRICE  (EMD_NO, CLCD, DTAG, TTAG, BARNO,PRCCD, EFFDT, AUTONO, RATE,MTRLJOBCD) Values (" + EMD_NO + ", '" + CLCD + "', 'E', NULL, '" + VE.TBATCHDTL[i].BARNO + "','WP', TO_DATE('" + VE.T_TXN.DOCDT.retDateStr() + "','dd/mm/yyyy'), '" + VE.T_TXN.AUTONO + "', " + VE.TBATCHDTL[i].WPRATE + ",'" + mtrljobcd + "')";
                                 OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
                             }
                         }
                         if (VE.TBATCHDTL[i].RPRATE.retDbl() != 0)
                         {
-                            var T_BATCHMST_PRICE = DB1.T_BATCHMST_PRICE.Where(x => x.BARNO == barno && x.AUTONO == VE.T_TXN.AUTONO && x.PRCCD == "RP").ToList();
+                            var T_BATCHMST_PRICE = DB1.T_BATCHMST_PRICE.Where(x => x.BARNO == barno && x.AUTONO == VE.T_TXN.AUTONO && x.PRCCD == "RP" && x.MTRLJOBCD == mtrljobcd).ToList();
                             if (T_BATCHMST_PRICE.Any())
                             {
                                 sql = "update " + schnm + ".T_BATCHMST_PRICE set RATE =" + VE.TBATCHDTL[i].RPRATE + " "
-                                        + " where BARNO='" + VE.TBATCHDTL[i].BARNO + "' and AUTONO='" + VE.T_TXN.AUTONO + "' and PRCCD='RP' and EFFDT=to_date('" + VE.T_TXN.DOCDT.retDateStr() + "','dd/mm/yyyy')  ";
+                                        + " where BARNO='" + VE.TBATCHDTL[i].BARNO + "' and AUTONO='" + VE.T_TXN.AUTONO + "' and PRCCD='RP' and EFFDT=to_date('" + VE.T_TXN.DOCDT.retDateStr() + "','dd/mm/yyyy') and MTRLJOBCD='" + mtrljobcd + "' ";
                                 OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
                             }
                             else
                             {
-                                sql = "insert into " + schnm + ".T_BATCHMST_PRICE  (EMD_NO, CLCD, DTAG, TTAG, BARNO,PRCCD, EFFDT, AUTONO, RATE) Values (" + EMD_NO + ", '" + CLCD + "', 'E', NULL, '" + VE.TBATCHDTL[i].BARNO + "','RP', TO_DATE('" + VE.T_TXN.DOCDT.retDateStr() + "','dd/mm/yyyy'), '" + VE.T_TXN.AUTONO + "', " + VE.TBATCHDTL[i].RPRATE + ")";
+                                sql = "insert into " + schnm + ".T_BATCHMST_PRICE  (EMD_NO, CLCD, DTAG, TTAG, BARNO,PRCCD, EFFDT, AUTONO, RATE,MTRLJOBCD) Values (" + EMD_NO + ", '" + CLCD + "', 'E', NULL, '" + VE.TBATCHDTL[i].BARNO + "','RP', TO_DATE('" + VE.T_TXN.DOCDT.retDateStr() + "','dd/mm/yyyy'), '" + VE.T_TXN.AUTONO + "', " + VE.TBATCHDTL[i].RPRATE + ",'" + mtrljobcd + "')";
                                 OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
                             }
                         }
