@@ -271,6 +271,7 @@
     <Compile Include="Controllers\M_Doc_AttachedController.cs" />
     <Compile Include="Controllers\M_FinProductController.cs" />
     <Compile Include="Controllers\M_FloorController.cs" />
+    <Compile Include="Controllers\Rep_Data_QueriesController.cs" />
     <Compile Include="Controllers\Rep_GLController.cs" />
     <Compile Include="Controllers\Rep_ItemPartySummController.cs" />
     <Compile Include="Controllers\Rep_PartyItemSummController.cs" />
@@ -1005,6 +1006,7 @@
     <Compile Include="ViewModels\RepBarcodeImage.cs" />
     <Compile Include="ViewModels\RepBarcodePrint.cs" />
     <Compile Include="ViewModels\RepBarHistory.cs" />
+    <Compile Include="ViewModels\RepDataQryUpdt.cs" />
     <Compile Include="ViewModels\RepEWBChanges.cs" />
     <Compile Include="ViewModels\RepMiscQryUpdt.cs" />
     <Compile Include="ViewModels\SalePymtEntry.cs" />
@@ -1665,6 +1667,8 @@
     <Content Include="Views\Rep_ItemPartySumm\Rep_ItemPartySumm.cshtml" />
     <Content Include="Views\Shared\_Rep_ItemPartySumm_Item_Det.cshtml" />
     <Content Include="Views\Rep_GL\Rep_GL.cshtml" />
+    <Content Include="Views\Rep_Data_Queries\Rep_Data_Queries.cshtml" />
+    <Content Include="Views\Shared\_Rep_Data_Qry_Updt_GRID.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

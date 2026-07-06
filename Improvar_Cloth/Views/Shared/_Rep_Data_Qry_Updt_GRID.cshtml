@@ -1,0 +1,94 @@
+﻿@model Improvar.ViewModels.RepDataQryUpdt
+<script type="text/javascript">
+    $(document).ready(function () {
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_Rep_Data_Qry_Updt_GRID'));
+        $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
+    });
+</script>
+
+<div style="transform: translate(0%, 0%);z-index: 1100;background-color:#c4b9b9;border:5px groove;width: 966px;">
+    <div class="table-responsive">
+        @if (Model.DefaultView == true)
+        {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                <div class="col-md-8">
+                    <input type="text" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_Rep_Data_Qry_Updt_GRID');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size:11px;color:darkmagenta;border:1px inset;height: 21px;padding: 4px;">
+                    <b> Customer Wise Details</b>
+                </center>
+            </div>
+            <div class="sticky-table sticky-ltr-cells">
+                <div style="height:auto;overflow-y:scroll;OVERFLOW-X: hidden;max-height:291px;">
+                    <table id="_Rep_Data_Qry_Updt_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px">
+                        <thead>
+                            <tr class="sticky-header" style="height:30px;">
+                                <th class="sticky-cell" style="width: 20px;">
+                                    <input type="checkbox" name="Test" onclick="SetAllCheckBoxesFilter(this, '_Rep_Data_Qry_Updt_GRID', 'Make_Checked_', 'search')" />
+                                </th>
+                                <th class="" style="width: 20px;text-align:center;">SL No.</th>
+                                <th class="" style="width:50px;">Name</th>
+                                <th class="" style="width:50px;">Address</th>
+                                <th class="" style="width:50px;">Area</th>
+                                <th class="" style="width:50px;">City</th>
+                                <th class="" style="width:50px;text-align:right">Pincode</th>
+                                <th class="" style="width:50px;">Reg. Email</th>
+                                <th class="" style="width:80px;text-align:right">Reg. Mobile</th>
+                                <th class="" style="width:80px;">GST No</th>
+                                <th class="" style="width:80px;">Agent Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.CUSTOMER_DTL != null)
+                            {
+                                for (int i = 0; i <= Model.CUSTOMER_DTL.Count - 1; i++)
+                                {
+                                    <tr style="font-size:12px; font-weight:bold;">
+                                        <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
+                                            @Html.CheckBoxFor(model => model.CUSTOMER_DTL[i].Checked, new { id = "DATA_CHECKED_" + i, @TabIndex = -1 })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.CUSTOMER_DTL[i].SLNO, new { id = "DATA_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align: left;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
+                                           
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.CUSTOMER_DTL[i].NM, new { id = "DATA_NM_" + i, @class = " atextBoxFor ", @style = "text-align: left;", maxlength = 50, @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.CUSTOMER_DTL[i].ADDRESS, new { id = "DATA_ADDRESS_" + i, @class = " atextBoxFor ", @style = "text-align: left;", maxlength = 100, @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.CUSTOMER_DTL[i].AREA, new { id = "DATA_AREA_" + i, @class = " atextBoxFor ", @style = "text-align: left;", maxlength = 50, @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.CUSTOMER_DTL[i].CITY, new { htmlAttributes = new { id = "DATA_CITY_" + i, @style = "text-align: left;", @class = " atextBoxFor", maxlength = 20, @TabIndex = -1, @readonly = "readonly" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.CUSTOMER_DTL[i].PIN, new { htmlAttributes = new { id = "DATA_PIN_" + i, @style = "text-align: right;", @class = " atextBoxFor", maxlength = 6, @TabIndex = -1, @readonly = "readonly" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.CUSTOMER_DTL[i].REGMAIL, new { htmlAttributes = new { id = "DATA_REGMAIL_" + i, @style = "text-align: left;", @class = " atextBoxFor", maxlength = 30, @TabIndex = -1, @readonly = "readonly" } })
+                                            
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.CUSTOMER_DTL[i].REGMOB, new { htmlAttributes = new { id = "DATA_REGMOB" + i, @style = "text-align: right;", @class = " atextBoxFor", maxlength = 10, @TabIndex = -1, @readonly = "readonly" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.CUSTOMER_DTL[i].GSTNO, new { htmlAttributes = new { id = "DATA_GSTNO_" + i, @style = "text-align: left;", @class = " atextBoxFor", maxlength = 15, @readonly = "readonly" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.CUSTOMER_DTL[i].AGNM, new { htmlAttributes = new { id = "DATA_AGNM" + i, @style = "text-align: left;", @class = " atextBoxFor", maxlength = 50, @TabIndex = -1, @readonly = "readonly" } })
+                                        </td>                                        
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
