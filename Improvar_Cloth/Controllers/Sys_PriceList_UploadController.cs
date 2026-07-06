@@ -64,7 +64,7 @@ namespace Improvar.Controllers
         }
         public string ReadRaymondPricelist(ReportViewinHtml VE, Stream stream)
         {
-            string msg = "";
+            string msg = ""; string count = "";
             try
             {
                 using (var package = new ExcelPackage(stream))
@@ -73,11 +73,11 @@ namespace Improvar.Controllers
                     var workSheet = currentSheet.First();
                     var noOfCol = workSheet.Dimension.End.Column;
                     var noOfRow = workSheet.Dimension.End.Row;
-                    int row = 2;
+                    int row = 2; 
                     for (row = 2; row <= noOfRow; row++)
                     {
                         string grpnm = workSheet.Cells[row, 1].Value.ToString();
-                        string style = workSheet.Cells[row, 2].Value.ToString() + workSheet.Cells[row, 3].Value.ToString().Split('-')[0];
+                        string style = workSheet.Cells[row, 2].Value?.ToString() + workSheet.Cells[row, 3].Value.ToString().Split('-')[0];
                         string HSNCODE = workSheet.Cells[row, 7].Value.ToString();
                         ItemDet ItemDet = Salesfunc.CreateItem(style, "MTR", grpnm, HSNCODE, "", "", "F", "C", "");
                         if (ItemDet.ITCD.retStr() == "")
@@ -93,7 +93,11 @@ namespace Improvar.Controllers
                         }
                         sql = "SELECT * FROM " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST_PRICE where barno ='" + ItemDet.BARNO + "' and EFFDT=to_date('" + VE.TDT + "','dd/mm/yyyy') ";
                         var dt = masterHelp.SQLquery(sql);
-                        if (dt.Rows.Count > 0) continue;
+                        if (dt.Rows.Count > 0)
+                        {
+                            count += "Row Number [" + row + "] Price Code Exist on given effective date " + VE.TDT + "<br>";
+                            continue;
+                        }
                         double CP = workSheet.Cells[row, 4].Value.retDbl();
                         double WP = workSheet.Cells[row, 5].Value.retDbl();
                         double RP = workSheet.Cells[row, 6].Value.retDbl();
@@ -105,6 +109,10 @@ namespace Improvar.Controllers
                         msg = row.ToString();
                         //row++;
                     }
+                }
+                if(count.retStr() != "")
+                {
+                    return count;
                 }
                 return "Uploaded Successfully ! ";
             }

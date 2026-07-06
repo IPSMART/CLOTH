@@ -1,0 +1,864 @@
+﻿@model Improvar.ViewModels.RepDataQryUpdt
+@{
+    ViewBag.Title = "Data Queries";
+    Layout = "~/Views/Shared/_ReportLayout.cshtml";
+    string PageControllerName = "Rep_Data_Queries";
+}
+<script src="~/Scripts/jquery.min.js" type="text/javascript"></script>
+<link rel="stylesheet" href="~/Content/bootstrap-float-label.min.css" />
+<link rel="stylesheet" href="~/Content/bootstrap-select.css" />
+@Scripts.Render("~/Scripts/Multiple-Select-min.js")
+@Scripts.Render("~/Scripts/bootstrap-select.js")
+<script src="~/Scripts/jquery.min.js"></script>
+<script src="~/Scripts/Jewel.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        // $("#1stdiv").hide();
+        // $("#2nddiv").hide();
+        ChangeWorkNo_Item();
+    });
+</script>
+<script>
+    $(function () {
+        $("#FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+        $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+        $("#NEWPREFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+        $("#FROMDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+        $("#TODT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+    });
+</script>
+<script>
+    function Update() {
+        debugger;
+        var val = ($("#TEXTBOX1").find(":selected").val());
+        if (val == "Change Item") {
+            if (!emptyFieldCheck("Select/Enter Work No.", "WORKNO")) { return false; }
+            if (!emptyFieldCheck("Select/Enter New Style No.", "NEWITCD")) { return false; }
+            if ($("#OLDITCD").val() == $("#NEWITCD").val()) {
+                msgInfo("Old Item and New Item is same !!");
+                message_value = "NEWITCD";
+                return false;
+            }
+        }
+
+        else if (val == "Change Work_No") {
+            if (!emptyFieldCheck("Select/Enter From Work No.", "NEWWORKNO")) { return false; }
+        }
+        else if (val == "Change Less_per") {
+            if (!emptyFieldCheck("Select/Enter Party", "SLCD")) { return false; }
+
+        }
+        else if (val == "Change Opening Rate") {
+            if (!emptyFieldCheck("Select/Enter Document No.", "DOCNO5")) { return false; }
+            //if (!emptyFieldCheck("Select/Enter New Rate", "NEWRATE")) { return false; }
+            if (retFloat($("#NEWRATE").val()) == 0) {
+                msgInfo("Select/Enter New Rate !!");
+                message_value = "NEWRATE";
+                return false;
+            }
+        }
+        else if (val == "Change Stone Rate") {
+            var WORKNORATE = $("#WORKNORATE").val();
+            var AUTONORATE = $("#AUTONORATE").val();
+            var ITCDRATE = $("#ITCDRATE").val();
+            if (WORKNORATE == "" && ITCDRATE == "") {
+                msgInfo("Please Select / Enter Item or Workno");
+                message_value = 'ITCDRATE';
+                return false;
+            }
+            //if (!emptyFieldCheck("Select/Enter Work No.", "WORKNORATE")) { return false; }
+            //if (!emptyFieldCheck("Select/Enter Autono", "AUTONORATE")) { return false; }
+
+            var cnt = 0;
+            var GridRow = $("#_Rep_Data_Qry_Updt_GRID > tbody > tr").length;
+            for (var i = 0; i <= GridRow - 1; i++) {
+                if (document.getElementById("RATE_CHECKED_" + i).checked == true) {
+                    cnt++;
+                }
+            }
+            if (cnt == 0) {
+                msgInfo("Please Checked Row for Rate Change !!");
+                return false;
+            }
+        }
+        else if (val == "Huid Add/Update") {
+            if (!emptyFieldCheck("Select/Enter Work No.", "HUID_WORKNO")) { return false; }
+        }
+
+        $.ajax({
+            type: 'post',
+            beforesend: $("#WaitingMode").show(),
+            url: "@Url.Action("Save", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                if (result == "1") {
+                    $("#WaitingMode").hide();
+                    msgSuccess1("Update Successfully");
+
+
+                } else {
+                    msgWarning(result);
+                    $("#WaitingMode").hide();
+                    return false;
+                }
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function ChangeWorkNo_Item() {
+        debugger;
+        var val = ($("#TEXTBOX1").find(":selected").val());
+        if (val == "Change Customer_View") {
+            $("#5thdiv").show(); $("#divUpdate").show();
+        }
+        else if (val == "select") {
+            $("#5thdiv").hide(); $("#divUpdate").hide();
+        }
+    }
+</script>
+<script>
+    function ChkBaleno() {
+        var NEWBALENO = $("#NEWBALENO").val();
+        if (NEWBALENO != "") {
+            $.ajax({
+                type: 'post',
+                beforesend: $("#WaitingMode").show(),
+                url: "@Url.Action("CheckBaleno", PageControllerName)",
+                data: { BALENO: NEWBALENO },
+                success: function (result) {
+                    if (result == "1") {
+                        msgInfo("Bale No Already Exists, Please Enter a Different Bale No. !! ");
+                        message_value = "NEWBALENO";
+                        $("#NEWBALENO").val("");
+                        return false;
+                    }
+                    $("#WaitingMode").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+
+        }
+
+    }
+</script>
+<script>
+    function ChkPrefno() {
+        var NEWPREFNO = $("#NEWPREFNO").val();
+        var NEWPREFDT = $("#NEWPREFDT").val();
+        if (NEWPREFNO != "" && NEWPREFDT != "") {
+            $.ajax({
+                type: 'post',
+                beforesend: $("#WaitingMode").show(),
+                url: "@Url.Action("CheckPrefno", PageControllerName)",
+                data: { PREFNO: NEWPREFNO, PREFDT: NEWPREFDT },
+                success: function (result) {
+                    if (result == "1") {
+                        msgInfo("Party Bill No. && Party Bill Date Already Exists, Please Enter a Different Party Bill No. && Party Bill Date !! ");
+                        message_value = "NEWPREFNO";
+                        $("#NEWPREFNO").val("");
+                        return false;
+                    }
+                    $("#WaitingMode").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+
+        }
+
+    }
+
+
+    function CheckBillNumber() {
+        debugger;
+        var BILL_NO = $("#NEWPREFNO").val();
+        var SUPPLIER = $("#SLCD").val();
+        var AUTO_NO = $("#BLAUTONO4").val();
+        if (BILL_NO != "") {
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("CheckBillNumber", PageControllerName)",
+                data:
+                {
+                    BILL_NO: BILL_NO, SUPPLIER: SUPPLIER, AUTO_NO: AUTO_NO,
+                },
+                success: function (result) {
+                    if (result == "1") {
+                        msgInfo("Bill Number Already Exists, for Particular Supplier Code : Please Enter a Different Bill Number !! ");
+                        message_value = "NEWPREFNO";
+                        $("#NEWPREFNO").val("");
+                        return false;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function GetWorkNoDetails(id, tag) {
+        debugger;
+
+        if (id == "") {
+            if (tag == "Change Item") {
+                ClearAllTextBoxes("WORKNO,OLDITCD,OLDITNM,NEWITCD,NEWITNM");
+            }
+            else
+                if (tag == "FWork_No") {
+                    ClearAllTextBoxes("OLDWORKNO,OLDITCD");
+                } else {
+                    ClearAllTextBoxes("WORKID,ITCD");
+
+                }
+
+        }
+        else {
+            var code = "";
+            if (tag == "Change Item") {
+                code = $("#WORKNO").val() + String.fromCharCode(181) + $("#OLDITCD").val() + String.fromCharCode(181) + tag;
+            }
+            else if (tag == "FWork_No") {
+                code = $("#OLDWORKNO").val() + String.fromCharCode(181) + '' + String.fromCharCode(181) + tag;
+            }
+            else {
+                code = $("#WORKID").val() + String.fromCharCode(181) + '' + String.fromCharCode(181) + tag;
+
+            }
+
+            var val = id;
+            if (val.indexOf('+') >= 0) {
+                val = val.replaceAll("+", "%2B");//encodeURIComponent('+')="%2B"
+            }
+            $.ajax({
+                type: 'POST',
+                beforesend: $("#WaitingMode").show(),
+                url: "@Url.Action("GetWorkNo", PageControllerName)",
+                data: "&val=" + val + "&Code=" + code,
+                success: function (result) {
+                    var MSG = result.indexOf('#helpDIV');
+                    if (MSG >= 0) {
+                        if (tag == "Change Item") {
+                            ClearAllTextBoxes("WORKNO,OLDITCD,OLDITNM,NEWITCD,NEWITNM");
+                            $('#SearchFldValue').val("WORKNO");
+                            $('#helpDIV').html(result);
+                            $('#ReferanceFieldID').val("WORKNO/OLDITCD/OLDITNM/NEWITCD/NEWITNM");
+                            $('#ReferanceColumn').val("0/2/1/2/1");
+
+                        }
+                        else if (tag == "FWork_No") {
+                            ClearAllTextBoxes("OLDWORKNO,OLDITCD");
+                            $('#SearchFldValue').val("OLDWORKNO");
+                            $('#helpDIV').html(result);
+                            $('#ReferanceFieldID').val("OLDWORKNO/OLDITCD");
+                            $('#ReferanceColumn').val("0/2");
+
+                        }
+                        else {
+                            ClearAllTextBoxes("WORKID,ITCD");
+                            $('#SearchFldValue').val("WORKID");
+                            $('#helpDIV').html(result);
+                            $('#ReferanceFieldID').val("WORKID/ITCD");
+                            $('#ReferanceColumn').val("0/2");
+
+                        }
+
+                        $('#helpDIV_Header').html("Work No. Details");
+                    }
+                    else {
+                        var MSG = result.indexOf(String.fromCharCode(181));
+                        if (MSG >= 0) {
+                            if (tag == "Change Item") {
+                                $("#WORKNO").val(returncolvalue(result, "WORKNO"));
+                                $("#OLDITCD").val(returncolvalue(result, "ITCD"));
+                                $("#OLDITNM").val(returncolvalue(result, "ITNM"));
+                                $("#NEWITCD").val(returncolvalue(result, "ITCD"));
+                                $("#NEWITNM").val(returncolvalue(result, "ITNM"));
+                            }
+                            else if (tag == "FWork_No") {
+                                $("#OLDWORKNO").val(returncolvalue(result, "WORKNO"));
+                                $("#OLDITCD").val(returncolvalue(result, "ITCD"));
+
+                            }
+                            else {
+                                $("#WORKID").val(returncolvalue(result, "WORKNO"));
+                                $("#ITCD").val(returncolvalue(result, "ITCD"));
+                            }
+                        }
+                        else {
+                            $('#helpDIV').html("");
+                            msgInfo("" + result + " !");
+                            if (tag == "Change Item") {
+                                ClearAllTextBoxes("WORKNO,OLDITCD,OLDITNM,NEWITCD,NEWITNM");
+                                message_value = "WORKNO";
+                            }
+                            else if (tag == "FWork_No") {
+                                ClearAllTextBoxes("OLDWORKNO,OLDITCD");
+                                message_value = "OLDWORKNO";
+                            }
+                            else {
+                                ClearAllTextBoxes("WORKID,ITCD");
+                                message_value = "WORKID";
+
+                            }
+
+                        }
+                    }
+                    $("#WaitingMode").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+
+    }
+</script>
+<script>
+    function CheckWorkOrderNumber() {
+        debugger;
+        var WORK_NO = $("#NEWWORKNO").val();
+        if (WORK_NO == "") return true;
+        if (WORK_NO != "") {
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("CheckWorkOrderNumber", PageControllerName)",
+                beforesend: $("#WaitingMode").show(),
+                data:
+                {
+                    WORK_NO: WORK_NO,
+                },
+                success: function (result) {
+                    var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
+                    $("#WaitingMode").hide();
+
+                    if (res[1] == "Y") {
+                        msgWarning("Either Work Number Same Or New Work Number Already Exists ! Please enter a Another New Work Number.");
+                        $("#NEWWORKNO").val("");
+                        $("#NEWWORKNO").focus();
+                    }
+                    //else {
+                    //    $("#NITCD").focus();
+                    //}
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function GetWorknoMaking() {
+        var ITCD4 = $("#ITCD4").val();
+        if (!emptyFieldCheck("Please Select / Enter Item", "ITCD4")) { return false; }
+        // if (retFloat($("#KMAKEPERCHNG").val()) != 0 && retFloat($("#SMAKEPERCHNG").val()) != 0) { msgInfo("Please enter K.Make % OR S.Make % change then Search"); message_value = "KMAKEPERCHNG"; return false; }
+        //if (retFloat($("#KMAKEPERCHNG").val()) == 0 && retFloat($("#SMAKEPERCHNG").val()) == 0) { msgInfo("Please enter K.Make % OR S.Make % change then Search"); message_value = "KMAKEPERCHNG"; return false; }
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("GetWorknoMakingDet", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize(),
+            success: function (result) {
+                var MSG = result.indexOf('_Rep_Misc_Qry_Updt_Making_GRID');
+                if (MSG >= 0) {
+                    $("#partialdivMakingGrid").animate({ marginTop: '-10px' }, 50);
+                    $("#partialdivMakingGrid").html(result);
+                    if (retFloat($("#RATE").val()) != 0) {
+                        ChangeSmakeFix();
+                    }
+                    $("#WaitingMode").hide();
+                }
+                else {
+                    msgInfo("Data not found");
+                    message_value = 'ITCD4';
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function MakePerUpdateGrid(id) {
+        debugger;
+        var KMAKEPERCHNG = retFloat($("#KMAKEPERCHNG").val());
+        var SMAKEPERCHNG = retFloat($("#SMAKEPERCHNG").val());
+
+        var GridRow = $("#_Rep_Misc_Qry_Updt_Making_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+
+            if (id == "KMAKE") {
+                var Make_OLDKMAKERATE = retFloat($("#Make_OLDKMAKERATE_" + i).val());
+                if (Make_OLDKMAKERATE != 0) {
+                    Make_NEWKMAKERATE_ = retFloat(Make_OLDKMAKERATE + retFloat((Make_OLDKMAKERATE * KMAKEPERCHNG) / 100)).toFixed(2);
+                    $("#Make_NEWKMAKERATE_" + i).val(Make_NEWKMAKERATE_);
+                    $("#Make_KMAKEPER_" + i).val(KMAKEPERCHNG);
+                }
+            }
+            else {
+                var Make_OLDSMAKERATE = retFloat($("#Make_OLDSMAKERATE_" + i).val());
+                if (Make_OLDSMAKERATE != 0) {
+                    Make_NEWSMAKERATE_ = retFloat(Make_OLDSMAKERATE + retFloat((Make_OLDSMAKERATE * SMAKEPERCHNG) / 100)).toFixed(2);
+                    $("#Make_NEWSMAKERATE_" + i).val(Make_NEWSMAKERATE_);
+                    $("#Make_SMAKEPER_" + i).val(SMAKEPERCHNG);
+                }
+            }
+        }
+    }
+    function MakePerUpdate(id, index) {
+        debugger;
+        var KMAKEPERCHNG = retFloat($("#Make_KMAKEPER_" + index).val());
+        var SMAKEPERCHNG = retFloat($("#Make_SMAKEPER_" + index).val());
+
+
+        if (id == "KMAKE") {
+            var Make_OLDKMAKERATE = retFloat($("#Make_OLDKMAKERATE_" + index).val());
+            if (Make_OLDKMAKERATE != 0) {
+                Make_NEWKMAKERATE_ = retFloat(Make_OLDKMAKERATE + retFloat((Make_OLDKMAKERATE * KMAKEPERCHNG) / 100)).toFixed(2);
+                $("#Make_NEWKMAKERATE_" + index).val(Make_NEWKMAKERATE_);
+            }
+        }
+        else {
+            var Make_OLDSMAKERATE = retFloat($("#Make_OLDSMAKERATE_" + index).val());
+            if (Make_OLDSMAKERATE != 0) {
+                Make_NEWSMAKERATE_ = retFloat(Make_OLDSMAKERATE + retFloat((Make_OLDSMAKERATE * SMAKEPERCHNG) / 100)).toFixed(2);
+                $("#Make_NEWSMAKERATE_" + index).val(Make_NEWSMAKERATE_);
+            }
+        }
+    }
+</script>
+<script>
+    function ChangeSmakeFix() {
+        debugger;
+        $("#WaitingMode").show();
+        var GridRow = $("#_Rep_Misc_Qry_Updt_Making_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            var PURECD = $("#Make_PURECD_" + i).val();
+            var CntDi = retFloat($("#Make_CntDi_" + i).val());
+            var QNTY = retFloat($("#Make_QNTY_" + i).val());
+            var RATE = retFloat($("#RATE").val());
+            if ((PURECD == "18" || CntDi > 0) && QNTY > 2) {
+                var SMAKEFIX = retFloat(QNTY * RATE);
+                SMAKEFIX = CharmPrice("RN", SMAKEFIX, "50");
+                $("#Make_SMAKEFIX_" + i).val(SMAKEFIX);
+                //$("#Make_KMAKEFIX_" + i).val(SMAKEFIX);
+            }
+        }
+        $("#WaitingMode").hide();
+    }
+</script>
+<script>
+    function GetWorknoRate() {
+        var WORKNORATE = $("#WORKNORATE").val();
+        var AUTONORATE = $("#AUTONORATE").val();
+        var ITCDRATE = $("#ITCDRATE").val();
+        if(WORKNORATE == "" && ITCDRATE == ""){
+            msgInfo("Please Select / Enter Item or Workno");
+            message_value = 'ITCDRATE';
+            return false;
+        }
+        //if (!emptyFieldCheck("Please Select / Enter Item", "WORKNORATE")) { return false; }
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("GetRate", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize() + "&Worknos=" + WORKNORATE + "&Autonos=" + AUTONORATE+ "&Itcds=" + ITCDRATE,
+            success: function (result) {
+                var MSG = result.indexOf('_Rep_Data_Qry_Updt_GRID');
+                if (MSG >= 0) {
+                    $("#partialdivRateGrid").animate({ marginTop: '-10px' }, 50);
+                    $("#partialdivRateGrid").html(result);
+                    if (retFloat($("#RATE").val()) != 0) {
+                        ChangeSmakeFix();
+                    }
+                    $("#WaitingMode").hide();
+                }
+                else {
+                    msgInfo("Data not found");
+                    message_value = 'WORKNORATE';
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function CalculateRowAmt(i, callfrm) {
+        debugger;
+
+        var AVWGHT = 0, REFAMT = 0, BROKAMT = 0, LOSSAMT = 0, PRATE = 0, PAMT = 0;
+
+        var PCS = retFloat($("#RATE_PCS_" + i).val());
+        var WGHT = retFloat($("#RATE_WGHT_" + i).val());
+        var SRATE = retFloat($("#RATE_SRATE_NEW_" + i).val());
+        var SAMT = retFloat($("#RATE_SAMT_" + i).val());
+        var WGHT = retFloat($("#RATE_WGHT_" + i).val());
+        var LOSSWGHT = retFloat($("#RATE_LOSSWGHT_" + i).val());
+
+        var PRATE = retFloat($("#RATE_PRATE_NEW_" + i).val());
+        var PAMT = retFloat($("#RATE_PAMT_" + i).val());
+
+        if (callfrm == "srate") {
+            SAMT = retFloat(WGHT * SRATE).toFixed(2);
+            SAMT = retFloat(RoundOff(SAMT, 0)).toFixed(2);
+            $("#RATE_SAMT_" + i).val(SAMT);
+        }
+        if (callfrm == "prate") {
+            PAMT = retFloat((WGHT + LOSSWGHT) * PRATE).toFixed(2);
+            PAMT = retFloat(RoundOff(PAMT, 0)).toFixed(2);
+            $("#RATE_PAMT_" + i).val(PAMT);
+        }
+
+        CalculateTotal();
+    }
+    function CalculateTotal() {
+        debugger;
+        var T_S_SAMT = 0, T_S_PAMT = 0;
+
+        var GridRow = $("#_Rep_Data_Qry_Updt_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            T_S_SAMT += retFloat($("#RATE_SAMT_" + i).val());
+            T_S_PAMT += retFloat($("#RATE_PAMT_" + i).val());
+        }
+
+        $("#T_SAMT").val(retFloat(T_S_SAMT).toFixed(2));
+        $("#T_PAMT").val(retFloat(T_S_PAMT).toFixed(2));
+    }
+</script>
+
+
+<script>
+    function GetHuid(id) {
+        debugger;
+        if (id == "") {
+            ClearAllTextBoxes("HUID_WORKNO,SLCD_HALMRK,SLNM_HALMRK");
+            $('#_Rep_Huid_Update_Huid > tbody').html("");
+
+        }
+        else {
+            $.ajax({
+                type: 'POST',
+                beforesend: $("#WaitingMode").show(),
+                url: "@Url.Action("GetWorkNoHuid", PageControllerName)",
+                data: $('form').serialize() + "&val=" + id,
+                success: function (result) {
+                    debugger;
+                    var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
+                    var MSG = res[1].indexOf('#helpDIV');
+                    if (MSG >= 0) {
+                        ClearAllTextBoxes("HUID_WORKNO,SLCD_HALMRK,SLNM_HALMRK");
+                        $('#partialdivDesigntab').html("");
+                        $('#SearchFldValue').val("HUID_WORKNO");
+                        $('#helpDIV').html(result);
+                        $('#ReferanceFieldID').val("HUID_WORKNO");
+                        $('#ReferanceColumn').val("0");
+                        $('#helpDIV_Header').html("Work Order Details");
+                    }
+                    else {
+                        var MSG = res[1].indexOf(String.fromCharCode(181));
+                        if (MSG >= 0) {
+                            $("#HUID_WORKNO").val(returncolvalue(result, "WORKNO"));
+                            $("#partialdiv").animate({ marginTop: '-10px' }, 50);
+                            $('#partialdiv').html(res[0]);
+                        }
+                        else {
+                            $('#helpDIV').html("");
+                            msgInfo("" + result + " !");
+                            ClearAllTextBoxes("HUID_WORKNO,SLCD_HALMRK,SLNM_HALMRK");
+                            $('#partialdiv').html("");
+                            message_value = "HUID_WORKNO";
+                        }
+                    }
+                    $("#WaitingMode").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+
+        }
+    }
+</script>
+
+<script>
+    function AddRow(ID, TABLE) {
+        debugger;
+        var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("AddRow", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG + "&TABLE=" + TABLE,
+            success: function (result) {
+                $("#WaitingMode").hide();
+                if (TABLE == "_Rep_Huid_Update_Huid") {
+                    $("#partialdiv").animate({ marginTop: '-10px' }, 50);
+                    $("#partialdiv").html(result);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function DeleteRow(TABLE) {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("DeleteRow", PageControllerName)",
+            data: $('form').serialize() + "&TABLE=" + TABLE,
+            success: function (result) {
+                if (TABLE == "_Rep_Huid_Update_Huid") {
+                    $("#partialdiv").animate({ marginTop: '0px' }, 50);
+                    $("#partialdiv").html(result);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function GetSalebill() {
+
+        //if (!emptyFieldCheck("Please Select / Enter From Date", "FROMDT")) { return false; }
+        //if (!emptyFieldCheck("Please Select / Enter To Date", "TODT")) { return false; }
+        var fdt = $("#FROMDT").val();
+        var tdt = $("#TODT").val();
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("GetSalebill", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize() + "&FROMDT=" + fdt + "&TODT=" + tdt,
+            success: function (result) {
+                var MSG = result.indexOf('_Rep_Misc_Qry_Updt_IV_GRID');
+                if (MSG >= 0) {
+                    $("#partialdivIV").html(result);
+                    $("#WaitingMode").hide();
+                }
+                else {
+                    msgInfo(result);
+                    message_value = 'FROMDT';
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function ExcelData(id) {
+        debugger;
+        $("#BtnName").val(id);
+        jQuery("form").append('<input type="hidden" id="BtnName" name="BtnNm" value=' + id + ' />');
+        jQuery("form").attr("target", "_blank");
+        jQuery("form").submit();
+    }
+</script>
+
+<script>
+    function SearchData() {
+
+        var NAME = $("#NM").val();
+        var AREA = $("#area").val();
+        var ADDRESS = $("#address").val();
+        var AGNM = $("#agnm").val();
+        var CITY = $("city").val();
+        var STATE = $("#state").val();
+        var PIN = $("#pin").val();
+        var REGMOB = $("#regmob").val();
+        var REGMAIL = $("#regmail").val();
+        var GSTNO = $("#gstno").val();
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("GetSublegData", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize() + "&NAME=" + NAME + "&AREA=" + AREA + "&ADDRESS=" + ADDRESS + "&AGNM=" + AGNM + "&CITY=" + CITY + "&STATE=" + STATE + "&PIN=" + PIN + "&REGMOB=" + REGMOB + "&REGMAIL=" + REGMAIL + "&GSTNO=" + GSTNO,
+        success: function (result) {
+            var MSG = result.indexOf('_Rep_Data_Qry_Updt_GRID');
+            if (MSG >= 0) {
+                $("#partialdivDataGrid").html(result);
+                $("#WaitingMode").hide();
+            }
+            else {
+                msgInfo(result);
+                message_value = 'FROMDT';
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+
+
+    }
+</script>
+
+@using (Html.BeginForm("Rep_Data_Queries", "Rep_Data_Queries", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    if (Model.DefaultView == true)
+    { <input type="hidden" id="Change_Item_tag" value="Change Item" />
+    <input type="hidden" id="FWork_No_tag" value="FWork_No" />
+    <input type="hidden" id="slcdcap_Halmrk" value="" />
+    <input type="hidden" id="slcdlinkcd_Halmrk" value="" />
+    <div class="form-horizontal">
+        @Html.HiddenFor(s => s.DefaultAction)
+        <input type="hidden" id="urlSLCDHLP" value="@Url.Action("GetSLCDhelp", PageControllerName)" />
+        <div class="col-md-5">
+            <div class="editor-label" style="margin-top: 10px;">
+                @Html.Label("", "Data In")
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-7">
+                @Html.DropDownListFor(model => Model.TEXTBOX1, new SelectList(Model.DropDown_list1, "Value", "Text", Model.TEXTBOX1), new { @class = "form-control", id = "TEXTBOX1", onchange = "ChangeWorkNo_Item();" })
+            </div>
+        </div>        
+        <div id="5thdiv">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="editor-field input-group" style="width:-webkit-fill-available;">
+                        <span class="has-float-label">
+                            @Html.EditorFor(model => model.NM, new { htmlAttributes = new { @class = "form-control", ID = "NM", @placeholder = "Name" } })                            
+                             <label for="NM">Name</label>                            
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="editor-field input-group" style="width:-webkit-fill-available;">
+                        <span class="has-float-label">
+                            @Html.EditorFor(model => model.agnm, new { htmlAttributes = new { @class = "form-control", ID = "agnm", @placeholder = "Agent Name" } })
+                            <label for="agnm">Agent Name</label>
+                        </span>
+                    </div>
+                </div> 
+                <div class="col-md-8">
+                    <div class="editor-field input-group" style="width:-webkit-fill-available;">
+                        <span class="has-float-label">
+                            @Html.EditorFor(model => model.area, new { htmlAttributes = new { @class = "form-control", ID = "area", @placeholder = "Area" } })
+                            <label for="area">Area</label>
+                        </span>
+                    </div>
+                </div>                 
+                <div class="col-md-8">
+                    <div class="editor-field input-group" style="width:-webkit-fill-available;">
+                        <span class="has-float-label">
+                            @Html.EditorFor(model => model.address, new { htmlAttributes = new { @class = "form-control", ID = "address", @placeholder = "Address" } })
+                            <label for="address">Address</label>
+                        </span>
+                    </div>
+                </div> 
+                <div class="col-md-6">
+                    <div class="editor-field input-group" style="width:-webkit-fill-available;">
+                        <span class="has-float-label">
+                            @Html.EditorFor(model => model.city, new { htmlAttributes = new { @class = "form-control", ID = "city", @placeholder = "City" } })
+                            <label for="city">City</label>
+                        </span>
+                    </div>
+                </div> 
+                <div class="col-md-6">
+                    <div class="editor-field input-group" style="width:-webkit-fill-available;">
+                        <span class="has-float-label">
+                            @Html.EditorFor(model => model.state, new { htmlAttributes = new { @class = "form-control", ID = "state", @placeholder = "State" } })
+                            <label for="state">State</label>
+                        </span>
+                    </div>
+                </div> 
+                <div class="col-md-2">
+                    <div class="editor-field input-group" style="width:-webkit-fill-available;">
+                        <span class="has-float-label">
+                            @Html.EditorFor(model => model.pin, new { htmlAttributes = new { @class = "form-control", ID = "pin", maxlength = 6, @placeholder = "Pincode" } })
+                            <label for="pin">Pincode</label>
+                        </span>
+                    </div>
+                </div>  
+              </div>
+            <div class="row" style="margin-top: 10px;">
+                <div class="col-md-5">
+                    <div class="editor-field input-group" style="width:-webkit-fill-available;">
+                        <span class="has-float-label">
+                            @Html.EditorFor(model => model.regmail, new { htmlAttributes = new { @class = "form-control", ID = "regmail", @placeholder = "Reg. Email" } })
+                            <label for="regmail">Reg. Email</label>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="editor-field input-group" style="width:-webkit-fill-available;">
+                        <span class="has-float-label">
+                            @Html.EditorFor(model => model.regmob, new { htmlAttributes = new { @class = "form-control", ID = "regmob", maxlength = 10, @placeholder = "Reg. Mobile No." } })
+                            <label for="regmob">Reg Mobile</label>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="editor-field input-group" style="width:-webkit-fill-available;">
+                        <span class="has-float-label">
+                            @Html.EditorFor(model => model.gstno, new { htmlAttributes = new { @class = "form-control", ID = "gstno", maxlength = 15, @placeholder = "GST No" } })
+                            <label for="gstno">GST No</label>
+                        </span>
+                    </div>
+                </div>  
+                <div class="col-lg-6">
+                    <input type="button" value="Fill Grid" name="submitbutton" class="btn btn-info" formtarget="_blank" accesskey="S" onclick="SearchData()" />
+                </div>              
+            </div>
+            <div class="row" style="margin-top: 30px;">
+                <div>
+                    <div id="partialdivDataGrid">
+                        @Html.Partial("_Rep_Data_Qry_Updt_GRID")
+                    </div>
+                </div>
+
+            </div>
+        </div> 
+
+        <div class="row" style="margin-top:10PX" id="divUpdate">
+            <div class="col-md-5">
+            </div>
+            <div class="col-lg-6">
+                <input type="submit" value="Generate Excel" class="btn btn-info" />
+            </div>
+        </div>
+    </div>
+    }
+    <div class="container">
+        <div id="helpDIV" style="z-index: 2;">
+        </div>
+    </div>
+}
