@@ -2050,58 +2050,61 @@ namespace Improvar.Controllers
                             var prcCols = prcRows[i].Split(',');
                             for (int j = 10; j < prcCols.Length; j++)
                             {
-                                string effdt = prcCols[0];
-                                string mtrljobcd = prcCols[1];
-                                string colorbarno = prcCols[5];// prcCols[2];
-                                string sizebarno = prcCols[8];// prcCols[5];
-                                string colorcd = prcCols[3];// prcCols[0];
-                                string sizecd = prcCols[6];//prcCols[3];
-                                string barno = prcCols[9];// prcCols[6];
-                                var varcode = VE.MSITEMBARCODE.Where(d => d.SIZECD.retStr() == sizecd && d.COLRCD.retStr() == colorcd).FirstOrDefault();
-                                if (varcode == null)
+                                if (prcCols[j].retDbl() != 0)
                                 {
-                                    transaction.Rollback();
-                                    return Content("Color:" + colorcd + " Sizecd:" + sizecd + " not in barcode Tab. Please refresh pricelist. ");
-                                }
-                                var PRCCD = DTPRICES.Columns[j].ColumnName;
-                                T_BATCHMST_PRICE MIP = new T_BATCHMST_PRICE();
-                                MIP.EMD_NO = MSITEM.EMD_NO;
-                                MIP.DTAG = MSITEM.DTAG;
-                                MIP.CLCD = MSITEM.CLCD;
-                                MIP.EFFDT = effdt.retStr() != "" ? Convert.ToDateTime(effdt) : System.DateTime.Now.Date;
-                                MIP.MTRLJOBCD = mtrljobcd;
-                                MIP.PRCCD = PRCCD;
-                                if (varcode.BARNO.retStr() != "")
-                                {
-                                    MIP.BARNO = varcode.BARNO.retStr();
-                                }
-                                else
-                                {
-                                    MIP.BARNO = salesfunc.GenerateBARNO(MSITEM.ITCD, varcode.CLRBARCODE.retStr(), varcode.SZBARCODE);
-                                }
-                                //if (i == 0)
-                                //{
-                                //    MIP.BARNO = MSITEMBARCODE.BARNO;
-                                //}
-                                //else
-                                //{
-                                //    MIP.BARNO = barno;
-                                //}
-                                MIP.RATE = prcCols[j].retDbl();
-                                DB.T_BATCHMST_PRICE.Add(MIP);
+                                    string effdt = prcCols[0];
+                                    string mtrljobcd = prcCols[1];
+                                    string colorbarno = prcCols[5];// prcCols[2];
+                                    string sizebarno = prcCols[8];// prcCols[5];
+                                    string colorcd = prcCols[3];// prcCols[0];
+                                    string sizecd = prcCols[6];//prcCols[3];
+                                    string barno = prcCols[9];// prcCols[6];
+                                    var varcode = VE.MSITEMBARCODE.Where(d => d.SIZECD.retStr() == sizecd && d.COLRCD.retStr() == colorcd).FirstOrDefault();
+                                    if (varcode == null)
+                                    {
+                                        transaction.Rollback();
+                                        return Content("Color:" + colorcd + " Sizecd:" + sizecd + " not in barcode Tab. Please refresh pricelist. ");
+                                    }
+                                    var PRCCD = DTPRICES.Columns[j].ColumnName;
+                                    T_BATCHMST_PRICE MIP = new T_BATCHMST_PRICE();
+                                    MIP.EMD_NO = MSITEM.EMD_NO;
+                                    MIP.DTAG = MSITEM.DTAG;
+                                    MIP.CLCD = MSITEM.CLCD;
+                                    MIP.EFFDT = effdt.retStr() != "" ? Convert.ToDateTime(effdt) : System.DateTime.Now.Date;
+                                    MIP.MTRLJOBCD = mtrljobcd;
+                                    MIP.PRCCD = PRCCD;
+                                    if (varcode.BARNO.retStr() != "")
+                                    {
+                                        MIP.BARNO = varcode.BARNO.retStr();
+                                    }
+                                    else
+                                    {
+                                        MIP.BARNO = salesfunc.GenerateBARNO(MSITEM.ITCD, varcode.CLRBARCODE.retStr(), varcode.SZBARCODE);
+                                    }
+                                    //if (i == 0)
+                                    //{
+                                    //    MIP.BARNO = MSITEMBARCODE.BARNO;
+                                    //}
+                                    //else
+                                    //{
+                                    //    MIP.BARNO = barno;
+                                    //}
+                                    MIP.RATE = prcCols[j].retDbl();
+                                    DB.T_BATCHMST_PRICE.Add(MIP);
 
-                                //RATE
-                                //T_BATCHMST_PRICE TBATCHMSTPRICE = new T_BATCHMST_PRICE();
-                                //TBATCHMSTPRICE.EMD_NO = MSITEM.EMD_NO;
-                                //TBATCHMSTPRICE.CLCD = MSITEM.CLCD;
-                                //TBATCHMSTPRICE.DTAG = MSITEM.DTAG;
-                                //TBATCHMSTPRICE.TTAG = MSITEM.TTAG;
-                                //TBATCHMSTPRICE.BARNO = MIP.BARNO;
-                                //TBATCHMSTPRICE.PRCCD = MIP.PRCCD;
-                                //TBATCHMSTPRICE.EFFDT = MIP.EFFDT;
-                                //TBATCHMSTPRICE.RATE = MIP.RATE;
+                                    //RATE
+                                    //T_BATCHMST_PRICE TBATCHMSTPRICE = new T_BATCHMST_PRICE();
+                                    //TBATCHMSTPRICE.EMD_NO = MSITEM.EMD_NO;
+                                    //TBATCHMSTPRICE.CLCD = MSITEM.CLCD;
+                                    //TBATCHMSTPRICE.DTAG = MSITEM.DTAG;
+                                    //TBATCHMSTPRICE.TTAG = MSITEM.TTAG;
+                                    //TBATCHMSTPRICE.BARNO = MIP.BARNO;
+                                    //TBATCHMSTPRICE.PRCCD = MIP.PRCCD;
+                                    //TBATCHMSTPRICE.EFFDT = MIP.EFFDT;
+                                    //TBATCHMSTPRICE.RATE = MIP.RATE;
 
-                                //DB.T_BATCHMST_PRICE.Add(TBATCHMSTPRICE);
+                                    //DB.T_BATCHMST_PRICE.Add(TBATCHMSTPRICE);
+                                }
                             }
                         }
                         #endregion

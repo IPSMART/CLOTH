@@ -42,6 +42,8 @@ namespace Improvar.Controllers
                     string location = CommVar.Loccd(UNQSNO);
                     jobcd = VE.MENU_PARA;
                     jobnm = DB.M_JOBMST.Find(jobcd).JOBNM;
+                    VE.TEXTBOX1 = jobcd;
+                    VE.TEXTBOX3 = jobnm;
 
                     //if (jobcd == "DY" || jobcd == "BL") VE.Checkbox4 = true;
                     ViewBag.formname = "Pending Challan";
