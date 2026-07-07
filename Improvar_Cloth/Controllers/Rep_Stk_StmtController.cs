@@ -203,6 +203,11 @@ namespace Improvar.Controllers
                 bool ignoreitems = VE.Checkbox2;
                 DataTable tbl = new DataTable();
                 DataTable fifotbl = new DataTable();
+                string prccode = "CP";
+                if (rateon != "FIFO")
+                {
+                    prccode = rateon;
+                }
                 if (summary == "F")
                 {
                     //tbl = Salesfunc.GetStockFifo("FIFO", asdt, "", "", selitgrpcd, "", selgocd, true, "", false, "", "", "", "", "CP");
@@ -211,12 +216,12 @@ namespace Improvar.Controllers
                 }
                 else if (summary == "P")
                 {
-                    tbl = Salesfunc.GetStock(tdt, selgocd, "", selitcd, mtrljobcd, "", selitgrpcd, "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", party, VE.Checkbox7, false, true, false, fdt, false, loccd, "", ShowShade);
+                    tbl = Salesfunc.GetStock(tdt, selgocd, "", selitcd, mtrljobcd, "", selitgrpcd, "", prccode, "C001", "", "", true, false, "", "", false, false, true, "", false, "", party, VE.Checkbox7, false, true, false, fdt, false, loccd, "", ShowShade);
                 }
                 else
                 {
                     //tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", party, VE.Checkbox7);
-                    tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, mtrljobcd, "", selitgrpcd, "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", party, VE.Checkbox7, false, false, false, "", false, loccd, "", ShowShade);
+                    tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, mtrljobcd, "", selitgrpcd, "", prccode, "C001", "", "", true, false, "", "", false, false, true, "", false, "", party, VE.Checkbox7, false, false, false, "", false, loccd, "", ShowShade);
                 }
                 if (rateon == "FIFO")
                 {
@@ -808,6 +813,7 @@ namespace Improvar.Controllers
                 bool ShowShade = VE.Checkbox13;
                 string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
                 string fdt = CommVar.FinStartDate(UNQSNO);
+                bool SuperSummary = VE.Checkbox14;
 
                 string query = "select a.barno, e.itcd, e.fabitcd, a.doctag, a.qnty, a.txblval, a.othramt, f.itgrpcd, h.itgrpnm, f.itnm, " + Environment.NewLine;
                 query += "nvl(e.pdesign, f.styleno) styleno, e.othrate, nvl(b.rate, 0) oprate, nvl(c.rate, 0) clrate, " + Environment.NewLine;
@@ -835,25 +841,35 @@ namespace Improvar.Controllers
                 if (mtrljobcd.retStr() != "") query += "and a.mtrljobcd in (" + mtrljobcd + ") " + Environment.NewLine;
                 query += "group by a.mtrljobcd,a.barno, c.doctag" + (ShowShade == true ? ",a.shade" : "") + " ) a, " + Environment.NewLine;
 
-                query += "(select barno, effdt, prccd, rate from ( " + Environment.NewLine;
-                query += "select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn " + Environment.NewLine;
+                query += "(select barno, effdt, prccd, rate,mtrljobcd from ( " + Environment.NewLine;
+                query += "select a.barno, a.effdt, a.prccd, a.rate,a.mtrljobcd, row_number() over(partition by a.barno, a.prccd,a.mtrljobcd order by a.effdt desc) as rn " + Environment.NewLine;
                 query += "from " + scm + ".t_batchmst_price a " + Environment.NewLine;
-                query += "where a.effdt < to_date('" + fdt + "', 'dd/mm/yyyy') and a.prccd = '" + PRCCD + "' ) where rn = 1) b, " + Environment.NewLine;
+                query += "where a.effdt < to_date('" + fdt + "', 'dd/mm/yyyy') and a.prccd = '" + PRCCD + "' and nvl(a.rate,0) <> 0  ) where rn = 1) b, " + Environment.NewLine;
 
-                query += "(select barno, effdt, prccd, rate from ( " + Environment.NewLine;
-                query += "select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn " + Environment.NewLine;
+                query += "(select barno, effdt, prccd, rate,mtrljobcd from ( " + Environment.NewLine;
+                query += "select a.barno, a.effdt, a.prccd, a.rate,a.mtrljobcd, row_number() over(partition by a.barno, a.prccd,a.mtrljobcd order by a.effdt desc) as rn " + Environment.NewLine;
                 query += "from " + scm + ".t_batchmst_price a " + Environment.NewLine;
-                query += "where a.effdt <= to_date('" + ASDT + "', 'dd/mm/yyyy') and a.prccd = '" + PRCCD + "' ) where rn = 1) c, " + Environment.NewLine;
+                query += "where a.effdt <= to_date('" + ASDT + "', 'dd/mm/yyyy') and a.prccd = '" + PRCCD + "' and nvl(a.rate,0) <> 0 ) where rn = 1) c, " + Environment.NewLine;
 
                 query += "" + scm + ".t_batchmst e, " + scm + ".m_sitem f, " + scm + ".m_sitem g, " + scm + ".m_group h, " + scmf + ".m_uom i, " + scm + ".m_mtrljobmst j " + Environment.NewLine;
                 query += "where a.barno = e.barno(+) and e.itcd = f.itcd(+) and e.fabitcd = g.itcd(+) and " + Environment.NewLine;
-                query += "a.barno = b.barno(+) and a.barno = c.barno(+) and " + Environment.NewLine;
+                query += "a.barno = b.barno(+) and a.mtrljobcd=b.mtrljobcd(+) and a.barno = c.barno(+) and a.mtrljobcd=c.mtrljobcd(+) and " + Environment.NewLine;
                 query += "f.itgrpcd = h.itgrpcd(+) and f.uomcd = i.uomcd(+) and a.mtrljobcd=j.mtrljobcd(+) " + Environment.NewLine;
                 if (ITGRPCD.retStr() != "") query += "and f.itgrpcd in (" + ITGRPCD + ") " + Environment.NewLine;
                 if (ITCD.retStr() != "") query += "and e.itcd in (" + ITCD + ") " + Environment.NewLine;
                 query += "order by mtrljobnm,mtrljobcd,itgrpnm, itgrpcd, fabitnm, fabitcd, itnm, itcd, styleno, barno " + Environment.NewLine;
                 DataTable tbl1 = MasterHelp.SQLquery(query);
                 if (tbl1.Rows.Count == 0) return Content("no records..");
+
+
+                query = "select a.itcd, " + Environment.NewLine;
+                query += "sum(case a.DRCR when 'C' then nvl(a.TAXABLEVAL, 0) else nvl(a.TAXABLEVAL, 0) * -1 end) txblval,'' karval_updt " + Environment.NewLine;
+                query += "from " + scm + ".T_JBILLDTL a, " + scm + ".T_JBILL c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e" + Environment.NewLine;
+                query += "where a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+)  and " + Environment.NewLine;
+                query += "d.compcd = '" + COM + "' and d.loccd in (" + LOC + ") and nvl(d.cancel, 'N') = 'N' and a.DRCR in ('D','C') and " + Environment.NewLine;
+                query += "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and d.docdt <= to_date('" + ASDT + "', 'dd/mm/yyyy') " + Environment.NewLine;
+                query += "group by a.itcd  " + Environment.NewLine;
+                DataTable tbl2 = MasterHelp.SQLquery(query);
 
 
                 Int32 rNo = 0, maxR = 0, maxB = 0, i = 0;
@@ -902,6 +918,7 @@ namespace Improvar.Controllers
 
                 while (i <= maxR)
                 {
+                    string item = tbl1.Rows[i]["itcd"].retStr();
                     string keyval = tbl1.Rows[i]["uomcd"].retStr() + tbl1.Rows[i]["itgrpcd"].retStr() + tbl1.Rows[i]["fabitcd"].retStr() + tbl1.Rows[i]["itcd"].retStr() + tbl1.Rows[i]["styleno"].retStr() + tbl1.Rows[i]["barno"].retStr() + tbl1.Rows[i]["mtrljobcd"].retStr() + (ShowShade == true ? tbl1.Rows[i]["shade"].retStr() : "");// + tbl1.Rows[i]["barno"].retStr();
                     errorrow = i.retStr() + "     key:" + keyval;
                     //calculation
@@ -918,7 +935,7 @@ namespace Improvar.Controllers
                     purval = (tbl1.Rows[i]["doctag"].retStr() == "PR") || (tbl1.Rows[i]["doctag"].retStr() == "PB") ? tbl1.Rows[i]["txblval"].retDbl() : 0;
 
                     karqty = (tbl1.Rows[i]["doctag"].retStr() == "KR" || tbl1.Rows[i]["doctag"].retStr() == "KI" || tbl1.Rows[i]["doctag"].retStr() == "JC" || tbl1.Rows[i]["doctag"].retStr() == "JR" || tbl1.Rows[i]["doctag"].retStr() == "JU") ? tbl1.Rows[i]["qnty"].retDbl() : 0;
-                    karval = (tbl1.Rows[i]["doctag"].retStr() == "KR" || tbl1.Rows[i]["doctag"].retStr() == "KI" || tbl1.Rows[i]["doctag"].retStr() == "JC" || tbl1.Rows[i]["doctag"].retStr() == "JR" || tbl1.Rows[i]["doctag"].retStr() == "JU") ? tbl1.Rows[i]["txblval"].retDbl() : 0;
+                    //karval = (tbl1.Rows[i]["doctag"].retStr() == "KR" || tbl1.Rows[i]["doctag"].retStr() == "KI" || tbl1.Rows[i]["doctag"].retStr() == "JC" || tbl1.Rows[i]["doctag"].retStr() == "JR" || tbl1.Rows[i]["doctag"].retStr() == "JU") ? tbl1.Rows[i]["txblval"].retDbl() : 0;
 
                     netsale = (tbl1.Rows[i]["doctag"].retStr() == "SR") || (tbl1.Rows[i]["doctag"].retStr() == "SB") ? tbl1.Rows[i]["qnty"].retDbl() * (-1) : 0;
                     salevalue = (tbl1.Rows[i]["doctag"].retStr() == "SR") || (tbl1.Rows[i]["doctag"].retStr() == "SB") ? tbl1.Rows[i]["txblval"].retDbl() * (-1) : 0;
@@ -951,8 +968,18 @@ namespace Improvar.Controllers
                         existdr["purval"] = existdr["purval"].retDbl() + purval;
 
                         existdr["karqty"] = existdr["karqty"].retDbl() + karqty;
-                        existdr["karval"] = existdr["karval"].retDbl() + karval;
+                        //existdr["karval"] = existdr["karval"].retDbl() + karval;
+                        double karamt = (from DataRow x in tbl2.Rows where x["itcd"].retStr() == item && x["karval_updt"].retStr() != "Y" select x["txblval"].retDbl()).Sum();
+                        if (karamt.retDbl() != 0)
+                        {
+                            summarybarcode.Rows[rNo]["karval"] = karamt;
+                            DataRow[] rows = tbl2.Select("itcd='" + item + "'");
 
+                            if (rows.Length > 0)
+                            {
+                                rows[0]["karval_updt"] = "Y";
+                            }
+                        }
                         existdr["netsale"] = existdr["netsale"].retDbl() + netsale;
                         existdr["salevalue"] = existdr["salevalue"].retDbl() + salevalue;
 
@@ -993,7 +1020,18 @@ namespace Improvar.Controllers
                         summarybarcode.Rows[rNo]["purval"] = purval;
 
                         summarybarcode.Rows[rNo]["karqty"] = karqty;
-                        summarybarcode.Rows[rNo]["karval"] = karval;
+                        //summarybarcode.Rows[rNo]["karval"] = karval;
+                        double karamt = (from DataRow x in tbl2.Rows where x["itcd"].retStr() == item && x["karval_updt"].retStr() != "Y" select x["txblval"].retDbl()).Sum();
+                        if(karamt.retDbl() != 0)
+                        {
+                            summarybarcode.Rows[rNo]["karval"] = karamt;
+                            DataRow[] rows = tbl2.Select("itcd='"+ item + "'");
+
+                            if (rows.Length > 0)
+                            {
+                                rows[0]["karval_updt"] = "Y";
+                            }
+                        }
 
                         summarybarcode.Rows[rNo]["netsale"] = netsale;
                         summarybarcode.Rows[rNo]["salevalue"] = salevalue;
@@ -1013,6 +1051,8 @@ namespace Improvar.Controllers
                         {
                             summarybarcode.Rows[rNo]["shade"] = tbl1.Rows[i]["shade"].retStr();
                         }
+
+
                     }
                     i++;
                     if (i > maxR) break;
@@ -1070,6 +1110,7 @@ namespace Improvar.Controllers
                     HC.GetPrintHeader(IR, "balval", "double", "n,14,2", "Bal Value");
                 }
                 IR.Columns.Add("itgrpcd", typeof(string), "");
+                IR.Columns.Add("mtrljobcd", typeof(string), "");
 
                 maxB = summarybarcode.Rows.Count - 1;
                 i = 0;
@@ -1087,6 +1128,7 @@ namespace Improvar.Controllers
                         IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                         IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + strbrgrpcd + "  " + " </span>" + summarybarcode.Rows[i]["itgrpnm"].ToString();
                         IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
+                        IR.Rows[rNo]["itgrpcd"] = "group";
 
                         while (summarybarcode.Rows[i]["mtrljobcd"].ToString() == mtrljob && summarybarcode.Rows[i]["itgrpcd"].retStr() == strbrgrpcd)
                         {
@@ -1127,6 +1169,7 @@ namespace Improvar.Controllers
                                         IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                                         islno++;
                                         IR.Rows[rNo]["itgrpcd"] = summarybarcode.Rows[i - 1]["itgrpcd"].ToString();
+                                        IR.Rows[rNo]["mtrljobcd"] = summarybarcode.Rows[i - 1]["mtrljobcd"].ToString();
                                         IR.Rows[rNo]["slno"] = islno;
                                         if (VE.Checkbox4 == true) IR.Rows[rNo]["barno"] = summarybarcode.Rows[i - 1]["barno"].ToString();
                                         if (VE.Checkbox8 == true) IR.Rows[rNo]["hsncode"] = summarybarcode.Rows[i - 1]["hsncode"].ToString();
@@ -1191,7 +1234,8 @@ namespace Improvar.Controllers
                         IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;";
 
                         string itgrpcd = summarybarcode.Rows[i - 1]["itgrpcd"].ToString();
-                        var unitwisegrptotal = IR.AsEnumerable().Where(g => g.Field<string>("uomnm").retStr() != "" && g.Field<string>("itgrpcd").retStr() == itgrpcd)
+                        string mtrljobcode = summarybarcode.Rows[i - 1]["mtrljobcd"].ToString();
+                        var unitwisegrptotal = IR.AsEnumerable().Where(g => g.Field<string>("uomnm").retStr() != "" && g.Field<string>("itgrpcd").retStr() == itgrpcd && g.Field<string>("mtrljobcd").retStr() == mtrljobcode)
                                     .GroupBy(g => g.Field<string>("uomnm"))
                                     .Select(g =>
                                     {
@@ -1333,9 +1377,15 @@ namespace Improvar.Controllers
                     IR.Rows[rNo]["purval"] = IR.AsEnumerable().Where(a => a.Field<string>("itgrpcd") == "grandtotal").Sum(b => b.Field<double>("purval"));
                     IR.Rows[rNo]["karval"] = IR.AsEnumerable().Where(a => a.Field<string>("itgrpcd") == "grandtotal").Sum(b => b.Field<double>("karval"));
                     IR.Rows[rNo]["salevalue"] = IR.AsEnumerable().Where(a => a.Field<string>("itgrpcd") == "grandtotal").Sum(b => b.Field<double>("salevalue"));
+                    //IR.Rows[rNo]["balqty"] = IR.AsEnumerable().Where(a => a.Field<string>("itgrpcd") == "grandtotal").Sum(b => b.Field<double>("balqty"));
                     IR.Rows[rNo]["balval"] = IR.AsEnumerable().Where(a => a.Field<string>("itgrpcd") == "grandtotal").Sum(b => b.Field<double>("balval"));
                 }
+                if(SuperSummary == true)
+                {
+                    IR = IR.AsEnumerable().Where(a => a.Field<string>("itgrpcd") == null || a.Field<string>("itgrpcd") == "grandtotal").CopyToDataTable();
+                }
                 IR.Columns.Remove("itgrpcd");
+                IR.Columns.Remove("mtrljobcd");
                 string pghdr1 = "";
                 string repname = "Stock_Val" + System.DateTime.Now;
 
