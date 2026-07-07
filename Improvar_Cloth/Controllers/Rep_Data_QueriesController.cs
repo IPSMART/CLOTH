@@ -190,22 +190,25 @@ namespace Improvar.Controllers
                 //DataTable DT = salesfunc.GetFinishStoneDataDetails(Worknos.retSqlformat(), "", tdt);
                 string sql = "";
                 sql = "select a.slcd,a.slnm,a.locality,a.add1 || ',' || a.add2 || ',' || a.add3 || ',' || a.add4 || ',' || a.add5 || ',' || a.add6 || ',' || a.add7 AS Address, " +Environment.NewLine;
-                sql += "a.state,a.district,a.pin,a.regemailid,a.regmobile,a.gstno,b.agslcd, c.slnm agslnm from " + Environment.NewLine;
+                sql += "upper(a.state),upper(a.district),a.pin,a.regemailid,a.regmobile,a.gstno,b.agslcd, c.slnm agslnm from " + Environment.NewLine;
                 sql += "" + scmf + ".m_subleg a, " + scm + ".m_subleg_com b, " + scmf + ".m_subleg c " + Environment.NewLine;
                 sql += "where a.slcd = b.slcd(+) and b.agslcd = c.slcd(+) " + Environment.NewLine;
                 if (NAME.retStr() != "") sql += "and a.slnm like '%" + NAME.ToUpper() + "%'" + Environment.NewLine;
                 if (AREA.retStr() != "") sql += "and a.locality like '%" + AREA.ToUpper() + "%'" + Environment.NewLine;
-                if (ADDRESS.retStr() != "") sql += "and address like '%" + ADDRESS.ToUpper() + "%'" + Environment.NewLine;
+                if (ADDRESS.retStr() != "") sql += "and (a.add1 like '%" + ADDRESS.ToUpper() + "%' or a.add2 like '%" + ADDRESS.ToUpper() + "%' or a.add3 like '%" + ADDRESS.ToUpper() + "%' or a.add4 like '%" + ADDRESS.ToUpper() + "%' or a.add5 like '%" + ADDRESS.ToUpper() + "%' or a.add6 like '%" + ADDRESS.ToUpper() + "%' or a.add7 like '%" + ADDRESS.ToUpper() + "%')" + Environment.NewLine;
                 if (AGNM.retStr() != "") sql += "and c.slnm like '%" + AGNM.ToUpper() + "%'" + Environment.NewLine;
-                if (CITY.retStr() != "") sql += "and a.district like '%" + CITY.ToUpper() + "%'" + Environment.NewLine;
-                if (STATE.retStr() != "") sql += "and a.state like '%" + STATE.ToUpper() + "%'" + Environment.NewLine;
+                if (CITY.retStr() != "") sql += "and upper(a.district) like '%" + CITY.ToUpper() + "%'" + Environment.NewLine;
+                if (STATE.retStr() != "") sql += "and upper(a.state) like '%" + STATE.ToUpper() + "%'" + Environment.NewLine;
                 if (PIN.retStr() != "") sql += "and a.pin like '%" + PIN + "%'" + Environment.NewLine;
                 if (REGMOB.retStr() != "") sql += "and a.regmobile like '%" + REGMOB + "%'" + Environment.NewLine;
-                if (REGMAIL.retStr() != "") sql += "and a.regemailid like '%" + REGMAIL.ToUpper() + "%'" + Environment.NewLine;
+                if (REGMAIL.retStr() != "") sql += "and a.regemailid like '%" + REGMAIL + "%'" + Environment.NewLine;
                 if (GSTNO.retStr() != "") sql += "and a.gstno like '%" + GSTNO.ToUpper() + "%'" + Environment.NewLine;
                 DataTable DT = MasterHelp.SQLquery(sql);
                 
-                
+                if(DT.Rows.Count == 0)
+                {
+                    return Content("No Record Found!!");
+                }
 
                     if (DT != null && DT.Rows.Count > 0)
                     {                        
@@ -215,13 +218,13 @@ namespace Improvar.Controllers
                                                NM = dr["slnm"].retStr(),
                                                ADDRESS = dr["address"].retStr(),
                                                AREA = dr["locality"].retStr(),
-                                               CITY = dr["district"].retStr(),
+                                               CITY = dr["upper(a.district)"].retStr(),
                                                PIN = dr["pin"].retDbl(),
                                                REGMOB = dr["regmobile"].retDbl(),
                                                REGMAIL = dr["regemailid"].retStr(),
                                                GSTNO = dr["gstno"].retStr(),
                                                AGNM = dr["agslnm"].retStr(),
-                                               STATE = dr["state"].retStr(),
+                                               STATE = dr["upper(a.state)"].retStr(),
                                            }).ToList();
 
 
@@ -267,6 +270,7 @@ namespace Improvar.Controllers
                 Template1.Columns.Add("Address", typeof(string), "");
                 Template1.Columns.Add("Area", typeof(string), "");
                 Template1.Columns.Add("City", typeof(string), "");
+                Template1.Columns.Add("State", typeof(string), "");
                 Template1.Columns.Add("Pincode", typeof(double), "");
                 Template1.Columns.Add("Reg.Email", typeof(string), "");
                 Template1.Columns.Add("Reg.Mobile", typeof(double), "");
@@ -282,6 +286,7 @@ namespace Improvar.Controllers
                     fin1["Address"] = row.ADDRESS.retStr();
                     fin1["Area"] = row.AREA.retStr();
                     fin1["City"] = row.CITY.retStr();
+                    fin1["State"] = row.STATE.retStr();
                     fin1["Pincode"] = row.PIN.retDbl();
                     fin1["Reg.Email"] = row.REGMAIL.retStr();
                     fin1["Reg.Mobile"] = row.REGMOB.retDbl();
