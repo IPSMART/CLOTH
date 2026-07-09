@@ -6390,7 +6390,7 @@ namespace Improvar.Controllers
                                 if (taxcheck == true)
                                 {
                                     //if (VE.TTXNAMT[i].IGSTAMT.retDbl() + VE.TTXNAMT[i].CGSTAMT.retDbl() + VE.TTXNAMT[i].SGSTAMT.retDbl() == 0 && VE.T_TXN.REVCHRG != "N")
-                                    if (VE.TTXNAMT[i].IGSTAMT.retDbl() + VE.TTXNAMT[i].CGSTAMT.retDbl() + VE.TTXNAMT[i].SGSTAMT.retDbl() == 0 && VE.T_TXN.REVCHRG != "N" && VE.MENU_PARA != "PB")//ANKAN WHATSAPP 06/05/2025 SHIPPING AMT W/O GST
+                                    if (VE.TTXNAMT[i].IGSTAMT.retDbl() + VE.TTXNAMT[i].CGSTAMT.retDbl() + VE.TTXNAMT[i].SGSTAMT.retDbl() == 0 && VE.T_TXN.REVCHRG != "N" && VE.MENU_PARA != "PB" && VE.MENU_PARA != "SR")//ANKAN WHATSAPP 06/05/2025 SHIPPING AMT W/O GST
                                     {
                                         ContentFlg = "TAX amount not found at amount tab. Please add tax at slno " + VE.TTXNAMT[i].SLNO;
                                         goto dbnotsave;
