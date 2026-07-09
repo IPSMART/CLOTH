@@ -609,6 +609,7 @@ namespace Improvar.Controllers
                         IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                         IR.Rows[rNo]["itnm"] = "Total of " + tbl.Rows[i - 1]["itgrpnm"].ToString();
                         IR.Rows[rNo]["amt"] = bamt;
+                        IR.Rows[rNo]["qnty"] = bqnty;
                         IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
                     }
                     else
