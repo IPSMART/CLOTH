@@ -364,7 +364,7 @@ namespace Improvar.Controllers
                 if (VE.TEXTBOX1.retStr() == "Job Bill")
                 {
                     sql += " select a.autono, a.doccd, a.docno,a.doctag, a.cancel,a.docdt,a.agslcd, " + Environment.NewLine;
-                    sql += "a.prefno, a.prefdt, a.slcd, a.slnm,a.slarea,a.agslnm,a.sagslnm,a.nm,a.mobile,a.gstno, a.district, " + Environment.NewLine;
+                    sql += "a.prefno, a.prefdt, a.slcd, a.slnm,a.slarea,a.agslnm,a.sagslnm,a.nm,a.mobile,a.gstno, a.district,a.pblno,a.pbldt, " + Environment.NewLine;
                     if (dtlsumm == "E")
                     {
                         sql += " (case when a.doctag = 'SR' or a.doctag = 'PR' then (case when a.rn = 1 then nvl(a.roamt, 0) else 0 end)*-1 else (case when a.rn = 1 then nvl(a.roamt, 0) else 0 end)end) roamt, " + Environment.NewLine;
@@ -429,7 +429,7 @@ namespace Improvar.Controllers
                     //query1 += " b.qnty, b.rate, b.amt,b.scmdiscamt, b.tddiscamt, b.discamt,b.TXBLVAL, g.conslcd, d.slnm cslnm, d.gstno cgstno, d.district cdistrict, ";
                     sql += " e.slnm trslnm, f.lrno,nvl(to_char(f.lrdt,'dd/mm/yyyy'),'')lrdt,f.GRWT,f.TRWT,f.NTWT, '' ordrefno, to_char(nvl('', ''), 'dd/mm/yyyy') ordrefdt, b.igstper, b.igstamt, b.cgstper, " + Environment.NewLine;
                     sql += " b.cgstamt,b.sgstamt, b.cessper, b.cessamt,b.blqnty,b.NETAMT,b.sgstper,b.igstper+b.cgstper+b.sgstper gstper,b.igstamt + b.cgstamt + b.sgstamt gstamt,k.ackno,nvl(to_char(k.ackdt,'dd/mm/yyyy'),'')ackdt,b.pageno,b.PAGESLNO,b.baleno,h.docrem,h.bltype,  " + Environment.NewLine;
-                    sql += " row_number() over(partition by a.autono order by b.slno)rn " + Environment.NewLine;
+                    sql += " row_number() over(partition by a.autono order by b.slno)rn,g.pblno,g.pbldt " + Environment.NewLine;
 
                     sql += " from ( " + Environment.NewLine;
                     sql += " select a.autono,a.doctag, b.doccd, b.docno, b.cancel, " + Environment.NewLine;
@@ -816,6 +816,11 @@ namespace Improvar.Controllers
                         if (dtlsumm != "C" && VE.Checkbox1 == true) HC.GetPrintHeader(IR, "bltype", "string", "c,20", "Bill;Type");
                         if (VE.TEXTBOX1 == "Sales Cash Memo") HC.GetPrintHeader(IR, "mobile", "string", "c,12", "Mobile Number");
                         if (dtlsumm != "C") HC.GetPrintHeader(IR, "gstno", "string", "c,15", "GST No.");
+                        if (VE.TEXTBOX1.retStr() == "Job Bill")
+                        {
+                            if (dtlsumm != "C") HC.GetPrintHeader(IR, "pblno", "string", "c,16", "Party;Bill No.");
+                            if (dtlsumm != "C") HC.GetPrintHeader(IR, "pbldt", "string", "d,10:dd/mm/yy", "Party;Bill Date");
+                        }
 
                         if ((dtlsumm != "C") || (dtlsumm == "C" && VE.Checkbox10 == true)) HC.GetPrintHeader(IR, "nos", "double", "n,5", "Nos");
                         //if (dtlsumm != "C") HC.GetPrintHeader(IR, "qnty", "double", "n,12,3", "Qnty");
@@ -970,6 +975,11 @@ namespace Improvar.Controllers
                                 }
                                 if ((dtlsumm == "D" || dtlsumm == "C") && (VE.TEXTBOX1 == "Proforma")) dr["docremoth"] = tbl.Rows[i]["docrem"].ToString();
                                 if (dtlsumm != "C") dr["gstno"] = tbl.Rows[i]["gstno"].ToString();
+                                if (VE.TEXTBOX1.retStr() == "Job Bill")
+                                {
+                                    if (dtlsumm != "C") dr["pblno"] = tbl.Rows[i]["pblno"].ToString();
+                                    if (dtlsumm != "C") dr["pbldt"] = tbl.Rows[i]["pbldt"].ToString().Substring(0, 10).ToString();
+                                }
                                 if (showpbill == true) dr["prefno"] = tbl.Rows[i]["prefno"].ToString();
                                 if (VE.Checkbox5 == true) dr["saprem"] = (tbl.Rows[i]["sapblno"].ToString() == "" ? "" : "BL# " + tbl.Rows[i]["sapblno"].ToString());
                                 if (showpbill == true) dr["prefdt"] = tbl.Rows[i]["prefdt"] == DBNull.Value ? "" : tbl.Rows[i]["prefdt"].ToString().Substring(0, 10).ToString();
