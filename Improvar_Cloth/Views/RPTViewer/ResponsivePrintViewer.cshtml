@@ -435,27 +435,48 @@
             if (callfrm != "MainRep") {
                 documentsrc = document.getElementById(id).src;
             }
-            catgr = documentsrc.search('image');
-            HTMLCode = "<HTML><HEAD><title>Document/Image Viewer " + docno + " ( " + doc_desc + " )</title>";
-            HTMLCode = HTMLCode + "</HEAD><BODY TOPMARGIN=0 LEFTMARGIN=0 MARGINHEIGHT=0 MARGINWIDTH=0 style='background-color:rgba(0, 0, 0, 0.56)'><CENTER>";
 
-            if (catgr == -1) {
-                HTMLCode = HTMLCode + "<iframe id='pdfiframe' SRC='" + documentsrc + "' name='pdfiframe' runat='server' width='100%' Height='700px' />";
+            // Check if it's a base64 data URL
+            if (documentsrc.startsWith('data:')) {
+                // Extract the MIME type and base64 part
+                const matches = documentsrc.match(/^data:(.+);base64,(.+)$/);
+                if (!matches) {
+                    alert('Invalid data URL');
+                    return;
+                }
+
+                const mimeType = matches[1];
+                const base64Data = matches[2];
+                if (mimeType === 'excel' || mimeType.includes('spreadsheet') || mimeType.includes('ms-excel')) {
+                    var documentsrc = document.getElementById(id).src;
+                    HTMLCode = "<HTML><HEAD><title>Document/Image Viewer</title>";
+                    HTMLCode = HTMLCode + "</HEAD><BODY TOPMARGIN=0 LEFTMARGIN=0 MARGINHEIGHT=0 MARGINWIDTH=0 style='background-color:rgba(0, 0, 0, 0.56)'><CENTER>";
+                    HTMLCode = HTMLCode + "<iframe id='pdfiframe' SRC='" + documentsrc + "' name='pdfiframe' runat='server' width='100%' Height='700px' />";
+                    mywindow = window.open('', 'PDF', 'toolbar = yes, scrollbars = yes, resizable = yes, top = 30, left = 100, width = 1160, height = 600');
+                    mywindow.document.open();
+                    mywindow.document.write(HTMLCode);
+                    mywindow.document.close();
+                }
+                else {
+
+                    // Decode base64 to binary
+                    const byteCharacters = atob(base64Data);
+                    const byteNumbers = new Array(byteCharacters.length);
+                    for (let i = 0; i < byteCharacters.length; i++) {
+                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    }
+
+                    const byteArray = new Uint8Array(byteNumbers);
+                    const blob = new Blob([byteArray], { type: mimeType });
+                    const blobUrl = URL.createObjectURL(blob);
+
+                    // Open in new window or tab
+                    window.open(blobUrl, '_blank');
+                }
+            } else {
+                // Normal short URL — open directly
+                window.open(src, '_blank');
             }
-            else {
-                HTMLCode = HTMLCode + "<IMG name='uploadimage' src='" + documentsrc + "' BORDER=0 NAME=FullImage  ";
-                HTMLCode = HTMLCode + " STYLE='WIDTH: max-content; height: max-content; MAX-WIDTH:-webkit-fill-available;MAX-HEIGHT:-webkit-fill-available;' >";
-            }
-            HTMLCode = HTMLCode + "</CENTER></BODY></HTML>";
-            if (catgr == -1) {
-                mywindow = window.open('', 'PDF', 'toolbar = yes, scrollbars = yes, resizable = yes, top = 30, left = 100, width = 1160, height = 600');
-            }
-            else {
-                mywindow = window.open('', 'image', 'toolbar=0,location=0,menuBar=0,top = 30, left = 100,scrollbars=0,resizable=0,width=1160,height=600');
-            }
-            mywindow.document.open();
-            mywindow.document.write(HTMLCode);
-            mywindow.document.close();
         }
         function PopupPageclose(pname) {
                 $("#" + pname).hide(300);

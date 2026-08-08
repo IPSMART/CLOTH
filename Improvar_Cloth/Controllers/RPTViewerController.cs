@@ -10,6 +10,7 @@ using iTextSharp.text.pdf;
 using iTextSharp.text.html.simpleparser;
 using System.Web;
 using OfficeOpenXml;
+using System.Configuration;
 
 namespace Improvar.Controllers
 {
@@ -759,6 +760,7 @@ namespace Improvar.Controllers
         {
             List<ReportContaint> listemail = new List<ReportContaint>();
             System.Text.StringBuilder SB = new System.Text.StringBuilder();
+            string BOXPINREPORT = ConfigurationManager.AppSettings["BOXPINREPORT"];
 
             int aryA = pv.HeaderArray.GetLength(0);
             int aryB = pv.HeaderArray.GetLength(1);
@@ -913,9 +915,26 @@ namespace Improvar.Controllers
                                     var sd = Table.Rows[i][x].GetType();
                                     if (img == true)
                                     {
-                                        InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;' />" + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>";
+                                        if (BOXPINREPORT == "Y")
+                                        {
+                                            InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;' />" + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>";
+                                        }
+                                        else
+                                        {
+                                            InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;' />" + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>";
+                                        }
                                     }
-                                    else if (sd == typeof(string)) InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>";
+                                    else if (sd == typeof(string))
+                                    {
+                                        if (BOXPINREPORT == "Y")
+                                        {
+                                            InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>";
+                                        }
+                                        else
+                                        {
+                                            InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:left;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>";
+                                        }
+                                    }
                                     else
                                     {
                                         var objvalue = Table.Rows[i][x];
@@ -923,10 +942,27 @@ namespace Improvar.Controllers
                                         string dspform = getformat(cellstyle);
                                         string precisionvalue = "";
                                         precisionvalue = Cn.Indian_Number_format(objvalue.ToString(), dspform);//Convert.ToDouble(objvalue).ToString(dspform);
-                                        InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:right;border: 1px outset;padding-right: 1px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + precisionvalue + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>";
+                                        if (BOXPINREPORT == "Y")
+                                        {
+                                            InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:right;border: 1px outset;padding-right: 1px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + precisionvalue + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>";
+                                        }
+                                        else
+                                        {
+                                            InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:right;padding-right: 1px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + precisionvalue + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>";
+                                        }
                                     }
                                 }
-                                else InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>";
+                                else
+                                {
+                                    if (BOXPINREPORT == "Y")
+                                    {
+                                        InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>";
+                                    }
+                                    else
+                                    {
+                                        InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:left;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>";
+                                    }
+                                }
                             }
                         }
                     }
@@ -1181,6 +1217,7 @@ namespace Improvar.Controllers
             int aryB = pv.HeaderArray.GetLength(1);
             string[] columnNames = Table.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToArray();
             string[] columnTypes = Table.Columns.Cast<DataColumn>().Select(x => x.DataType.ToString()).ToArray();
+            string BOXPINREPORT = ConfigurationManager.AppSettings["BOXPINREPORT"];
 
             try
             {
@@ -1346,22 +1383,54 @@ namespace Improvar.Controllers
                                     {
                                         if (isfooter)
                                         {
-                                            footer = footer + "<td " + " style='border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;' /></td>";
+                                            if (BOXPINREPORT == "Y")
+                                            {
+                                                footer = footer + "<td " + " style='border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;' /></td>";
+
+                                            }
+                                            else
+                                            {
+                                                footer = footer + "<td " + " style='padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;' /></td>";
+                                            }
                                         }
                                         else
                                         {
-                                            InnerRow = InnerRow + "<td " + " style='border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;' /></td>";
+                                            if (BOXPINREPORT == "Y")
+                                            {
+                                                InnerRow = InnerRow + "<td " + " style='border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;' /></td>";
+
+                                            }
+                                            else
+                                            {
+                                                InnerRow = InnerRow + "<td " + " style='padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;' /></td>";
+                                            }
                                         }
                                     }
                                     else if (sd == typeof(string))
                                     {
                                         if (isfooter)
                                         {
-                                            footer = footer + "<td " + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "</td>";
+                                            if (BOXPINREPORT == "Y")
+                                            {
+                                                footer = footer + "<td " + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "</td>";
+
+                                            }
+                                            else
+                                            {
+                                                footer = footer + "<td " + " style='text-align:left;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "</td>";
+                                            }
                                         }
                                         else
                                         {
-                                            InnerRow = InnerRow + "<td " + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "</td>";
+                                            if (BOXPINREPORT == "Y")
+                                            {
+                                                InnerRow = InnerRow + "<td " + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "</td>";
+
+                                            }
+                                            else
+                                            {
+                                                InnerRow = InnerRow + "<td " + " style='text-align:left;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "</td>";
+                                            }
                                         }
                                     }
                                     else
@@ -1373,11 +1442,27 @@ namespace Improvar.Controllers
                                         precisionvalue = Cn.Indian_Number_format(objvalue.ToString(), dspform);//Convert.ToDouble(objvalue).ToString(dspform);
                                         if (isfooter)
                                         {
-                                            footer = footer + "<td " + " style='text-align:right;border: 1px outset;padding-right: 1px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + precisionvalue + "</td>";
+                                            if (BOXPINREPORT == "Y")
+                                            {
+                                                footer = footer + "<td " + " style='text-align:right;border: 1px outset;padding-right: 1px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + precisionvalue + "</td>";
+
+                                            }
+                                            else
+                                            {
+                                                footer = footer + "<td " + " style='text-align:right;padding-right: 1px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + precisionvalue + "</td>";
+                                            }
                                         }
                                         else
                                         {
-                                            InnerRow = InnerRow + "<td " + " style='text-align:right;border: 1px outset;padding-right: 1px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + precisionvalue + "</td>";
+                                            if (BOXPINREPORT == "Y")
+                                            {
+                                                InnerRow = InnerRow + "<td " + " style='text-align:right;border: 1px outset;padding-right: 1px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + precisionvalue + "</td>";
+
+                                            }
+                                            else
+                                            {
+                                                InnerRow = InnerRow + "<td " + " style='text-align:right;padding-right: 1px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + precisionvalue + "</td>";
+                                            }
                                         }
                                     }
                                 }
@@ -1385,11 +1470,27 @@ namespace Improvar.Controllers
                                 {
                                     if (isfooter)
                                     {
-                                        footer = footer + "<td " + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "</td>";
+                                        if (BOXPINREPORT == "Y")
+                                        {
+                                            footer = footer + "<td " + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "</td>";
+
+                                        }
+                                        else
+                                        {
+                                            footer = footer + "<td " + " style='text-align:left;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "</td>";
+                                        }
                                     }
                                     else
                                     {
-                                        InnerRow = InnerRow + "<td " + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "</td>";
+                                        if (BOXPINREPORT == "Y")
+                                        {
+
+                                            InnerRow = InnerRow + "<td " + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "</td>";
+                                        }
+                                        else
+                                        {
+                                            InnerRow = InnerRow + "<td " + " style='text-align:left;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "</td>";
+                                        }
                                     }
                                 }
                             }
@@ -1435,6 +1536,7 @@ namespace Improvar.Controllers
             int aryB = pv.HeaderArray.GetLength(1);
             string[] columnNames = Table.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToArray();
             string[] columnTypes = Table.Columns.Cast<DataColumn>().Select(x => x.DataType.ToString()).ToArray();
+            string BOXPINREPORT = ConfigurationManager.AppSettings["BOXPINREPORT"];
 
             try
             {
@@ -1605,7 +1707,15 @@ namespace Improvar.Controllers
                                         }
                                         else
                                         {
-                                            InnerRow = InnerRow + "<td " + " style='border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;' /></td>";
+                                            if (BOXPINREPORT == "Y")
+                                            {
+                                                InnerRow = InnerRow + "<td " + " style='border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;' /></td>";
+
+                                            }
+                                            else
+                                            {
+                                                InnerRow = InnerRow + "<td " + " style='padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;' /></td>";
+                                            }
                                         }
                                     }
                                     else if (sd == typeof(string))
@@ -1616,7 +1726,15 @@ namespace Improvar.Controllers
                                         }
                                         else
                                         {
-                                            InnerRow = InnerRow + "<td " + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "</td>";
+                                            if (BOXPINREPORT == "Y")
+                                            {
+
+                                                InnerRow = InnerRow + "<td " + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "</td>";
+                                            }
+                                            else
+                                            {
+                                                InnerRow = InnerRow + "<td " + " style='text-align:left;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "</td>";
+                                            }
                                         }
                                     }
                                     else
@@ -1632,7 +1750,15 @@ namespace Improvar.Controllers
                                         }
                                         else
                                         {
-                                            InnerRow = InnerRow + "<td " + " style='text-align:right;border: 1px outset;padding-right: 1px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + precisionvalue + "</td>";
+                                            if (BOXPINREPORT == "Y")
+                                            {
+                                                InnerRow = InnerRow + "<td " + " style='text-align:right;border: 1px outset;padding-right: 1px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + precisionvalue + "</td>";
+
+                                            }
+                                            else
+                                            {
+                                                InnerRow = InnerRow + "<td " + " style='text-align:right;padding-right: 1px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + precisionvalue + "</td>";
+                                            }
                                         }
                                     }
                                 }
@@ -1644,7 +1770,15 @@ namespace Improvar.Controllers
                                     }
                                     else
                                     {
-                                        InnerRow = InnerRow + "<td " + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "</td>";
+                                        if (BOXPINREPORT == "Y")
+                                        {
+
+                                            InnerRow = InnerRow + "<td " + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "</td>";
+                                        }
+                                        else
+                                        {
+                                            InnerRow = InnerRow + "<td " + " style='text-align:left;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "</td>";
+                                        }
                                     }
                                 }
                             }
@@ -1690,6 +1824,7 @@ namespace Improvar.Controllers
             int aryB = pv.HeaderArray.GetLength(1);
             string[] columnNames = Table.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToArray();
             string[] columnTypes = Table.Columns.Cast<DataColumn>().Select(x => x.DataType.ToString()).ToArray();
+            string BOXPINREPORT = ConfigurationManager.AppSettings["BOXPINREPORT"];
 
             try
             {
@@ -1825,9 +1960,28 @@ namespace Improvar.Controllers
 
                                     if (img == true)
                                     {
-                                        InnerRow = InnerRow + "<td " + " style='border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;' /></td>";
+                                        if (BOXPINREPORT == "Y")
+                                        {
+                                            InnerRow = InnerRow + "<td " + " style='border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;' /></td>";
+
+                                        }
+                                        else
+                                        {
+                                            InnerRow = InnerRow + "<td " + " style='padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;' /></td>";
+                                        }
                                     }
-                                    else if (sd == typeof(string)) InnerRow = InnerRow + "<td " + " style='" + widthpx + "text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "</td>";
+                                    else if (sd == typeof(string))
+                                    {
+                                        if (BOXPINREPORT == "Y")
+                                        {
+                                            InnerRow = InnerRow + "<td " + " style='" + widthpx + "text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "</td>";
+
+                                        }
+                                        else
+                                        {
+                                            InnerRow = InnerRow + "<td " + " style='" + widthpx + "text-align:left;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "</td>";
+                                        }
+                                    }
                                     else
                                     {
                                         var objvalue = Table.Rows[i][x];
@@ -1835,10 +1989,29 @@ namespace Improvar.Controllers
                                         string dspform = getformat(cellstyle);
                                         string precisionvalue = "";
                                         precisionvalue = Cn.Indian_Number_format(objvalue.ToString(), dspform);//Convert.ToDouble(objvalue).ToString(dspform);
-                                        InnerRow = InnerRow + "<td " + " style='" + widthpx + "text-align:right;border: 1px outset;padding-right: 1px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + precisionvalue + "</td>";
+                                        if (BOXPINREPORT == "Y")
+                                        {
+                                            InnerRow = InnerRow + "<td " + " style='" + widthpx + "text-align:right;border: 1px outset;padding-right: 1px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + precisionvalue + "</td>";
+
+                                        }
+                                        else
+                                        {
+                                            InnerRow = InnerRow + "<td " + " style='" + widthpx + "text-align:right;padding-right: 1px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + precisionvalue + "</td>";
+                                        }
                                     }
                                 }
-                                else InnerRow = InnerRow + "<td " + " style='" + widthpx + "text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "</td>";
+                                else
+                                {
+                                    if (BOXPINREPORT == "Y")
+                                    {
+
+                                        InnerRow = InnerRow + "<td " + " style='" + widthpx + "text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "</td>";
+                                    }
+                                    else
+                                    {
+                                        InnerRow = InnerRow + "<td " + " style='" + widthpx + "text-align:left;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "</td>";
+                                    }
+                                }
                             }
                         }
                     }
@@ -2290,6 +2463,7 @@ namespace Improvar.Controllers
             string[] span = SpanColumnContaint == null ? null : SpanColumnContaint.Split(',');
             string[] spanLangth = SpanColumnLength == null ? null : SpanColumnLength.Split(',');
             string[] setIndex = SpanColumnSetIndex == null ? null : SpanColumnSetIndex.Split(',');
+            string BOXPINREPORT = ConfigurationManager.AppSettings["BOXPINREPORT"];
             try
             {
                 string assign_table = "<table class='grid_table'>";
@@ -2447,16 +2621,42 @@ namespace Improvar.Controllers
                                     var sd = Table.Rows[i][x].GetType();
                                     if (img == true)
                                     {
-                                        InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;' />" + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>";
+                                        if (BOXPINREPORT == "Y")
+                                        {
+                                            InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;' />" + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>";
+
+                                        }
+                                        else
+                                        {
+                                            InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;' />" + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>";
+                                        }
                                     }
                                     else if (sd == typeof(string) && LinkVar.Contains(chk) && Table.Rows[i]["doclink"].ToString() != "")
                                     {
                                         string linkpara = Table.Rows[i]["doclink"].retStr().Replace("'", "\'");
-                                        InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> ";//onclick=ShowPopup();
+                                        if (BOXPINREPORT == "Y")
+                                        {
+                                            InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> ";//onclick=ShowPopup();
+
+                                        }
+                                        else
+                                        {
+                                            InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:left;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> ";//onclick=ShowPopup();
+                                        }
                                         InnerRow = InnerRow + " <a href='#' onclick=\"CheckDocument(" + linkpara + ",'" + extr_col + "');return false;\">" + Table.Rows[i][x].ToString() + " </a>  <script>Rmenu('col_" + i + "_" + x + "','',1);</script> </td>";
                                     }
-                                    else if (sd == typeof(string) && chk != "doclink") InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + " <script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + " </td>";//onclick=ShowPopup();
+                                    else if (sd == typeof(string) && chk != "doclink")
+                                    {
+                                        if (BOXPINREPORT == "Y")
+                                        {
+                                            InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + " <script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + " </td>";//onclick=ShowPopup();
 
+                                        }
+                                        else
+                                        {
+                                            InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:left;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + " <script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + " </td>";//onclick=ShowPopup();
+                                        }
+                                    }
                                     else
                                     {
                                         var objvalue = Table.Rows[i][x];
@@ -2464,12 +2664,28 @@ namespace Improvar.Controllers
                                         string dspform = getformat(cellstyle);
                                         string precisionvalue = "";
                                         precisionvalue = Cn.Indian_Number_format(objvalue.ToString(), dspform);//Convert.ToDouble(objvalue).ToString(dspform);
-                                        InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:right;border: 1px outset;padding-right: 1px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + precisionvalue + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>";
+                                        if (BOXPINREPORT == "Y")
+                                        {
+                                            InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:right;border: 1px outset;padding-right: 1px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + precisionvalue + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>";
+
+                                        }
+                                        else
+                                        {
+                                            InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:right;padding-right: 1px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + precisionvalue + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>";
+                                        }
                                     }
                                 }
                                 else
                                 {
-                                    InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>"; //<a href='#' target='_blank'>Document Details
+                                    if (BOXPINREPORT == "Y")
+                                    {
+                                        InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>"; //<a href='#' target='_blank'>Document Details
+
+                                    }
+                                    else
+                                    {
+                                        InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:left;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>"; //<a href='#' target='_blank'>Document Details
+                                    }
                                 }
                             }
                         }
@@ -2532,6 +2748,7 @@ namespace Improvar.Controllers
             string[] span = SpanColumnContaint == null ? null : SpanColumnContaint.Split(',');
             string[] spanLangth = SpanColumnLength == null ? null : SpanColumnLength.Split(',');
             string[] setIndex = SpanColumnSetIndex == null ? null : SpanColumnSetIndex.Split(',');
+            string BOXPINREPORT = ConfigurationManager.AppSettings["BOXPINREPORT"];
             try
             {
                 string assign_table = "<table class='grid_table'>";
@@ -2660,12 +2877,12 @@ namespace Improvar.Controllers
                                     string[] dammyCOLSPAN = Table.Rows[i]["Flag"].ToString().Split('~');
                                     if (dammyCOLSPAN.Length > 1)
                                     {
-                                        InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'  colspan='" + dammyCOLSPAN[1] + "' style='" + dammyCOLSPAN[0] + "'>" + Table.Rows[i][x].ToString() + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "  </td>";
+                                        InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'  colspan='" + dammyCOLSPAN[1] + "' style='" + dammyCOLSPAN[0] + "'>" + Table.Rows[i][x].ToString() + "<script>Rmenu('Pcol_" + i + "_" + x + "','',1);</script>" + "  </td>";
                                         x += 4;
                                     }
                                     else
                                     {
-                                        InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "' colspan='" + col_span + "' style='" + Table.Rows[i]["Flag"].ToString() + "'>" + Table.Rows[i][x].ToString() + " <script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + " </td>";
+                                        InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "' colspan='" + col_span + "' style='" + Table.Rows[i]["Flag"].ToString() + "'>" + Table.Rows[i][x].ToString() + " <script>Rmenu('Pcol_" + i + "_" + x + "','',1);</script>" + " </td>";
                                         break;
                                     }
                                 }
@@ -2685,31 +2902,73 @@ namespace Improvar.Controllers
                                     {
                                         if (Table.Rows[i][x].ToString().Contains("pdf") == true && Table.Rows[i][x].ToString().Contains("data:image") == false)
                                         {
-                                            InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'" + " style='border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' id='img_" + i + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;display:none;'onclick=imgpreview('img_" + i + "','" + str_docno + "','" + str_docdesc + "','',''); />";
+                                            if (BOXPINREPORT == "Y")
+                                            {
+                                                InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'" + " style='border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' id='img_" + i + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;display:none;'onclick=imgpreview('img_" + i + "','" + str_docno + "','" + str_docdesc + "','',''); />";
+
+                                            }
+                                            else
+                                            {
+                                                InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'" + " style='padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' id='img_" + i + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;display:none;'onclick=imgpreview('img_" + i + "','" + str_docno + "','" + str_docdesc + "','',''); />";
+                                            }
                                             InnerRow = InnerRow + " <img src = '../Image/pdf_48_icon.png' id='img1_" + i + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;cursor:pointer;'onclick = imgpreview('img_" + i + "','" + str_docno + "','" + str_docdesc + "','',''); />";
                                             InnerRow = InnerRow + "<input id='col_" + i + "_" + x + "' type=hidden value='" + Table.Rows[i][x].ToString() + "'/>" + " <script> Rmenu('col_" + i + "_" + x + "', '', 1);</script>" + "</td> ";
                                         }
                                         else if (Table.Rows[i][x].ToString().Contains("text") == true && Table.Rows[i][x].ToString().Contains("data:image") == false)
                                         {
-                                            InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'" + " style='border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' id='img_" + i + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;display:none;'onclick=imgpreview('img_" + i + "','" + str_docno + "','" + str_docdesc + "','',''); />";
+                                            if (BOXPINREPORT == "Y")
+                                            {
+
+                                                InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'" + " style='border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' id='img_" + i + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;display:none;'onclick=imgpreview('img_" + i + "','" + str_docno + "','" + str_docdesc + "','',''); />";
+                                            }
+                                            else
+                                            {
+                                                InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'" + " style='padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' id='img_" + i + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;display:none;'onclick=imgpreview('img_" + i + "','" + str_docno + "','" + str_docdesc + "','',''); />";
+                                            }
                                             InnerRow = InnerRow + " <img src = '../Image/text_48_icon.png' id='img1_" + i + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;cursor:pointer;'onclick = imgpreview('img_" + i + "','" + str_docno + "','" + str_docdesc + "','',''); />";
                                             InnerRow = InnerRow + "<input id='col_" + i + "_" + x + "' type=hidden value='" + Table.Rows[i][x].ToString() + "'/>" + " <script> Rmenu('col_" + i + "_" + x + "', '', 1);</script>" + "</td> ";
 
                                         }
                                         else if (Table.Rows[i][x].ToString().Contains("openxmlformats") == true && Table.Rows[i][x].ToString().Contains("data:image") == false)
                                         {
-                                            InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'" + " style='border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' id='img_" + i + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;display:none;'onclick=imgpreview('img_" + i + "','" + str_docno + "','" + str_docdesc + "','',''); />";
+                                            if (BOXPINREPORT == "Y")
+                                            {
+                                                InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'" + " style='border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' id='img_" + i + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;display:none;'onclick=imgpreview('img_" + i + "','" + str_docno + "','" + str_docdesc + "','',''); />";
+
+                                            }
+                                            else
+                                            {
+                                                InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'" + " style='padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' id='img_" + i + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;display:none;'onclick=imgpreview('img_" + i + "','" + str_docno + "','" + str_docdesc + "','',''); />";
+                                            }
                                             InnerRow = InnerRow + " <img src = '../Image/excel_48_icon.png' id='img1_" + i + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;cursor:pointer;'onclick = imgpreview('img_" + i + "','" + str_docno + "','" + str_docdesc + "','',''); />";
                                             InnerRow = InnerRow + "<input id='col_" + i + "_" + x + "' type=hidden value='" + Table.Rows[i][x].ToString() + "'/>" + " <script> Rmenu('col_" + i + "_" + x + "', '', 1);</script>" + "</td> ";
 
                                         }
                                         else
                                         {
-                                            InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'" + " style='border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px;cursor:pointer; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' id='img_" + i + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;'onclick=imgpreview('img_" + i + "','" + str_docno + "','" + str_docdesc + "','',''); />";
+                                            if (BOXPINREPORT == "Y")
+                                            {
+                                                InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'" + " style='border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px;cursor:pointer; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' id='img_" + i + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;'onclick=imgpreview('img_" + i + "','" + str_docno + "','" + str_docdesc + "','',''); />";
+
+                                            }
+                                            else
+                                            {
+                                                InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'" + " style='padding-right: 2px;padding-left: 2px;cursor:pointer; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' id='img_" + i + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;'onclick=imgpreview('img_" + i + "','" + str_docno + "','" + str_docdesc + "','',''); />";
+                                            }
                                         }
                                     }
-                                    else if (sd == typeof(string)) InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'" + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>";//onclick=ShowPopup();
+                                    else if (sd == typeof(string))
+                                    {
+                                        if (BOXPINREPORT == "Y")
+                                        {
+                                            InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'" + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "<script>Rmenu('Pcol_" + i + "_" + x + "','',1);</script>" + "</td>";//onclick=ShowPopup();
 
+                                        }
+                                        else
+                                        {
+                                            InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'" + " style='text-align:left;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "<script>Rmenu('Pcol_" + i + "_" + x + "','',1);</script>" + "</td>";//onclick=ShowPopup();
+                                        }
+                                    }
                                     else
                                     {
                                         var objvalue = Table.Rows[i][x];
@@ -2717,11 +2976,29 @@ namespace Improvar.Controllers
                                         string dspform = getformat(cellstyle);
                                         string precisionvalue = "";
                                         precisionvalue = Cn.Indian_Number_format(objvalue.ToString(), dspform);//Convert.ToDouble(objvalue).ToString(dspform);
-                                        InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'" + " style='text-align:right;border: 1px outset;padding-right: 1px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + precisionvalue + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>";
+                                        if (BOXPINREPORT == "Y")
+                                        {
+                                            InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'" + " style='text-align:right;border: 1px outset;padding-right: 1px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + precisionvalue + "<script>Rmenu('Pcol_" + i + "_" + x + "','',1);</script>" + "</td>";
+
+                                        }
+                                        else
+                                        {
+                                            InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'" + " style='text-align:right;padding-right: 1px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + precisionvalue + "<script>Rmenu('Pcol_" + i + "_" + x + "','',1);</script>" + "</td>";
+                                        }
                                     }
                                 }
-                                else InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'" + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>"; //<a href='#' target='_blank'>Document Details
+                                else
+                                {
+                                    if (BOXPINREPORT == "Y")
+                                    {
+                                        InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'" + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "<script>Rmenu('Pcol_" + i + "_" + x + "','',1);</script>" + "</td>"; //<a href='#' target='_blank'>Document Details
 
+                                    }
+                                    else
+                                    {
+                                        InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'" + " style='text-align:left;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "<script>Rmenu('Pcol_" + i + "_" + x + "','',1);</script>" + "</td>"; //<a href='#' target='_blank'>Document Details
+                                    }
+                                }
 
                             }
                         }
