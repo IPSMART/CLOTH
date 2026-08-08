@@ -1756,7 +1756,8 @@ namespace Improvar
             sql += "select distinct '' gocd, a.mtrljobcd, '' stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, '' shade, 0 cutlength, 0 dia, 0 balqnty, 0 balnos " + Environment.NewLine;
             sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_cntrl_hdr c " + Environment.NewLine;
             sql += "where a.barno=b.barno(+) and a.autono=c.autono(+) and " + Environment.NewLine;
-            sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "'  " + Environment.NewLine;
+            //sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "'  " + Environment.NewLine;
+            sql += "c.compcd='" + COM + "' " + Environment.NewLine;
             if (barno.retStr() != "") sql += "and upper(a.barno) in (" + barno + ")  " + Environment.NewLine;
             if (itcd.retStr() != "") sql += "and b.itcd in (" + itcd + ")  " + Environment.NewLine;
             if (mtrljobcd.retStr() != "") sql += "and a.mtrljobcd in (" + mtrljobcd + ")  " + Environment.NewLine;
