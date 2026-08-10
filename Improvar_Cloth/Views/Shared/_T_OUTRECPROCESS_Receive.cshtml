@@ -78,6 +78,7 @@
                                                 @Html.HiddenFor(model => model.TBATCHDTL[i].DISCRATE, new { id = "B_DISCRATE_" + i })
                                                 @Html.HiddenFor(model => model.TBATCHDTL[i].MTRLJOBCD, new { id = "B_MTRLJOBCD_" + i })
                                                 @Html.HiddenFor(model => model.TBATCHDTL[i].JOBTXNTY, new { id = "B_JOBTXNTY_" + i })
+                                                @Html.HiddenFor(model => model.TBATCHDTL[i].ORDAUTONO, new { id = "B_ORDAUTONO_" + i })
  </td>
                                             <td class="sticky-cell" style="left:20px;">
                                                 @Html.TextBoxFor(model => Model.TBATCHDTL[i].SLNO, new { id = "B_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })

@@ -3546,7 +3546,7 @@ namespace Improvar.Controllers
                                             TBATCHMST.SHADE = helpM[j].SHADE;
                                             TBATCHMST.MILLNM = helpM[j].MILLNM;
                                             TBATCHMST.BATCHNO = helpM[j].BATCHNO;
-                                            TBATCHMST.ORDAUTONO = helpM[j].ORDAUTONO;
+                                            TBATCHMST.ORDAUTONO = VE.TPROGDTL[i].ORDAUTONO;// helpM[j].ORDAUTONO;
                                             //dbsql = masterHelp.RetModeltoSql(TBATCHMST);
                                             dbsql = masterHelp.RetModeltoSql(TBATCHMST, Action, "", SqlCondition);
                                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
@@ -3578,7 +3578,7 @@ namespace Improvar.Controllers
                                         TBATCHDTL.SCMDISCTYPE = helpM[j].SCMDISCTYPE;
                                         TBATCHDTL.TDDISCRATE = helpM[j].TDDISCRATE;
                                         TBATCHDTL.TDDISCTYPE = helpM[j].TDDISCTYPE;
-                                        TBATCHDTL.ORDAUTONO = helpM[j].ORDAUTONO;
+                                        TBATCHDTL.ORDAUTONO = VE.TPROGDTL[i].ORDAUTONO;// helpM[j].ORDAUTONO;
                                         TBATCHDTL.ORDSLNO = helpM[j].ORDSLNO;
                                         TBATCHDTL.DIA = helpM[j].DIA;
                                         TBATCHDTL.CUTLENGTH = helpM[j].CUTLENGTH;

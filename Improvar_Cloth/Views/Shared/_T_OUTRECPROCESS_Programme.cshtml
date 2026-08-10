@@ -94,7 +94,8 @@
                                             {
                                                 @Html.HiddenFor(model => model.TPROGDTL[i].CUTLENGTH, new { id = "P_CUTLENGTH_" + i })
                                             }
-                                        </td>
+                                            @Html.HiddenFor(model => model.TPROGDTL[i].ORDAUTONO, new { id = "P_ORDAUTONO_" + i })
+  </td>
                                         <td class="sticky-cell" style="left:27px;">
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].SLNO, new { id = "P_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                         </td>

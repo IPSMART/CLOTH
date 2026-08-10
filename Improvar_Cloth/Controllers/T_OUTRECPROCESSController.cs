@@ -376,7 +376,7 @@ namespace Improvar.Controllers
 
                 string str = "";
                 str += "select a.PROGAUTONO,a.PROGSLNO,a.PROGAUTONO||a.PROGSLNO PROGAUTOSLNO,b.PROGUNIQNO,b.BARNO,a.SLNO,d.ITGRPCD,c.ITGRPNM,d.ITNM, ";
-                str += "b.ITCD,d.FABITCD,d.STYLENO,d.UOMcd,e.COLRNM,b.COLRCD,b.SIZECD,b.SHADE,a.NOS,a.QNTY,b.ITREMARK,f.ITNM FABITNM,b.sample,g.COMMONUNIQBAR,a.SHORTQNTY,d.styleno||' '||d.itnm itstyle,a.JOBTXNTY,b.mtrljobcd ";
+                str += "b.ITCD,d.FABITCD,d.STYLENO,d.UOMcd,e.COLRNM,b.COLRCD,b.SIZECD,b.SHADE,a.NOS,a.QNTY,b.ITREMARK,f.ITNM FABITNM,b.sample,g.COMMONUNIQBAR,a.SHORTQNTY,d.styleno||' '||d.itnm itstyle,a.JOBTXNTY,b.mtrljobcd,B.ORDAUTONO ";
                 str += "from " + Scm + ".T_PROGDTL a , " + Scm + ".T_PROGMAST b," + Scm + ".M_GROUP c, ";
                 str += Scm + ".M_SITEM d, " + Scm + ".M_COLOR e, " + Scm + ".M_SITEM f, " + Scm + ".T_BATCHMST g ";
                 str += "where d.ITGRPCD=c.ITGRPCD(+) and b.ITCD = d.ITCD(+) and b.COLRCD = e.COLRCD(+) and d.FABITCD = f.ITCD(+) and b.BARNO=g.BARNO(+) ";
@@ -451,6 +451,7 @@ namespace Improvar.Controllers
                                    ITSTYLE = dr["ITSTYLE"].retStr(),
                                    CheckedJOBTXNTY = dr["JOBTXNTY"].retStr() == "Y" ? true : false,
                                    MTRLJOBCD = dr["sample"].retStr() == "Y" ? dr["mtrljobcd"].retStr() : "",
+                                   ORDAUTONO = dr["ORDAUTONO"].retStr(),
                                }).OrderBy(s => s.SLNO).ToList();
 
                 VE.Prog_UomTotal = string.Join(", ", (from x in VE.TPROGDTL
@@ -1983,6 +1984,7 @@ namespace Improvar.Controllers
                                     SHORTQNTY = a.SHORTQNTY.retDbl(),
                                     MTRLJOBCD = a.MTRLJOBCD.retStr(),
                                     JOBTXNTY = a.CheckedJOBTXNTY == true ? "Y" : "N",
+                                    ORDAUTONO = a.ORDAUTONO.retStr(),
                                 }).ToList();
 
                 //string[] progautoslno = VE.TPROGDTL.Select(x => x.PROGAUTOSLNO).ToArray();
@@ -3334,8 +3336,8 @@ namespace Improvar.Controllers
                                 //TBATCHDTL.SCMDISCTYPE = VE.TBATCHDTL[i].SCMDISCTYPE;
                                 //TBATCHDTL.TDDISCRATE = VE.TBATCHDTL[i].TDDISCRATE;
                                 //TBATCHDTL.TDDISCTYPE = VE.TBATCHDTL[i].TDDISCTYPE;
-                                //TBATCHDTL.ORDAUTONO = VE.TBATCHDTL[i].ORDAUTONO;
-                                //TBATCHDTL.ORDSLNO = VE.TBATCHDTL[i].ORDSLNO;
+                                TBATCHDTL.ORDAUTONO = VE.TBATCHDTL[i].ORDAUTONO;
+                                TBATCHDTL.ORDSLNO = VE.TBATCHDTL[i].ORDSLNO;
                                 TBATCHDTL.DIA = VE.TBATCHDTL[i].DIA;
                                 TBATCHDTL.CUTLENGTH = VE.TBATCHDTL[i].CUTLENGTH;
                                 TBATCHDTL.LOCABIN = VE.TBATCHDTL[i].LOCABIN;
@@ -5053,6 +5055,7 @@ namespace Improvar.Controllers
                                 ITSTYLE = dr["STYLENO"].retStr() + " " + dr["ITNM"].retStr(),
                                 //MTRLJOBCD = dr["sample"].retStr() == "Y" ? dr["MTRLJOBCD"].retStr() : "",
                                 MTRLJOBCD = dr["MTRLJOBCD"].retStr(),
+                                ORDAUTONO = dr["ORDAUTONO"].retStr(),
                             }).ToList();
                 if (VE.TPROGDTL != null)
                 {
