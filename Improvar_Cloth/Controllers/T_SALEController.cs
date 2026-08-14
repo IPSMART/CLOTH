@@ -3714,7 +3714,7 @@ namespace Improvar.Controllers
                 sql += ") a, ";
 
                 //get return data
-                sql += Environment.NewLine + "(select sum(nvl(a.qnty,0))qnty,sum(nvl(a.nos,0))nos,sum(nvl(a.CUTLENGTH,0))CUTLENGTH,a.AGDOCNO,a.AGDOCDT,a.itcd,a.barno from(";
+                sql += Environment.NewLine + "(select sum(nvl(a.qnty,0))qnty,sum(nvl(a.nos,0))nos,sum(nvl(a.CUTLENGTH,0))CUTLENGTH,a.AGDOCNO,a.AGDOCDT,a.itcd,a.barno,a.txnslno from(";
                 for (int a = 0; a <= 2; a++)
                 {
                     scm_prevyr = scm;
@@ -3732,15 +3732,15 @@ namespace Improvar.Controllers
                         {
                             sql += Environment.NewLine + "union all";
                         }
-                        sql += Environment.NewLine + "select nvl(a.qnty,0)qnty,nvl(a.nos,0)nos,nvl(b.CUTLENGTH,0)CUTLENGTH,a.AGDOCNO,a.AGDOCDT,a.itcd,b.barno from ";
+                        sql += Environment.NewLine + "select nvl(a.qnty,0)qnty,nvl(a.nos,0)nos,nvl(b.CUTLENGTH,0)CUTLENGTH,a.AGDOCNO,a.AGDOCDT,a.itcd,b.barno,b.txnslno from ";
                         sql += Environment.NewLine + scm_prevyr + ".t_txndtl a," + scm_prevyr + ".T_BATCHDTL b ," + scm_prevyr + ".t_txn c," + scm_prevyr + ".t_cntrl_hdr d ";
                         sql += Environment.NewLine + "where a.autono=b.autono and a.slno=b.txnslno and a.autono=c.autono and c.autono=d.autono(+) and nvl(d.cancel,'N')='N' and c.doctag in('" + retdoctag + "') ";
 
                     }
                 }
                 sql += Environment.NewLine + " )a ";
-                sql += Environment.NewLine + "group by a.AGDOCNO,a.AGDOCDT,a.itcd,a.barno )b ";
-                sql += Environment.NewLine + " where a.docno=b.AGDOCNO(+) and a.docdt=b.AGDOCDT(+) and a.itcd=b.itcd(+) and a.barno=b.barno(+))a   ";
+                sql += Environment.NewLine + "group by a.AGDOCNO,a.AGDOCDT,a.itcd,a.barno,a.txnslno )b ";
+                sql += Environment.NewLine + " where a.docno=b.AGDOCNO(+) and a.docdt=b.AGDOCDT(+) and a.itcd=b.itcd(+) and a.barno=b.barno(+) and a.txnslno=b.txnslno(+))a   ";
                 sql += "where balqnty>0 ";
                 sql += "order by a.docdt, a.docno,a.txnslno ";
 

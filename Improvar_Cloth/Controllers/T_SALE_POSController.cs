@@ -192,7 +192,11 @@ namespace Improvar.Controllers
                                 VE.LINKDOCNO = loadOrder.retStr();
                                 VE.T_TXN_LINKNO.LINKAUTONO = searchValue.retStr();
                             }
+                            var chkadj = ChildRecordCheck(VE.T_TXN.AUTONO);
+
                             if (VE.T_CNTRL_HDR != null && VE.T_CNTRL_HDR.DOCNO != null) ViewBag.formname = ViewBag.formname + " (" + VE.T_CNTRL_HDR.DOCNO + ")";
+                            if (chkadj.retStr() != "") ViewBag.formname = ViewBag.formname + " [" + chkadj + "]";
+
                         }
                         if (op.ToString() == "A" && loadOrder == "N")
                         {
@@ -977,7 +981,12 @@ namespace Improvar.Controllers
                     }
                     #endregion
                 }
-
+                var chkadj = ChildRecordCheck(VE.T_TXN.AUTONO);
+                if (chkadj.retStr() != "")
+                {
+                    VE.Edit = "ADJUSTED";
+                    VE.Delete = "ADJUSTED";
+                }
                 if (VE.T_CNTRL_HDR.CANCEL == "Y") VE.CancelRecord = true; else VE.CancelRecord = false;
             }
             //Cn.DateLock_Entry(VE, DB,   VE.T_CNTRL_HDR.DOCDT.Value);
@@ -4930,6 +4939,30 @@ namespace Improvar.Controllers
             tempdataname = tempdataname + VE.MENU_PARA + COM + LOC + doccd;
             return tempdataname;
         }
+        private string ChildRecordCheck(string autono)
+        {
+            TransactionSaleEntry VE = new TransactionSaleEntry();
+            Cn.getQueryString(VE);
+            string message = "";
+            string scm = CommVar.CurSchema(UNQSNO);
+            string fcm = CommVar.FinSchema(UNQSNO);
+
+
+
+            string sql = "";
+
+            sql += "select a.autono,b.docno,b.docdt,c.docnm  ";
+            sql += "from  " + fcm + ".T_vch_bl_adj a," + fcm + ".t_cntrl_hdr b ," + fcm + ".m_doctype c  ";
+            sql += "where a.autono=B.AUTONO and b.doccd=c.DOCCD  and nvl(b.cancel,'N') = 'N'  and (a.i_autono='" + autono + "' OR a.r_autono='" + autono + "'  ) and a.autono not in ('" + autono + "') ";
+            DataTable dt = masterHelp.SQLquery(sql);
+            if (dt.Rows.Count > 0)
+            {
+                message = "Child record found at docno:" + dt.Rows[0]["docno"].ToString() + " docdt:" + dt.Rows[0]["docdt"].retDateStr() + " docnm:" + dt.Rows[0]["docnm"].ToString() ;
+                return message;
+            }
+            return message;
+        }
+
 
     }
 }
