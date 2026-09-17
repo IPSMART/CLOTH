@@ -37,7 +37,7 @@
             modeView();
             //$("#print_nav").hide();
             $("#check_nav").hide();
-            
+
         }
         else if ("@Model.DefaultAction" == "E") {
             if ("@Model.Edit_Tag" == "False") {
@@ -373,8 +373,8 @@
         for (var i = 0; i <= GridRow - 1; i++) {
             var SIZE = document.getElementById("SIZECD_" + i).value;
             //if (SIZE != "") {
-                var QUANTITY = document.getElementById("SIZE_QNTY_" + i).value; if (QUANTITY == "") { QUANTITY = parseFloat(0); } else { QUANTITY = parseFloat(QUANTITY); }
-                TOTAL_SIZE_QNTY = parseFloat(TOTAL_SIZE_QNTY) + parseFloat(QUANTITY);
+            var QUANTITY = document.getElementById("SIZE_QNTY_" + i).value; if (QUANTITY == "") { QUANTITY = parseFloat(0); } else { QUANTITY = parseFloat(QUANTITY); }
+            TOTAL_SIZE_QNTY = parseFloat(TOTAL_SIZE_QNTY) + parseFloat(QUANTITY);
             //}
         }
         document.getElementById("TOTAL_SIZE_QNTY").value = parseFloat(TOTAL_SIZE_QNTY).toFixed(2);
@@ -1259,26 +1259,74 @@
     }
 </script>
 <script>
+    function Calculate_Amt(i) {
+        debugger;
+        var QNTY_ = retFloat($("#QNTY_" + i).val());
+        var RATE_ = retFloat($("#RATE_" + i).val());
+        var SCMDISCAMT_ = retFloat($("#SCMDISCAMT_" + i).val());
+        var DISCAMT_ = retFloat($("#DISCAMT_" + i).val());
+        var PRODGRPGSTPER_ = $("#PRODGRPGSTPER_" + i).val();
+
+        var GSTPER = 0;
+        var GSTPERstr = retGstPerstr(PRODGRPGSTPER_, RATE_, "F", SCMDISCAMT_, QNTY_);
+        var GSTPERarr = GSTPERstr.split(','); var GSTPER = 0;
+        $.each(GSTPERarr, function () {
+            GSTPER += parseFloat(this) || 0;
+        });
+
+
+        var AMOUNT_ = retFloat((QNTY_ * RATE_).toFixed(2));
+        var TXBLVAL_ = retFloat((AMOUNT_ - SCMDISCAMT_ - DISCAMT_).toFixed(2));
+        var TAXAMT_ = retFloat((TXBLVAL_ * GSTPER / 100).toFixed(2));
+        var NETAMT_ = retFloat((TXBLVAL_ + TAXAMT_).toFixed(2));
+
+        $("#GSTPER_" + i).val(GSTPER.toFixed(2));
+        $("#TAXAMT_" + i).val(TAXAMT_.toFixed(2));
+        $("#AMOUNT_" + i).val(AMOUNT_.toFixed(2));
+        $("#TXBLVAL_" + i).val(TXBLVAL_.toFixed(2));
+        $("#NETAMT_" + i).val(NETAMT_.toFixed(2));
+        Calculate_Total();
+    }
+
     function Calculate_Total() {
         debugger;
         var APRXVL = 0;
         var T_QNTY = 0;
         var T_FRGHTAMT = 0;
+        var TOTAL_AMOUNT = 0, TOTAL_SCMDISCAMT = 0, TOTAL_DISCAMT = 0, TOTAL_TXBLVAL = 0, TOTAL_TAXAMT = 0, TOTAL_NETAMT = 0;
         var GridRow = $("#_T_SORD_MAIN_GRID > tbody > tr").length;
         for (var i = 0; i <= GridRow - 1; i++) {
-            var RATE_ =retFloat( $("#RATE_" + i).val());
+            var RATE_ = retFloat($("#RATE_" + i).val());
             var QNTY_ = $("#QNTY_" + i).val();
             var FRGHTAMT_ = $("#FRGHTAMT_" + i).val();
+            var NETAMT_ = retFloat($("#NETAMT_" + i).val());
             if (QNTY_ == "") { QNTY_ = parseFloat(0); } else { QNTY_ = parseFloat(QNTY_) }
             if (QNTY_ != "") { T_QNTY = T_QNTY + parseFloat(QNTY_); } else { T_QNTY = T_QNTY + parseFloat(0); }
             if (FRGHTAMT_ == "") { FRGHTAMT_ = parseFloat(0); } else { FRGHTAMT_ = parseFloat(FRGHTAMT_) }
             if (FRGHTAMT_ != "") { T_FRGHTAMT = T_FRGHTAMT + parseFloat(FRGHTAMT_); } else { T_FRGHTAMT = T_FRGHTAMT + parseFloat(0); }
             document.getElementById("QNTY_" + i).value = QNTY_.toFixed(3);
-            APRXVL += (QNTY_ * RATE_) + FRGHTAMT_;
+            APRXVL += NETAMT_ + FRGHTAMT_;
+
+
+            TOTAL_AMOUNT += retFloat($("#AMOUNT_" + i).val());
+            TOTAL_SCMDISCAMT += retFloat($("#SCMDISCAMT_" + i).val());
+            TOTAL_DISCAMT += retFloat($("#DISCAMT_" + i).val());
+            TOTAL_TXBLVAL += retFloat($("#TXBLVAL_" + i).val());
+            TOTAL_TAXAMT += retFloat($("#TAXAMT_" + i).val());
+            TOTAL_NETAMT += retFloat($("#NETAMT_" + i).val());
         }
         document.getElementById("TOTAL_QNTY").value = T_QNTY.toFixed(3);
         document.getElementById("TOTAL_FRGHTAMT").value = T_FRGHTAMT.toFixed(3);
         document.getElementById("APROXVAL").value = APRXVL.toFixed(2);
+
+
+        $("#TOTAL_AMOUNT").val(TOTAL_AMOUNT.toFixed(2));
+        $("#TOTAL_SCMDISCAMT").val(TOTAL_SCMDISCAMT.toFixed(2));
+        $("#TOTAL_DISCAMT").val(TOTAL_DISCAMT.toFixed(2));
+        $("#TOTAL_TXBLVAL").val(TOTAL_TXBLVAL.toFixed(2));
+        $("#TOTAL_TAXAMT").val(TOTAL_TAXAMT.toFixed(2));
+        $("#TOTAL_NETAMT").val(TOTAL_NETAMT.toFixed(2));
+
     }
 
 </script>
@@ -1376,7 +1424,74 @@
         return true;
     }
 </script>
+<script>
+    function GetItcd(id, i) {
+        debugger;
+        if (id == "") {
+            ClearAllTextBoxes("ITCD_" + i + ",ITNM_" + i + ",UOM_" + i + ",STYLENO_" + i + ",ITGRPCD_" + i + ",ITGRPNM_" + i + ",FABITCD_" + i + ",FABITNM_" + i + ",PRODGRPGSTPER_" + i);
+        }
+        else {
+            var code = $("#ITGRPCD_" + i).val() + String.fromCharCode(181) + $("#FABITCD_" + i).val() + String.fromCharCode(181) + $("#PRCCD").val() + String.fromCharCode(181) + $("#TAXGRPCD").val() + String.fromCharCode(181) + $("#DOCDT").val();
+            $.ajax({
+                type: 'POST',
+                beforesend: $("#WaitingMode").show(),
+                url:  "@Url.Action("GetItemDetails", PageControllerName)",
+                data: "&Code=" + code + "&val=" + id,
+                success: function (result) {
+                    var MSG = result.indexOf('#helpDIV');
+                    if (MSG >= 0) {
+                        ClearAllTextBoxes("ITCD_" + i + ",ITNM_" + i + ",UOM_" + i + ",STYLENO_" + i + ",ITGRPCD_" + i + ",ITGRPNM_" + i + ",FABITCD_" + i + ",FABITNM_" + i + ",PRODGRPGSTPER_" + i);
+                        $('#SearchFldValue').val("ITCD_" + i);
+                        $('#helpDIV').html(result);
+                        $('#ReferanceFieldID').val("ITCD_" + i + "/ITNM_" + i + "/UOM_" + i + "/STYLENO_" + i + "/ITGRPCD_" + i + "/FABITCD_" + i + "");
+                        $('#ReferanceColumn').val("2/1/3/0/5/7");
+                        $('#helpDIV_Header').html("Item Details");
+                    }
+                    else {
+                        var MSG = result.indexOf(String.fromCharCode(181));
+                        if (MSG >= 0) {
+                            $("#ITCD_" + i).val(returncolvalue(result, "itcd"));
+                            $("#ITNM_" + i).val(returncolvalue(result, "itnm"));
+                            $("#UOM_" + i).val(returncolvalue(result, "uomcd"));
+                            $("#STYLENO_" + i).val(returncolvalue(result, "styleno"));
+                            $("#ITGRPCD_" + i).val(returncolvalue(result, "ITGRPCD"));
+                            $("#ITGRPNM_" + i).val(returncolvalue(result, "ITGRPNM"));
+                            $("#FABITCD_" + i).val(returncolvalue(result, "fabitcd"));
+                            $("#FABITNM_" + i).val(returncolvalue(result, "FABITNM"));
+                            $("#PRODGRPGSTPER_" + i).val(returncolvalue(result, "PRODGRPGSTPER"));
 
+                            var QNTY_ = retFloat($("#QNTY_" + i).val());
+                            var RATE_ = retFloat($("#RATE_" + i).val());
+                            var SCMDISCAMT_ = retFloat($("#SCMDISCAMT_" + i).val());
+
+                            var GSTPER = 0;
+                            var GSTPERstr = retGstPerstr(returncolvalue(result, "PRODGRPGSTPER"), RATE_, "F", SCMDISCAMT_, QNTY_);
+                            var GSTPERarr = GSTPERstr.split(','); var GSTPER = 0;
+                            $.each(GSTPERarr, function () {
+                                GSTPER += parseFloat(this) || 0;
+                            });
+                            $("#GSTPER_" + i).val(GSTPER.toFixed(2));
+
+                        }
+                        else {
+                            $('#helpDIV').html("");
+                            msgInfo("" + result + " !");
+                            ClearAllTextBoxes("ITCD_" + i + ",ITNM_" + i + ",UOM_" + i + ",STYLENO_" + i + ",ITGRPCD_" + i + ",ITGRPNM_" + i + ",FABITCD_" + i + ",FABITNM_" + i + ",PRODGRPGSTPER_" + i);
+                            message_value = "ITCD_" + i;
+                        }
+                    }
+                    $("#WaitingMode").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+
+        }
+    }
+</script>
 
 @using (Html.BeginForm())
 {
@@ -1409,7 +1524,7 @@
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNCOLOR, new { id = "MNTNCOLOR" })
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNPART, new { id = "MNTNPART" })
         @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
- <input type="hidden" id="SLCDlinkcd" value="D,C,O" />
+        <input type="hidden" id="SLCDlinkcd" value="D,C,O" />
         <div class="form-horizontal">
             @if (Model.DefaultAction == "V")
             {
@@ -1485,8 +1600,8 @@
                         <div class="editor-field">
                             @*@Html.EditorFor(model => model.T_SORD.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeyup = "GetHelp_WithId('" + @Url.Action("GetPartyDetails", PageControllerName) + "','SLCD/PartyName','1/0','Party Details','SLCD','BRANDCD')", onblur = "SelectSubLedgerCode(this.value,SLCD,PartyName,'urlnamePARTY');", @placeholder = "Code", maxlength = 8 } })
                                 <img src="~/Image/search.png" id="PARTY_HELP" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp_WithId('@Url.Action("GetPartyDetails", PageControllerName )','SLCD/PartyName','1/0','Party Details','SLCD','BRANDCD')" />*@
-                            @Html.EditorFor(model => model.T_SORD.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=SLAREA','partylinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=SLAREA','partylinkcd');", @placeholder = "Code", maxlength = 8 } })
-                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=SLAREA','partylinkcd')" />
+                            @Html.EditorFor(model => model.T_SORD.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=SLAREA/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD','partylinkcd/DOCDT')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=SLAREA/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD','partylinkcd/DOCDT');", @placeholder = "Code", maxlength = 8 } })
+                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=SLAREA/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD','partylinkcd/DOCDT')" />
                         </div>
                     </div>
                     <div class="col-md-10">
@@ -1500,13 +1615,15 @@
                             @Html.HiddenFor(model => model.AGTNM, new { @class = "form-control", id = "AGTNM_H" })
                             @Html.HiddenFor(model => model.TRNSCD, new { @class = "form-control", id = "TRNSCD_H" })
                             @Html.HiddenFor(model => model.TRNSNM, new { @class = "form-control", id = "TRNSNM_H" })
+                            @Html.HiddenFor(model => model.TAXGRPCD, new { id = "TAXGRPCD" })
+                            @Html.HiddenFor(model => model.PRCCD, new { id = "PRCCD" })
                         </div>
                     </div>
                     <div class="col-md-8">
                         <div class="editor-field">
                             @Html.EditorFor(model => model.M_SUBLEG.SLAREA, new { htmlAttributes = new { @class = "form-control", id = "SLAREA", maxlength = 40, @title = "Only for View", @placeholder = "District", @readonly = "readonly", tabindex = "-1" } })
                         </div>
-                    </div>       
+                    </div>
                 </div>
                 @*<div class="col-lg-7" style="margin-left:-4px;">*@
                 <div class="row">
@@ -1580,34 +1697,34 @@
                         </div>
                     </div>
                 </div>
-                @if(Model.MENU_PARA=="SBCM")
-                { 
-                <div class="row">
-                    <div class="col-md-5">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Retail")
-                            <b style="color:Red;">*</b>
+                @if (Model.MENU_PARA == "SBCM")
+                {
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Retail")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.T_SORD.RTDEBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "RTDEBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetRefRetailDetails", PageControllerName) + "','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDEBNM=RTDEBNM=0','RETDEBSLCD')", onblur = "GetHelpBlur('" + @Url.Action("GetRefRetailDetails", PageControllerName) + "','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDEBNM=RTDEBNM=0/MOBILE=MOBILE/ADDR=ADDR','RETDEBSLCD');", @placeholder = "Code", maxlength = 8 } })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetRefRetailDetails", PageControllerName)','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDEBNM=RTDEBNM=0','RETDEBSLCD')" />
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.RTDEBNM, new { htmlAttributes = new { @class = "form-control", id = "RTDEBNM", maxlength = 15, @title = Model.ADDR, @placeholder = "Ref Retail Name", @TabIndex = -1, @readonly = "readonly" } })
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.MOBILE, new { htmlAttributes = new { @class = "form-control", id = "MOBILE", maxlength = 10, @title = "Only for View", @placeholder = "Mobile No.", @readonly = "readonly" } })
+                                @Html.HiddenFor(model => model.ADDR, new { @class = "form-control", id = "ADDR", maxlength = 15 })
+                                @Html.HiddenFor(model => model.RETDEBSLCD, new { @class = "form-control", id = "RETDEBSLCD", maxlength = 15 })
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.T_SORD.RTDEBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "RTDEBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetRefRetailDetails", PageControllerName) + "','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDEBNM=RTDEBNM=0','RETDEBSLCD')", onblur = "GetHelpBlur('" + @Url.Action("GetRefRetailDetails", PageControllerName) + "','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDEBNM=RTDEBNM=0/MOBILE=MOBILE/ADDR=ADDR','RETDEBSLCD');", @placeholder = "Code", maxlength = 8 } })
-                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetRefRetailDetails", PageControllerName)','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDEBNM=RTDEBNM=0','RETDEBSLCD')" />
-                        </div>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.RTDEBNM, new { htmlAttributes = new { @class = "form-control", id = "RTDEBNM", maxlength = 15,@title=Model.ADDR, @placeholder = "Ref Retail Name", @TabIndex = -1, @readonly = "readonly" } })
-                        </div>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.MOBILE, new { htmlAttributes = new { @class = "form-control", id = "MOBILE", maxlength = 10, @title = "Only for View", @placeholder = "Mobile No.", @readonly = "readonly" } })
-                            @Html.HiddenFor(model => model.ADDR, new { @class = "form-control", id = "ADDR", maxlength = 15 })
-                            @Html.HiddenFor(model => model.RETDEBSLCD, new { @class = "form-control", id = "RETDEBSLCD", maxlength = 15 })
-                        </div>
-                    </div>
-                </div>
                 }
                 @*</div>*@
                 @*<div class="col-lg-5">

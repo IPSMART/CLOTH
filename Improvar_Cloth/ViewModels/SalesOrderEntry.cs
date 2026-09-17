@@ -118,7 +118,23 @@ namespace Improvar.ViewModels
         public string MOBILE { get; set; }
         public string ADDR { get; set; }
         public string RETDEBSLCD { get; set; }
-        
+
+
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double TOTAL_AMOUNT { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double TOTAL_SCMDISCAMT { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double TOTAL_DISCAMT { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double TOTAL_TXBLVAL { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double TOTAL_TAXAMT { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double TOTAL_NETAMT { get; set; }
+        public string TAXGRPCD { get; set; }
+
+
     }
     public class SalesOrderEntry_MAINGRID
     {

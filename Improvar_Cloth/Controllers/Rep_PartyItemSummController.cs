@@ -346,6 +346,8 @@ namespace Improvar.Controllers
         {
             string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
             string txntag = "'SB','SR','SD','SC'";
+            string saletag = "'SB'";
+            string rettag = "'SR'";
             //if (CHECK == "Y")
             //{
             //    txntag = "'SB'";
@@ -386,6 +388,8 @@ namespace Improvar.Controllers
                 {
                     txntag = "'JC','JR'";
                 }
+                saletag = txntag;
+                rettag = "'JU'";
             }
             string sql = "";
             sql += " select a.autono, a.doccd, a.docno,a.doctag, a.cancel,a.docdt,a.agslcd, " + Environment.NewLine;
@@ -396,17 +400,17 @@ namespace Improvar.Controllers
             sql += "a.slno,a.stkdrcr,a.itgrpnm, a.itcd,a.qnty,a.rate,a.amt, " + Environment.NewLine;
             sql += "a.itnm,a.itstyle, a.itrem,a.barno, a.barimagecount, a.barimage, a.hsncode,a.uomcd,a.uomnm, a.decimals,a.colrcd,a.colrnm, " + Environment.NewLine;
 
-            sql += "(case when a.doctag = 'SB' then nvl(a.nos, 0) else 0 end)snos," + Environment.NewLine;
-            sql += "(case when a.doctag = 'SR' then nvl(a.nos, 0) else 0 end)srnos," + Environment.NewLine;
+            sql += "(case when a.doctag in (" + saletag + ") then nvl(a.nos, 0) else 0 end)snos," + Environment.NewLine;
+            sql += "(case when a.doctag in (" + rettag + ") then nvl(a.nos, 0) else 0 end)srnos," + Environment.NewLine;
 
-            sql += "(case when a.doctag = 'SB' then nvl(a.qnty, 0) else 0 end)sqnty," + Environment.NewLine;
-            sql += "(case when a.doctag = 'SR' then nvl(a.qnty, 0) else 0 end)srqnty," + Environment.NewLine;
+            sql += "(case when a.doctag in (" + saletag + ") then nvl(a.qnty, 0) else 0 end)sqnty," + Environment.NewLine;
+            sql += "(case when a.doctag in (" + rettag + ") then nvl(a.qnty, 0) else 0 end)srqnty," + Environment.NewLine;
 
-            sql += "(case when a.doctag = 'SB' then nvl(a.rate, 0) else 0 end)srate," + Environment.NewLine;
-            sql += "(case when a.doctag = 'SR' then nvl(a.rate, 0) else 0 end)srrate," + Environment.NewLine;
+            sql += "(case when a.doctag in (" + saletag + ") then nvl(a.rate, 0) else 0 end)srate," + Environment.NewLine;
+            sql += "(case when a.doctag in (" + rettag + ")  then nvl(a.rate, 0) else 0 end)srrate," + Environment.NewLine;
 
-            sql += "(case when a.doctag = 'SB' then nvl(a.amt, 0) else 0 end)samt," + Environment.NewLine;
-            sql += "(case when a.doctag = 'SR' then nvl(a.amt, 0) else 0 end)sramt," + Environment.NewLine;
+            sql += "(case when a.doctag in (" + saletag + ") then nvl(a.amt, 0) else 0 end)samt," + Environment.NewLine;
+            sql += "(case when a.doctag in (" + rettag + ")  then nvl(a.amt, 0) else 0 end)sramt," + Environment.NewLine;
 
 
             sql += " a.amt,a.scmdiscrate,a.scmdiscamt, a.tddiscamt, a.discamt,a.TXBLVAL, " + Environment.NewLine;

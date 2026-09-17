@@ -40,12 +40,26 @@ namespace Improvar.Controllers
                     VE.TDT = CommVar.CurrDate(UNQSNO);
                     VE.DropDown_list_JOBCD = DropDownHelp.DropDown_JOBCD();
 
-                    VE.DropDown_list = (from i in DB.M_DOCTYPE
-                                        select new DropDown_list()
-                                        {
-                                            value = i.DOCCD,
-                                            text = i.DOCNM
-                                        }).Distinct().OrderBy(s => s.text).ToList();
+                    string scm = CommVar.CurSchema(UNQSNO);
+                    string sql = "";
+                    sql += "select distinct c.doccd, c.doctype, c.docnm " + Environment.NewLine;
+                    sql += "from " + scm + ".t_txn a," + scm + ".t_cntrl_hdr b," + scm + ".m_doctype c " + Environment.NewLine;
+                    sql += "where a.autono=b.autono(+) and b.doccd=c.doccd(+) and  a.jobcd is not null order by c.docnm " + Environment.NewLine;
+
+                    DataTable tbl = MasterHelp.SQLquery(sql);
+                    if (tbl != null && tbl.Rows.Count > 0)
+                    {
+                        VE.DropDown_list = (from DataRow dr in tbl.Rows
+                                            select new DropDown_list()
+                                            {
+                                                text = dr["doctype"].retStr(),
+                                                value = dr["docnm"].retStr()
+                                            }).OrderBy(A => A.text).ToList();
+                    }
+                    else
+                    {
+                        VE.DropDown_list = new List<DropDown_list>();
+                    }
                     VE.TEXTBOX11 = MasterHelp.ComboFill("doctype", VE.DropDown_list, 0, 0);
 
 
@@ -465,86 +479,87 @@ namespace Improvar.Controllers
                     string RegisterType = VE.TEXTBOX10;
 
                     string doctype = "";
+                    if (FC.AllKeys.Contains("doctypevalue")) doctype = CommFunc.retSqlformat(FC["doctypevalue"].ToString());
+                    if (doctype.retStr() == "") return Content("Select Doctype");
+                    //if (JOBCD == "ST")
+                    //{
+                    //    if (RegisterType == "Issue")
+                    //    {
+                    //        doctype = "'OSTI'";
+                    //    }
+                    //    else if (RegisterType == "Receive")
+                    //    {
+                    //        doctype = "'OSTR'";
+                    //    }
+                    //    else
+                    //    {
+                    //        doctype = "'OSTI','OSTR'";
+                    //    }
 
-                    if (JOBCD == "ST")
-                    {
-                        if (RegisterType == "Issue")
-                        {
-                            doctype = "'OSTI'";
-                        }
-                        else if (RegisterType == "Receive")
-                        {
-                            doctype = "'OSTR'";
-                        }
-                        else
-                        {
-                            doctype = "'OSTI','OSTR'";
-                        }
+                    //}
+                    //else if (JOBCD == "JB")
+                    //{
+                    //    if (RegisterType == "Issue")
+                    //    {
+                    //        doctype = "'OJWI'";
+                    //    }
+                    //    else if (RegisterType == "Receive")
+                    //    {
+                    //        doctype = "'OJWR'";
+                    //    }
+                    //    else
+                    //    {
+                    //        doctype = "'OJWI','OJWR'";
+                    //    }
+                    //}
+                    //else if (JOBCD == "DY")
+                    //{
+                    //    if (RegisterType == "Issue")
+                    //    {
+                    //        doctype = "'ODYI'";
+                    //    }
+                    //    else if (RegisterType == "Receive")
+                    //    {
+                    //        doctype = "'ODYR'";
+                    //    }
+                    //    else
+                    //    {
+                    //        doctype = "'ODYI','ODYR'";
+                    //    }
 
-                    }
-                    else if (JOBCD == "JB")
-                    {
-                        if (RegisterType == "Issue")
-                        {
-                            doctype = "'OJWI'";
-                        }
-                        else if (RegisterType == "Receive")
-                        {
-                            doctype = "'OJWR'";
-                        }
-                        else
-                        {
-                            doctype = "'OJWI','OJWR'";
-                        }
-                    }
-                    else if (JOBCD == "DY")
-                    {
-                        if (RegisterType == "Issue")
-                        {
-                            doctype = "'ODYI'";
-                        }
-                        else if (RegisterType == "Receive")
-                        {
-                            doctype = "'ODYR'";
-                        }
-                        else
-                        {
-                            doctype = "'ODYI','ODYR'";
-                        }
+                    //}
+                    //else if (JOBCD == "PR")
+                    //{
+                    //    if (RegisterType == "Issue")
+                    //    {
+                    //        doctype = "'OPRI'";
+                    //    }
+                    //    else if (RegisterType == "Receive")
+                    //    {
+                    //        doctype = "'OPRR'";
+                    //    }
+                    //    else
+                    //    {
+                    //        doctype = "'OPRI','OPRR'";
+                    //    }
 
-                    }
-                    else if (JOBCD == "PR")
-                    {
-                        if (RegisterType == "Issue")
-                        {
-                            doctype = "'OPRI'";
-                        }
-                        else if (RegisterType == "Receive")
-                        {
-                            doctype = "'OPRR'";
-                        }
-                        else
-                        {
-                            doctype = "'OPRI','OPRR'";
-                        }
+                    //}
+                    //else if (JOBCD == "KR")
+                    //{
+                    //    if (RegisterType == "Issue")
+                    //    {
+                    //        doctype = "'OEMI'";
+                    //    }
+                    //    else if (RegisterType == "Receive")
+                    //    {
+                    //        doctype = "'OEMR'";
+                    //    }
+                    //    else
+                    //    {
+                    //        doctype = "'OEMI','OEMR'";
+                    //    }
 
-                    }
-                    else if (JOBCD == "KR")
-                    {
-                        if (RegisterType == "Issue")
-                        {
-                            doctype = "'OEMI'";
-                        }
-                        else if (RegisterType == "Receive")
-                        {
-                            doctype = "'OEMR'";
-                        }
-                        else
-                        {
-                            doctype = "'OEMI','OEMR'";
-                        }
-
-                    }
+                    //}
                     sql = "";
                     sql += "select a.autono,a.slno,c.docdt,c.docno,f.slnm,a.nos,a.qnty,c.doccd doccode, " + Environment.NewLine;
                     sql += "f.slarea area,f.gstno,a.amt basicamt,0 disc1amt,0 disc2amt, " + Environment.NewLine;

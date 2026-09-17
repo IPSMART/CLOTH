@@ -241,6 +241,19 @@ namespace Improvar.Controllers
                                 {
                                     VE.SAGSLNM = DBF.M_SUBLEG.Find(sl.SAGSLCD).SLNM;
                                 }
+                                string Code = "";
+                                switch (VE.DOC_CODE)
+                                {
+                                    case "SORD": Code = "D"; break;
+                                    case "PORD": Code = "C"; break;
+                                    default: Code = "D"; break;
+                                }
+                                var party_data = Salesfunc.GetSlcdDetails(sl.SLCD, sl.DOCDT.retDateStr(), Code);
+                                if (party_data != null && party_data.Rows.Count > 0)
+                                {
+                                    VE.TAXGRPCD = party_data.Rows[0]["TAXGRPCD"].retStr();
+                                    VE.PRCCD = party_data.Rows[0]["PRCCD"].retStr();
+                                }
                                 string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
                                 if (VE.MENU_PARA == "SBCM" && sl.RTDEBCD != null)
                                 {
@@ -288,7 +301,7 @@ namespace Improvar.Controllers
 
                                 str1 += "select a.SLNO,a.AUTONO, a.STKDRCR, a.STKTYPE, a.FREESTK, a.ITCD, c.ITNM, c.STYLENO, c.PCSPERSET, c.UOMCD, ";
                                 str1 += "a.sizecd, a.rate, a.scmdiscamt, a.discamt, a.qnty,A.DELVDT,a.ITREM,a.PDESIGN,c.itgrpcd, d.itgrpnm,c.fabitcd, ";
-                                str1 += "e.itnm fabitnm,a.colrcd,a.partcd,f.colrnm,g.sizenm,h.partnm,a.rate,a.frghtamt from ";
+                                str1 += "e.itnm fabitnm,a.colrcd,a.partcd,f.colrnm,g.sizenm,h.partnm,a.rate,a.frghtamt,a.SCMDISCAMT,a.DISCAMT,a.TAXAMT from ";
                                 str1 += SCM + ".T_SORDDTL a, " + SCM + ".T_CNTRL_HDR b, ";
                                 str1 += SCM + ".m_sitem c, " + SCM + ".m_group d, " + SCM + ".m_sitem e, " + SCM + ".m_color f, " + SCM + ".m_size g, " + SCM + ".m_parts h ";
                                 str1 += "where a.autono = b.autono(+) and a.itcd = c.itcd(+) and c.itgrpcd=d.itgrpcd and c.fabitcd=e.itcd(+) ";
@@ -326,15 +339,46 @@ namespace Improvar.Controllers
                                                    PARTNM = dr["PARTNM"].ToString(),
                                                    RATE = dr["RATE"].retDbl(),
                                                    FRGHTAMT = dr["FRGHTAMT"].retDbl(),
+                                                   SCMDISCAMT = dr["SCMDISCAMT"].retDbl(),
+                                                   DISCAMT = dr["DISCAMT"].retDbl(),
+                                                   TAXAMT = dr["TAXAMT"].retDbl(),
                                                }).OrderBy(s => s.SLNO).ToList();
                                 double tqty = 0, tFRGHTAMT = 0;
+
+                                string arritcd = VE.TSORDDTL.Select(a => a.ITCD).ToArray().retSqlfromStrarray();
+                                DataTable allprodgrpgstper_data = Salesfunc.GetBarHelp(sl.DOCDT.retDateStr(), "", "", arritcd, "", "", "", "", VE.PRCCD, VE.TAXGRPCD, "", "", true, false, "PB", "", "", false, false, true, "", false);
+
                                 foreach (var v in VE.TSORDDTL)
                                 {
                                     tqty = tqty + v.QNTY.retDbl();
                                     tFRGHTAMT = tFRGHTAMT + v.FRGHTAMT.retDbl();
+
+                                    v.AMOUNT = (v.QNTY * v.RATE).retDbl().toRound();
+                                    v.TXBLVAL = (v.AMOUNT - v.SCMDISCAMT - v.DISCAMT).retDbl().toRound();
+                                    v.NETAMT = (v.TXBLVAL + v.TAXAMT).retDbl().toRound();
+                                    string itcd = v.ITCD;
+                                    var tempdata = (from DataRow a in allprodgrpgstper_data.Rows where a["itcd"].retStr() == itcd select a["PRODGRPGSTPER"].retStr()).ToList();
+                                    if (tempdata != null && tempdata.Count > 0)
+                                    {
+                                        v.PRODGRPGSTPER = tempdata[0].retStr();
+                                        string ALL_GSTPER = Salesfunc.retGstPer(v.PRODGRPGSTPER, v.RATE.retDbl(), "F", v.SCMDISCAMT, v.QNTY.retDbl());
+                                        if (ALL_GSTPER.retStr() != "")
+                                        {
+                                            var gst = ALL_GSTPER.Split(',').ToList();
+                                            v.GSTPER = (from a in gst select a.retDbl()).Sum();
+                                        }
+                                    }
                                 }
                                 VE.TOTAL_QNTY = tqty;
                                 VE.TOTAL_FRGHTAMT = tFRGHTAMT;
+
+                                VE.TOTAL_AMOUNT = VE.TSORDDTL.Sum(a => a.AMOUNT).retDbl().toRound();
+                                VE.TOTAL_SCMDISCAMT = VE.TSORDDTL.Sum(a => a.SCMDISCAMT).retDbl().toRound();
+                                VE.TOTAL_DISCAMT = VE.TSORDDTL.Sum(a => a.DISCAMT).retDbl().toRound();
+                                VE.TOTAL_TXBLVAL = VE.TSORDDTL.Sum(a => a.TXBLVAL).retDbl().toRound();
+                                VE.TOTAL_TAXAMT = VE.TSORDDTL.Sum(a => a.TAXAMT).retDbl().toRound();
+                                VE.TOTAL_NETAMT = VE.TSORDDTL.Sum(a => a.NETAMT).retDbl().toRound();
+
                                 if (VE.DefaultAction == "E")
                                 {
                                     int ROW_COUNT = 0;
@@ -1052,6 +1096,11 @@ namespace Improvar.Controllers
                                     TSORDDTL.ITREM = VE.TSORDDTL[i].ITREM;
                                     TSORDDTL.PDESIGN = VE.TSORDDTL[i].PDESIGN;
 
+                                    TSORDDTL.DISCAMT = VE.TSORDDTL[i].DISCAMT;
+                                    TSORDDTL.SCMDISCAMT = VE.TSORDDTL[i].SCMDISCAMT;
+                                    TSORDDTL.TAXAMT = VE.TSORDDTL[i].TAXAMT;
+
+
                                     dbsql = MasterHelpFa.RetModeltoSql(TSORDDTL);
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
@@ -1223,7 +1272,19 @@ namespace Improvar.Controllers
                 var agent = Code.Split(Convert.ToChar(Cn.GCS()));
                 if (agent.Count() > 1)
                 {
-                    if (agent[1] == "")
+                    if (agent[0] == "party")
+                    {
+                        SalesOrderEntry VE = new SalesOrderEntry();
+                        Cn.getQueryString(VE);
+                        switch (VE.DOC_CODE)
+                        {
+                            case "SORD": Code = "D"; break;
+                            case "PORD": Code = "C"; break;
+                            default: Code = "D"; break;
+                        }
+
+                    }
+                    else if (agent[1] == "")
                     {
                         return Content("Please Select Agent !!");
                     }
@@ -1232,18 +1293,18 @@ namespace Improvar.Controllers
                         Code = agent[0];
                     }
                 }
-                else if (Code == "party")
-                {
-                    SalesOrderEntry VE = new SalesOrderEntry();
-                    Cn.getQueryString(VE);
-                    switch (VE.DOC_CODE)
-                    {
-                        case "SORD": Code = "D"; break;
-                        case "PORD": Code = "C"; break;
-                        default: Code = "D"; break;
-                    }
+                //else if (Code == "party")
+                //{
+                //    SalesOrderEntry VE = new SalesOrderEntry();
+                //    Cn.getQueryString(VE);
+                //    switch (VE.DOC_CODE)
+                //    {
+                //        case "SORD": Code = "D"; break;
+                //        case "PORD": Code = "C"; break;
+                //        default: Code = "D"; break;
+                //    }
 
-                }
+                //}
                 var str = Master_Help.SLCD_help(val, Code);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
@@ -1251,6 +1312,14 @@ namespace Improvar.Controllers
                 }
                 else
                 {
+                    if (agent.Count() > 1)
+                    {
+                        if (agent[0] == "party")
+                        {
+                            var party_data = Salesfunc.GetSlcdDetails(val, agent[1], Code);
+                            str = Master_Help.ToReturnFieldValues("", party_data);
+                        }
+                    }
                     return Content(str);
                 }
             }
@@ -1297,6 +1366,9 @@ namespace Improvar.Controllers
                 }
                 else
                 {
+                    DataTable allprodgrpgstper_data = Salesfunc.GetBarHelp(data[4].retStr(), "", "", val.retStr().retSqlformat(), "", "", "", "", data[2].retStr().retStr(), data[3].retStr().retStr(), "", "", true, false, "PB", "", "", false, false, true, "", false);
+                    str += "^PRODGRPGSTPER=^" + allprodgrpgstper_data.Rows[0]["PRODGRPGSTPER"] + Cn.GCS();
+
                     return Content(str);
                 }
             }

@@ -64,6 +64,9 @@ namespace Improvar.Models
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         [Required]
         public double DISCAMT { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double TXBLVAL { get; set; }
+        
 
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         [Required]
@@ -124,6 +127,14 @@ namespace Improvar.Models
         public string PDESIGN { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? FRGHTAMT { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double TAXAMT { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double NETAMT { get; set; }
+        public double GSTPER { get; set; }
+        public string PRODGRPGSTPER { get; set; }
 
     }
 }
