@@ -3210,10 +3210,11 @@ namespace Improvar
                 string scmf = CommVar.FinSchema(UNQSNO);
                 var COMPCD = CommVar.Compcd(UNQSNO);
                 var LOCCD = CommVar.Loccd(UNQSNO);
+                var yr_cd = CommVar.YearCode(UNQSNO);
                 string valsrch = val.ToUpper().Trim();
                 string sql = "";
                 sql += "select distinct b.DOCNO,to_char(b.DOCDT,'dd/mm/yyyy') DOCDT,a.SLCD,a.AUTONO ,c.SLNM,a.PREFNO,to_char(a.PREFDT,'dd/mm/yyyy') PREFDT from " + scm + ".T_TXN a," + scm + ".T_CNTRL_HDR b,  ";
-                sql += scmf + ".M_SUBLEG c where a.AUTONO=b.AUTONO(+) and a.SLCD=c.SLCD(+) and a.PREFNO is not null and PREFDT is not null and b.compcd='" + COMPCD + "' and b.loccd='" + LOCCD + "' ";
+                sql += scmf + ".M_SUBLEG c where a.AUTONO=b.AUTONO(+) and a.SLCD=c.SLCD(+) and a.PREFNO is not null and PREFDT is not null and b.compcd='" + COMPCD + "' and b.loccd='" + LOCCD + "' and b.yr_cd ='" + yr_cd + "' ";
                 if (valsrch.retStr() != "") sql += " and upper(b.DOCNO) = '" + valsrch + "' ";
                 sql += "  order by DOCNO,DOCDT ";
                 DataTable tbl = SQLquery(sql);

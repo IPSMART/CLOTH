@@ -858,7 +858,7 @@ namespace Improvar.Controllers
                 query += "f.itgrpcd = h.itgrpcd(+) and f.uomcd = i.uomcd(+) and a.mtrljobcd=j.mtrljobcd(+) " + Environment.NewLine;
                 if (ITGRPCD.retStr() != "") query += "and f.itgrpcd in (" + ITGRPCD + ") " + Environment.NewLine;
                 if (ITCD.retStr() != "") query += "and e.itcd in (" + ITCD + ") " + Environment.NewLine;
-                query += "order by mtrljobnm,mtrljobcd,itgrpnm, itgrpcd, fabitnm, fabitcd, itnm, itcd, styleno, barno " + Environment.NewLine;
+                query += "order by mtrljobnm,mtrljobcd,itgrpnm, itgrpcd, itnm,styleno, fabitnm, fabitcd,  itcd,  barno " + Environment.NewLine;
                 DataTable tbl1 = MasterHelp.SQLquery(query);
                 if (tbl1.Rows.Count == 0) return Content("no records..");
 
@@ -1179,7 +1179,7 @@ namespace Improvar.Controllers
                                             IR.Rows[rNo]["itnm"] = summarybarcode.Rows[i - 1]["itstyle"].ToString();
                                         }
                                         else {
-                                            IR.Rows[rNo]["itnm"] = summarybarcode.Rows[i - 1]["fabitnm"].ToString();
+                                            IR.Rows[rNo]["itnm"] = summarybarcode.Rows[i - 1]["itnm"].ToString();
                                         }
                                         if (VE.Checkbox3 == true) IR.Rows[rNo]["styleno"] = summarybarcode.Rows[i - 1]["styleno"].ToString() + (ShowShade == true ? " (Shade : " + summarybarcode.Rows[i - 1]["shade"].ToString() + ")" : "");
                                         IR.Rows[rNo]["uomnm"] = summarybarcode.Rows[i - 1]["uomcd"].ToString();
