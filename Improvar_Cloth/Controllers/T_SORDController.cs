@@ -276,9 +276,9 @@ namespace Improvar.Controllers
                                 {
                                     string str = "";
                                     str += " select distinct b.doccd, b.docno, b.docdt, b.autono, ";
-                                    str += " b.usr_id sb_madeby_id, c.user_name sb_madeby_name, b.usr_entdt sb_madeby_dt ";
-                                    str += " from " + CommVar.CurSchema(UNQSNO) + ".t_batchdtl a, " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr b, user_appl c ";
-                                    str += " where a.autono = b.autono and a.ordautono = '" + sl.AUTONO + "' and b.usr_id = c.user_id(+) ";
+                                    str += " b.usr_id sb_madeby_id, c.user_name sb_madeby_name, b.usr_entdt sb_madeby_dt,e.slnm,e.pin ";
+                                    str += " from " + CommVar.CurSchema(UNQSNO) + ".t_batchdtl a, " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr b, user_appl c, " + CommVar.CurSchema(UNQSNO) + ".T_TXN d," + CommVar.FinSchema(UNQSNO) + ".m_subleg e ";
+                                    str += " where a.autono = b.autono and a.ordautono = '" + sl.AUTONO + "' and b.usr_id = c.user_id(+) and b.autono=d.autono(+) and d.slcd=e.slcd(+) ";
                                     DataTable dtbl = Master_Help.SQLquery(str);
                                     VE.TSORDDTL_SEARCHPANEL = (from DataRow dr1 in dtbl.Rows
                                                                select new TSORDDTL_SEARCHPANEL()
@@ -289,7 +289,8 @@ namespace Improvar.Controllers
                                                                    AUTONO = dr1["autono"].retStr(),
                                                                    SB_MADEBY_ID = dr1["sb_madeby_id"].retStr(),
                                                                    SB_MADEBY_NAME = dr1["sb_madeby_name"].retStr(),
-                                                                   SB_MADEDT = dr1["sb_madeby_dt"].retStr()
+                                                                   SB_MADEDT = dr1["sb_madeby_dt"].retStr(),
+                                                                   SLNM = dr1["slnm"].retStr() + " [" + dr1["pin"].retStr() + "]"
                                                                }).OrderBy(s => s.AUTONO).ToList();
                                 }
 
@@ -1367,7 +1368,12 @@ namespace Improvar.Controllers
                 else
                 {
                     DataTable allprodgrpgstper_data = Salesfunc.GetBarHelp(data[4].retStr(), "", "", val.retStr().retSqlformat(), "", "", "", "", data[2].retStr().retStr(), data[3].retStr().retStr(), "", "", true, false, "PB", "", "", false, false, true, "", false);
-                    str += "^PRODGRPGSTPER=^" + allprodgrpgstper_data.Rows[0]["PRODGRPGSTPER"] + Cn.GCS();
+                    string PRODGRPGSTPER = "";
+                    if(allprodgrpgstper_data != null && allprodgrpgstper_data.Rows.Count > 0)
+                    {
+                        PRODGRPGSTPER = allprodgrpgstper_data.Rows[0]["PRODGRPGSTPER"].retStr();
+                    }
+                    str += "^PRODGRPGSTPER=^" + PRODGRPGSTPER + Cn.GCS();
 
                     return Content(str);
                 }

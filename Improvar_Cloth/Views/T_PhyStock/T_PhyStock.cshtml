@@ -27,6 +27,52 @@
         else if ("@Model.DefaultAction" == "A") {
             $('form :input:enabled:visible:not([readonly]):first').focus();
         }
+
+        $('#btnExtractFile').click(function () {
+            debugger;
+            if (window.FormData !== undefined) {
+                var formData = new FormData($('form').get(0));
+                var file = document.getElementById("file").files[0];
+                var filename = document.getElementById("file").value;
+                if (filename == "") {
+                    msgWarning("Please Select Excel File");
+                    return false;
+                }
+                formData.append("file", file);
+                formData.append("Command", "Upload");
+                formData.append("CorrectExcel", "Y");
+                $.ajax({
+                    url: "@Url.Action("UpdateGrid", PageControllerName)",
+                    type: "POST",
+                beforesend: $("#WaitingMode").show(),
+                contentType: false, // Not to set any content header
+                processData: false, // Not to process data
+                data: formData,
+                success: function (result) {
+
+                    debugger;
+                    var MSG = result.indexOf('_T_PhyStock_GRID');
+                    if (MSG >= 0) {
+                        $("#WaitingMode").hide();
+                        $("#partialdivBarCodeTab").html(result);
+                        $("input[type='file']").attr("disabled", false);
+                    }
+                    else {
+                        msgInfo(result);
+                        return false;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+        else {
+                alert("File/FormData not found.");
+    }
+    });
         $("#WaitingMode").hide();
 
     });
@@ -944,6 +990,27 @@
 
                                 </div>
                             </div>
+                            @if (Model.DefaultAction == "A")
+                            {
+                                    <div class="col-md-4" style="width:auto;">
+                                        <div class="editor-label" style="margin-top: 6px;">
+                                            @Html.Label("", "Select File")
+                                        </div>
+                                    </div>
+                                    <div class="col-md-7" style="width:auto;">
+                                        <div class="editor-label" style="margin-top: 6px;">
+                                            <input type="file" id="file" name="file" accept=".xlsx" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-10" style="width:auto;">
+                                        <div class="editor-label">
+                                            <input id="btnExtractFile" type="button" value="Upload Data in Bar Code Grid" name="Command" formtarget="_blank" class="btn btn-success" style="margin-top: 4px;padding: 2px 7px 2px 5px;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-7" style="width:auto;">
+                                        <input type="submit" value="Download Template" name="Command" formtarget="_blank" class="btn btn-primary" style="margin-top: 4px;padding: 2px 7px 2px 5px;" />
+                                    </div>
+                            }
                         </div>
                         <div class="row">
                             <div class="col-md-2">

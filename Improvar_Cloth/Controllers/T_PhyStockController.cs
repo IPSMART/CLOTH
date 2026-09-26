@@ -10,6 +10,9 @@ using System.Web.UI.WebControls;
 using Oracle.ManagedDataAccess.Client;
 using System.IO;
 using System.Reflection;
+using System.Web;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
 
 namespace Improvar.Controllers
 {
@@ -1133,5 +1136,158 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        public ActionResult UpdateGrid(TransactionPhyStockEntry VE, FormCollection FC)
+        {
+            try
+            {
+                Cn.getQueryString(VE);
+                string msg = ""; string MESSAGE = "", strerrline = "";
+                Stream stream;
+
+                if (Request.Files.Count == 0) return Content("No File Selected");
+                HttpPostedFileBase file = Request.Files[0];
+                if (System.IO.Path.GetExtension(file.FileName) != ".xlsx") return Content(".xlsx file need to choose");
+                stream = file.InputStream;
+
+                DataTable dbfdt = new DataTable();
+                dbfdt.Columns.Add("EXCELROWNUM", typeof(int));
+                dbfdt.Columns.Add("SL No", typeof(int));
+                //Item Code	Style No	Bar No.	Quantity	Stock Type
+
+                dbfdt.Columns.Add("Item Code", typeof(string));
+                dbfdt.Columns.Add("Bar No.", typeof(string));
+                dbfdt.Columns.Add("Style No", typeof(string));
+                dbfdt.Columns.Add("Length", typeof(string));
+                dbfdt.Columns.Add("Nos", typeof(string));
+                dbfdt.Columns.Add("Quantity", typeof(string));
+                dbfdt.Columns.Add("Rate", typeof(string));
+                dbfdt.Columns.Add("Stock Type", typeof(string));
+                dbfdt.Columns.Add("Item Remarks", typeof(string));
+                dbfdt.Columns.Add("Material Job", typeof(string));
+
+                using (var package = new ExcelPackage(stream))
+                {
+                    var currentSheet = package.Workbook.Worksheets;
+                    var workSheet = currentSheet.First();
+                    var noOfCol = workSheet.Dimension.End.Column;
+                    var noOfRow = workSheet.Dimension.End.Row;
+                    int rowNum = 2;
+                    for (rowNum = 2; rowNum <= noOfRow; rowNum++)
+                    {
+                        if (workSheet.Cells[rowNum, 1].Value.retStr() != "" && workSheet.Cells[rowNum, 2].Value.retStr() != "" && workSheet.Cells[rowNum, 3].Value.retStr() != "" && workSheet.Cells[rowNum, 6].Value.retDbl() != 0)
+                        {
+                            DataRow dr = dbfdt.NewRow();
+                            //dr["SL No"] = rowNum;
+                            dr["EXCELROWNUM"] = rowNum;
+                            var wsRow = workSheet.Cells[rowNum, 1, rowNum, noOfCol];
+                            for (int colnum = 1; colnum <= noOfCol; colnum++)
+                            {
+                                string colname = workSheet.Cells[1, colnum].Value.retStr().Trim();
+                                string colValue = workSheet.Cells[rowNum, colnum].Value.retStr().Trim();
+                                try
+                                {
+                                    if (colname == "") continue;
+                                    dr[colname] = colValue;
+                                }
+                                catch (ArgumentException ex)
+                                {
+                                    return Content("Wrong ColumnName:" + colname + " Error:" + ex.Message);
+                                }
+                            }
+                            dbfdt.Rows.Add(dr);
+                        }
+                    }
+                }
+
+                string scm = CommVar.CurSchema(UNQSNO);
+                string sql = "";
+                sql += "select a.itcd,a.styleno from " + scm + ".m_sitem a ," + scm + ".m_cntrl_hdr b ";
+                sql += "where a.m_autono=b.m_autono(+) and nvl(b.inactive_tag, 'N')= 'N'  ";
+                DataTable tbl = Master_Help.SQLquery(sql);
+
+                VE.TPHYSTK = (from DataRow dr in dbfdt.Rows
+                              join DataRow dr1 in tbl.Rows on dr["Style No"].retStr() equals dr1["styleno"].retStr()
+                              select new TPHYSTK()
+                              {
+                                  ITCD = dr1["itcd"].retStr(),
+                                  BARNO = dr["Bar No."].retStr(),
+                                  ITSTYLE = dr["Style No"].retStr(),
+                                  CUTLENGTH = dr["Length"].retDbl(),
+                                  NOS = dr["Nos"].retDbl(),
+                                  QNTY = dr["Quantity"].retDbl(),
+                                  RATE = dr["Rate"].retDbl(),
+                                  STKTYPE = dr["Stock Type"].retStr(),
+                                  ITREM = dr["Item Remarks"].retStr(),
+                                  MTRLJOBCD = dr["Material Job"].retStr(),
+                                  SLNO = dr["SL No"].retShort(),
+                              }).ToList();
+
+                //for (int i = 0; i <= VE.TPHYSTK.Count - 1; i++)
+                //{
+                //    VE.TPHYSTK[i].SLNO = (i + 1).retShort();
+                //}
+
+
+                VE.B_T_NOS = VE.TPHYSTK.Sum(a => a.NOS).retDbl();
+                VE.B_T_QNTY = VE.TPHYSTK.Sum(a => a.QNTY).retDbl();
+
+                ModelState.Clear();
+                VE.DefaultView = true;
+                return PartialView("_T_PhyStock_BarTab", VE);
+
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+
+        }
+        [HttpPost]
+        public ActionResult T_PhyStock(FormCollection FC, TransactionPhyStockEntry VE, string Command = "")
+        {
+            try
+            {
+                string nm = "Physical Stock";
+
+                //DESIGN ITEM GROUP ITEM NAME UOM HSN CODE    FAB ITNM    BARNO WPRATE    MRP CPRATE   RPRATE JOBPRATE    JOBSRATE IGST    RNO ITLEGACYCD  LEGACYCD
+
+                string Excel_Header = "SL No" + "|" + "Bar No." + "|" + "Style No" + "|" + "Length" + "|" + "Nos" + "|" + "Quantity"
+                    + "|" + "Rate" + "|" + "Stock Type" + "|" + "Item Remarks" + " |" + "Material Job";
+
+                ExcelPackage ExcelPkg = new ExcelPackage();
+                ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("Sheet1");
+
+                using (ExcelRange Rng = wsSheet1.Cells["A1:V1"])
+                {
+                    Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Yellow);
+                    string[] Header = Excel_Header.Split('|');
+                    for (int i = 0; i < Header.Length; i++)
+                    {
+                        wsSheet1.Cells[1, i + 1].Value = Header[i];
+                    }
+                }
+                wsSheet1.Cells[1, 1, 1, 22].AutoFitColumns();
+
+                Response.Clear();
+                Response.ClearContent();
+                Response.Buffer = true;
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                Response.AddHeader("Content-Disposition", "attachment; filename=" + nm + ".xlsx");
+                Response.BinaryWrite(ExcelPkg.GetAsByteArray());
+                Response.Flush();
+                Response.Close();
+                Response.End();
+                return Content("Download Sucessfull");
+
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message);
+            }
+        }
+
     }
 }

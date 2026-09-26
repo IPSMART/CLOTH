@@ -16,5 +16,6 @@ namespace Improvar.Models
         public string SB_MADEBY_ID { get; set; }
         public string SB_MADEBY_NAME { get; set; }
         public bool Checked { get; set; }
+        public string SLNM { get; set; }
     }
 }

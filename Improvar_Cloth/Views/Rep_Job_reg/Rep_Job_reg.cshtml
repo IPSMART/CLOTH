@@ -30,6 +30,7 @@
     $(document).ready(function () {
         //getdoctype(); // Call function on page load
         $('#display').hide();// hide the div
+        ShowAmtDiv();
     });
 </script>
 <script>
@@ -70,7 +71,19 @@
         }
     }
 </script>
-
+<script>
+    function ShowAmtDiv() {
+        debugger;
+        if (document.getElementById("Checkbox1").checked == true && document.getElementById("Checkbox2").checked == true)
+        {
+            $(".divamt").show();
+        }
+        else {
+            $(".divamt").hide();
+        }
+        document.getElementById("Checkbox3").checked = false;
+    }
+</script>
 @using (Html.BeginForm("", PageControllerName, FormMethod.Post, new { id = "form1", enctype = "multipart/form-data" }))
 {
     if (Model.DefaultView == true)
@@ -187,7 +200,7 @@
                     </div>
                     <div class="col-lg-2" style="border: 2px groove;">
                         <label class="checkbox-inline">
-                            @Html.CheckBoxFor(model => model.Checkbox1)  @Html.Label("Show Value")
+                            @Html.CheckBoxFor(model => model.Checkbox1, new { id = "Checkbox1", onclick = "ShowAmtDiv();" })  @Html.Label("Show Value")
                         </label>
                     </div>
 
@@ -200,10 +213,22 @@
                     </div>
                     <div class="col-lg-2" style="border: 2px groove;">
                         <label class="checkbox-inline">
-                            @Html.CheckBoxFor(model => model.Checkbox2)  @Html.Label("Show Metirial Issue Item")
+                            @Html.CheckBoxFor(model => model.Checkbox2, new { id = "Checkbox2", onclick = "ShowAmtDiv();" })  @Html.Label("Show Metirial Issue Item")
                         </label>
                     </div>
 
+                </div>
+                <div class="divamt row" style="margin-top: 5px;">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Show Amt From Master")
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-field" style="margin-top:6px;">
+                            @Html.CheckBoxFor(model => model.Checkbox3, new { id = "Checkbox3", })
+                        </div>
+                    </div>
                 </div>
                 @*<div class="row">
                         <div class="col-lg-2">
