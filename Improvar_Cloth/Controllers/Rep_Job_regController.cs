@@ -448,11 +448,11 @@ namespace Improvar.Controllers
 
                                             if (ITCD_material_DATA != null)
                                             {
+                                                tqnt = 0; tisqt = 0;
                                                 foreach (var k in ITCD_material_DATA)
                                                 {
                                                     string item1 = k.itcd.ToString();
-                                                    string mtrljobcd1 = k.mtrljobcd.ToString();
-                                                    tqnt = 0; tisqt = 0;
+                                                    string mtrljobcd1 = k.mtrljobcd.ToString();                                                   
 
                                                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                                                     //IR.Rows[rNo]["flag"] = "font-style:italic;";
