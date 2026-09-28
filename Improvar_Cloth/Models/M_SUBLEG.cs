@@ -256,5 +256,7 @@ namespace Improvar.Models
         public string BLWSONACT { get; set; }
         [StringLength(30)]
         public string MSMENO { get; set; }
+        [StringLength(100)]
+        public string REFBY { get; set; }
     }
 }

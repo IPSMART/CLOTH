@@ -1956,7 +1956,7 @@
                                 @Html.EditorFor(model => model.M_SUBLEG.REGEMAILID, new { htmlAttributes = new { @class = "form-control", @placeholder = "Registered Email", maxlength = 60 } })
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Registered Mobile")
                             </div>
@@ -1985,6 +1985,28 @@
                         <div class="col-md-3">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.M_SUBLEG.WHATSAPP_NO, new { htmlAttributes = new { @class = "form-control", @placeholder = "WhatsApp No.", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", @type = "text", maxlength = 10 } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Note")
+                            </div>
+                        </div>
+                        <div class="col-md-11">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_SUBLEG.OTHADDREM, new { htmlAttributes = new { @class = "form-control", @id = "OTHADDREM", @placeholder = "Note", maxlength = 100 } })
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Reference")
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_SUBLEG.REFBY, new { htmlAttributes = new { @class = "form-control", @id = "REFBY", @placeholder = "Note", maxlength = 100 } })
                             </div>
                         </div>
                     </div>
@@ -2072,20 +2094,7 @@
                                 @Html.EditorFor(model => model.M_SUBLEG.OTHADDEMAIL, new { htmlAttributes = new { @class = "form-control", @id = "OTHADDEMAIL", @placeholder = "Email", maxlength = 50 } })
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-3">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Note")
-                            </div>
-                        </div>
-                        <div class="col-md-11">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.M_SUBLEG.OTHADDREM, new { htmlAttributes = new { @class = "form-control", @id = "OTHADDREM", @placeholder = "Note", maxlength = 100 } })
-                            </div>
-                        </div>
-                    </div>
-
+                    </div>  
                 </div>
                 @if (Model.DefaultAction == "V")
                 {

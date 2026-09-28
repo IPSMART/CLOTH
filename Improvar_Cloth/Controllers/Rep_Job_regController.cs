@@ -399,6 +399,105 @@ namespace Improvar.Controllers
                         return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
                         #endregion
                     }
+                    else if (ReportType == "METIRIALSUMMARY")
+                    {
+                        HC.GetPrintHeader(IR, "docdt", "string", "c,10", "Iss. Date.");
+                        HC.GetPrintHeader(IR, "docno", "string", "c,13", "Iss Doc No");
+                        HC.GetPrintHeader(IR, "itnm", "string", "c,10", "Item");
+                        HC.GetPrintHeader(IR, "styleno", "string", "c,6", "Styleno");
+                        HC.GetPrintHeader(IR, "qnty", "double", "n,11,3", "Prog.Qnty");
+                        if (showValue == true) HC.GetPrintHeader(IR, "issamt", "double", "n,15,2", "Iss Amt.");
+                        HC.GetPrintHeader(IR, "itremarks", "string", "c,15", "itremark");
+
+                        Int32 rNo = 0; Int32 i = 0; Int32 maxR = 0;
+                        i = 0; maxR = tbl.Rows.Count - 1;
+                        double tqnty = 0, tisamt = 0; double tqnt = 0, tisqt = 0; double gtqnty = 0, gtisamt = 0;
+                        while (i <= maxR)
+                        {
+                            tqnty = 0; tisamt = 0;
+                            string slcd = tbl.Rows[i]["slcd"].retStr();
+                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                            IR.Rows[rNo]["Dammy"] = "" + tbl.Rows[i]["slnm"].retStr() + " [" + tbl.Rows[i]["slcd"].retStr() + "]" + (tbl.Rows[i]["regmobile"].retStr() == "" ? "" : "Mob : " + tbl.Rows[i]["regmobile"].retStr());
+                            IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
+
+                            while (tbl.Rows[i]["slcd"].retStr() == slcd)
+                            {
+                                string autono = tbl.Rows[i]["autono"].retStr();
+                                
+                                while (tbl.Rows[i]["slcd"].retStr() == slcd && tbl.Rows[i]["autono"].retStr() == autono)
+                                {
+                                    double progslno = tbl.Rows[i]["slno"].retDbl();
+                                    
+                                    while (tbl.Rows[i]["slcd"].retStr() == slcd && tbl.Rows[i]["autono"].retStr() == autono && tbl.Rows[i]["slno"].retDbl() == progslno)
+                                    {
+                                        if (VE.Checkbox2 == true)
+                                        {
+                                            var ITCD_material_DATA = (from DataRow x in Mtrl.Rows
+                                                                      where x["autono"].retStr() == autono && x["RECPROGSLNO"].retDbl() == progslno
+                                                                      group x by new { ITCD = x["itcd"].retStr(), ITNM = x["itnm"].retStr(), STYLENO = x["styleno"].retStr(), ITREM = x["itrem"].retStr(), MTRLJOBCD = x["MTRLJOBCD"].retStr() } into x
+                                                                      select new
+                                                                      {
+                                                                          itcd = x.Key.ITCD,
+                                                                          itnm = x.Key.STYLENO + x.Key.ITNM,
+                                                                          itrem = x.Key.ITREM,
+                                                                          qnty = x.Sum(s => s["qnty"].retDbl()),
+                                                                          amt = x.Sum(s => s["amt"].retDbl()),
+                                                                          mtrljobcd = x.Key.MTRLJOBCD,
+                                                                          //TWASTGQNTY = x.Sum(s => s["qnty"].retDbl())
+                                                                      }).ToList();
+
+                                            if (ITCD_material_DATA != null)
+                                            {
+                                                foreach (var k in ITCD_material_DATA)
+                                                {
+                                                    string item1 = k.itcd.ToString();
+                                                    string mtrljobcd1 = k.mtrljobcd.ToString();
+                                                    tqnt = 0; tisqt = 0;
+
+                                                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                                    //IR.Rows[rNo]["flag"] = "font-style:italic;";
+                                                    IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].retDateStr();
+                                                    IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].retStr();
+                                                    IR.Rows[rNo]["itnm"] = k.itcd.retStr();
+                                                    IR.Rows[rNo]["Styleno"] = k.itnm.retStr();
+                                                    IR.Rows[rNo]["qnty"] = k.qnty.retStr();
+                                                    IR.Rows[rNo]["itremarks"] = k.itrem.retStr();
+                                                    double rt = (from DataRow a in tblprccd.Rows where a["itcd"].retStr() == item1 && a["mtrljobcd"].retStr() == mtrljobcd1 select a["rate"].retDbl()).FirstOrDefault();
+                                                    if (showValue == true) IR.Rows[rNo]["issamt"] = (k.qnty * rt).retDbl().toRound();
+
+                                                    tqnt += k.qnty;
+                                                    tisqt += (k.qnty * rt).retDbl().toRound();
+                                                }
+                                            }
+                                        }
+                                        i++;
+                                        if (i > maxR) break;
+                                    }
+                                    tqnty += tqnt;
+                                    tisamt += tisqt;
+                                    if (i > maxR) break;
+                                }                                
+                                if (i > maxR) break;
+                            }
+                            gtqnty += tqnty;
+                            gtisamt += tisamt;
+
+                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                            IR.Rows[rNo]["docno"] = "Total of " + tbl.Rows[i - 1]["slnm"].ToString();
+                            IR.Rows[rNo]["qnty"] = tqnty;
+                            if (showValue == true) IR.Rows[rNo]["issamt"] = tisamt;
+
+                        }
+                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                        IR.Rows[rNo]["docno"] = "Grand Total";
+                        IR.Rows[rNo]["qnty"] = gtqnty;
+                        if (showValue == true) IR.Rows[rNo]["issamt"] = gtisamt;
+                        string repname = "Job Register".retRepname();
+                        pghdr1 = "Job Work register Details" + (fdt != "" ? " from " + fdt + " to " : " as on ") + tdt;
+                        PV = HC.ShowReport(IR, repname, pghdr1, pghdr2, true, true, "P", false);
+                        TempData[repname] = PV;
+                        return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
+                    }
                     else
                     {
                         #region
